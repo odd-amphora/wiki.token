@@ -1,11 +1,5 @@
-// MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
-export const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
-
-//MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
-export const ETHERSCAN_KEY = "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8";
-
-// EXTERNAL CONTRACTS
-
+export const INFURA_ID = "9b6950881ce24f88a564ce04f1c18f01";
+export const ETHERSCAN_KEY = "K7RTR3T28WIB5KFQRRRPNVX5DU97CDQYVG";
 export const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
 export const DAI_ABI = [
