@@ -42,7 +42,7 @@ yarn deploy
 
 🔏 Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
 
-📝 Edit your frontend `App.jsx` in `packages/react-app/src`
+📝 Edit your frontend `App.jsx` in `packages/frontend/src`
 
 💼 Edit your deployment script `deploy.js` in `packages/hardhat/scripts`
 
@@ -132,7 +132,7 @@ Look for the [HardHat](https://hardhat.org) console.log() output in the `yarn ru
 
 📟 Events are really handy for signaling to the frontend. [Read more about events here.](https://solidity-by-example.org/0.6/events/)
 
-📲 Spend some time in `App.jsx` in `packages/react-app/src` and learn about the 🛰 [Providers](https://github.com/austintgriffith/wiki.token#-web3-providers)
+📲 Spend some time in `App.jsx` in `packages/frontend/src` and learn about the 🛰 [Providers](https://github.com/austintgriffith/wiki.token#-web3-providers)
 
 ⚠️ Big numbers are stored as objects: `formatEther` and `parseEther` (ethers.js) will help with WEI->ETH and ETH->WEI.
 
@@ -166,7 +166,7 @@ Look for the [HardHat](https://hardhat.org) console.log() output in the `yarn ru
 
 🔑 Create wallet links to your app with `yarn wallet` and `yarn fundedwallet`
 
-⬇️ Installing a new package to your frontend? You need to `cd packages/react-app` and then `yarn add PACKAGE`
+⬇️ Installing a new package to your frontend? You need to `cd packages/frontend` and then `yarn add PACKAGE`
 
 ⬇️ Installing a new package to your backend? You need to `cd packages/harthat` and then `yarn add PACKAGE`
 
@@ -340,7 +340,7 @@ yarn install
 yarn start
 ```
 
-📝 Edit your frontend `App.jsx` in `packages/react-app/src` and open http://localhost:3000
+📝 Edit your frontend `App.jsx` in `packages/frontend/src` and open http://localhost:3000
 
 ---
 
@@ -452,7 +452,7 @@ yarn run deploy
 
 🔏 Edit or rename your smart contract `YourContract.sol` in `packages/hardhat/contracts`
 
-📝 Edit your frontend `App.jsx` in `packages/react-app/src`
+📝 Edit your frontend `App.jsx` in `packages/frontend/src`
 
 📱 Open http://localhost:3000 to see the app
 
@@ -506,13 +506,13 @@ tx({
 tx(writeContracts["SmartContractWallet"].updateOwner(newOwner));
 ```
 
-> ☢️ **Warning**: You will need to update the configuration for `react-app/src/helpers/Transactor.js` to use _your_ [BlockNative dappId](https://www.blocknative.com/notify)
+> ☢️ **Warning**: You will need to update the configuration for `frontend/src/helpers/Transactor.js` to use _your_ [BlockNative dappId](https://www.blocknative.com/notify)
 
 ---
 
 ## 🖇 Hooks:
 
-Commonly used Ethereum hooks located in `packages/react-app/src/`:
+Commonly used Ethereum hooks located in `packages/frontend/src/`:
 
 `usePoller(fn, delay)`: runs a function on app load and then on a custom interval
 
@@ -590,7 +590,7 @@ const ownerUpdates = useEventListener(
 
 ## 📦 Components:
 
-Your commonly used React Ethereum components located in `packages/react-app/src/`:
+Your commonly used React Ethereum components located in `packages/frontend/src/`:
 
 <br/>
 
@@ -687,7 +687,7 @@ const price = useExchangePrice(mainnetProvider);
 
 📝 Edit your smart contract `SmartContractWallet.sol` in `packages/hardhat/contracts`
 
-📝 Then edit the `SmartContractWallet.js` React component in `packages/react-app/src`
+📝 Then edit the `SmartContractWallet.js` React component in `packages/frontend/src`
 
 ▶️ Run `yarn run compile` and `yarn run deploy` or just `yarn run watch`
 

@@ -1,6 +1,6 @@
-## @uniswap-v1-app/react-app
+## @uniswap-v1-app/frontend
 
-This package is a fork of the default template provided by [Create React App](https://github.com/facebook/create-react-app).
+This package is a fork of the default template provided by [Create React App](https://github.com/facebook/create-frontend).
 
 ## Available Scripts
 
@@ -19,7 +19,7 @@ You will see the build errors and lint warnings in the console.
 Runs the test watcher in an interactive mode.<br>
 By default, runs tests related to files changed since the last commit.
 
-[Read more about testing.](https://facebook.github.io/create-react-app/docs/running-tests)
+[Read more about testing.](https://facebook.github.io/create-frontend/docs/running-tests)
 
 ### `yarn build`
 
@@ -29,9 +29,9 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
 
-See the React documentation on [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+See the React documentation on [deployment](https://facebook.github.io/create-frontend/docs/deployment) for more information.
 
-### `yarn react-app:eject`
+### `yarn frontend:eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
@@ -46,30 +46,30 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-frontend/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### Code Splitting
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+This section has moved here: https://facebook.github.io/create-frontend/docs/code-splitting
 
 ### Analyzing the Bundle Size
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+This section has moved here: https://facebook.github.io/create-frontend/docs/analyzing-the-bundle-size
 
 ### Making a Progressive Web App
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+This section has moved here: https://facebook.github.io/create-frontend/docs/making-a-progressive-web-app
 
 ### Advanced Configuration
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+This section has moved here: https://facebook.github.io/create-frontend/docs/advanced-configuration
 
 ### Deployment
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+This section has moved here: https://facebook.github.io/create-frontend/docs/deployment
 
 ### `yarn build` fails to minify
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+This section has moved here: https://facebook.github.io/create-frontend/docs/troubleshooting#npm-run-build-fails-to-minify

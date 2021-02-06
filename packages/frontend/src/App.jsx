@@ -45,7 +45,7 @@ const mainnetProvider = new JsonRpcProvider("https://mainnet.infura.io/v3/" + IN
 
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = targetNetwork.rpcUrl;
-// as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
+// as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/frontend/.env
 const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER
   ? process.env.REACT_APP_PROVIDER
   : localProviderUrl;
@@ -215,7 +215,7 @@ function App(props) {
       <Header />
       {networkDisplay}
       <Contract
-        name="WikiToken"
+        name="Token"
         signer={userProvider.getSigner()}
         provider={localProvider}
         address={address}

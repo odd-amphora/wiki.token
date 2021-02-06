@@ -1,45 +1,14 @@
 /* eslint no-use-before-define: "warn" */
 const fs = require("fs");
 const chalk = require("chalk");
-const { config, ethers } = require("hardhat");
+const { ethers } = require("hardhat");
 const { utils } = require("ethers");
 const R = require("ramda");
 
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
-  const yourContract = await deploy("YourContract"); // <-- add in constructor args like line 19 vvvv
-  const wikiToken = await deploy("WikiToken");
-
-  //const secondContract = await deploy("SecondContract")
-
-  // const exampleToken = await deploy("ExampleToken")
-  // const examplePriceOracle = await deploy("ExamplePriceOracle")
-  // const smartContractWallet = await deploy("SmartContractWallet",[exampleToken.address,examplePriceOracle.address])
-
-  /*
-  //If you want to send value to an address from the deployer
-  const deployerWallet = ethers.provider.getSigner()
-  await deployerWallet.sendTransaction({
-    to: "0x34aA3F359A9D614239015126635CE7732c18fDF3",
-    value: ethers.utils.parseEther("0.001")
-  })
-  */
-
-  /*
-  //If you want to send some ETH to a contract on deploy (make your constructor payable!)
-  const yourContract = await deploy("YourContract", [], {
-  value: ethers.utils.parseEther("0.05")
-  });
-  */
-
-  /*
-  //If you want to link a library into your contract:
-  // reference: https://github.com/austintgriffith/wiki.token/blob/using-libraries-example/packages/hardhat/scripts/deploy.js#L19
-  const yourContract = await deploy("YourContract", [], {}, {
-   LibraryName: **LibraryAddress**
-  });
-  */
+  const token = await deploy("Token");
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",
@@ -80,26 +49,6 @@ const abiEncodeArgs = (deployed, contractArgs) => {
   const encoded = utils.defaultAbiCoder.encode(deployed.interface.deploy.inputs, contractArgs);
   return encoded;
 };
-
-// checks if it is a Solidity file
-const isSolidity = fileName =>
-  fileName.indexOf(".sol") >= 0 && fileName.indexOf(".swp") < 0 && fileName.indexOf(".swap") < 0;
-
-const readArgsFile = contractName => {
-  let args = [];
-  try {
-    const argsFile = `./contracts/${contractName}.args`;
-    if (!fs.existsSync(argsFile)) return args;
-    args = JSON.parse(fs.readFileSync(argsFile));
-  } catch (e) {
-    console.log(e);
-  }
-  return args;
-};
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 main()
   .then(() => process.exit(0))
