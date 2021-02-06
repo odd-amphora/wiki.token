@@ -19,18 +19,8 @@ import {
 import { Header, Account, Faucet, Ramp, Contract, GasGauge } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
-// import { ExampleUI, Subgraph } from "./views";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
-    Welcome to 🏗 wiki.token !
-
-    Code:
-    https://github.com/austintgriffith/wiki.token
-
-    Support:
-    https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA
-    or DM @austingriffith on twitter or telegram
-
     You should get your own Infura.io ID and put it in `constants.js`
     (this is your connection to the main Ethereum network for ENS etc.)
 
@@ -225,103 +215,13 @@ function App(props) {
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
       {networkDisplay}
-      <BrowserRouter>
-        <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
-          <Menu.Item key="/">
-            <Link
-              onClick={() => {
-                setRoute("/");
-              }}
-              to="/"
-            >
-              YourContract
-            </Link>
-          </Menu.Item>
-          {/* <Menu.Item key="/exampleui">
-            <Link
-              onClick={() => {
-                setRoute("/exampleui");
-              }}
-              to="/exampleui"
-            >
-              ExampleUI
-            </Link>
-          </Menu.Item> */}
-          {/* <Menu.Item key="/subgraph">
-            <Link
-              onClick={() => {
-                setRoute("/subgraph");
-              }}
-              to="/subgraph"
-            >
-              Subgraph
-            </Link>
-          </Menu.Item> */}
-        </Menu>
-
-        <Switch>
-          <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
-
-            <Contract
-              name="YourContract"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-
-            {/* uncomment for a second contract:
-            <Contract
-              name="SecondContract"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-            */}
-
-            {/* Uncomment to display and interact with an external contract (DAI on mainnet):
-            <Contract
-              name="DAI"
-              customContract={mainnetDAIContract}
-              signer={userProvider.getSigner()}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-            */}
-          </Route>
-          {/* <Route path="/exampleui">
-            <ExampleUI
-              address={address}
-              userProvider={userProvider}
-              mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
-              purpose={purpose}
-              setPurposeEvents={setPurposeEvents}
-            />
-          </Route> */}
-          {/* <Route path="/subgraph">
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
-            />
-          </Route> */}
-        </Switch>
-      </BrowserRouter>
-
+      <Contract
+        name="WikiToken"
+        signer={userProvider.getSigner()}
+        provider={localProvider}
+        address={address}
+        blockExplorer={blockExplorer}
+      />
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
       <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
         <Account
