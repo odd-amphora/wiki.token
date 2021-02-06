@@ -22,7 +22,7 @@ contract Token is ERC721, Ownable {
     _setBaseURI(baseURI);
   }
 
-  function getMaxMintableTokensPerUser() public pure returns (uint8) { 
+  function getMaxMintableTokensPerAddress() public pure returns (uint8) { 
     return 16;
   }
 
@@ -33,7 +33,7 @@ contract Token is ERC721, Ownable {
   function mint(uint256 wikidataId) public {
     require (!isClaimed(wikidataId), "Page must not be claimed");
     require (
-      _mintedTokensPerAddress[msg.sender] < getMaxMintableTokensPerUser(),
+      _mintedTokensPerAddress[msg.sender] < getMaxMintableTokensPerAddress(),
       "Max minted tokens reached"
     );
 

@@ -24,12 +24,12 @@ describe("Token Contract", function () {
       await expect(hardhatToken.mint(2)).to.be.reverted;
     });
 
-    it("Should limit number of mintable tokens per user", async function () {
-      const maxMintableTokensPerUser = await hardhatToken.getMaxMintableTokensPerUser();
-      for (var i = 1; i <= maxMintableTokensPerUser; i++) {
+    it("Should limit number of mintable tokens per address", async function () {
+      const maxMintableTokensPerAddress = await hardhatToken.getMaxMintableTokensPerAddress();
+      for (var i = 1; i <= maxMintableTokensPerAddress; i++) {
         await expect(hardhatToken.mint(i)).to.not.be.reverted;
       }
-      await expect(hardhatToken.mint(maxMintableTokensPerUser + 1)).to.be.reverted;
+      await expect(hardhatToken.mint(maxMintableTokensPerAddress + 1)).to.be.reverted;
     });
   });
 
