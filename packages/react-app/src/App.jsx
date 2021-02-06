@@ -15,14 +15,13 @@ import {
   useContractReader,
   useEventListener,
   useBalance,
-  useExternalContractLoader,
 } from "./hooks";
 import { Header, Account, Faucet, Ramp, Contract, GasGauge } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 //import Hints from "./Hints";
 import { Hints, ExampleUI, Subgraph } from "./views";
-import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
+import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
     Welcome to 🏗 wiki.token !
 
@@ -58,7 +57,9 @@ const mainnetProvider = new JsonRpcProvider("https://mainnet.infura.io/v3/" + IN
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = targetNetwork.rpcUrl;
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
+const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER
+  ? process.env.REACT_APP_PROVIDER
+  : localProviderUrl;
 if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
@@ -94,11 +95,16 @@ function App(props) {
 
   // 🏗 wiki.token is full of handy hooks like this one to get your balance:
   const yourLocalBalance = useBalance(localProvider, address);
-  if (DEBUG) console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
+  if (DEBUG)
+    console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
 
   // Just plug in different 🛰 providers to get your balance on different chains:
   const yourMainnetBalance = useBalance(mainnetProvider, address);
-  if (DEBUG) console.log("💵 yourMainnetBalance", yourMainnetBalance ? formatEther(yourMainnetBalance) : "...");
+  if (DEBUG)
+    console.log(
+      "💵 yourMainnetBalance",
+      yourMainnetBalance ? formatEther(yourMainnetBalance) : "...",
+    );
 
   // Load in your local 📝 contract and read a value from it:
   const readContracts = useContractLoader(localProvider);
@@ -124,7 +130,13 @@ function App(props) {
   console.log("🤗 purpose:", purpose);
 
   //📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(readContracts, "YourContract", "SetPurpose", localProvider, 1);
+  const setPurposeEvents = useEventListener(
+    readContracts,
+    "YourContract",
+    "SetPurpose",
+    localProvider,
+    1,
+  );
   console.log("📟 SetPurpose events:", setPurposeEvents);
 
   /*
@@ -132,7 +144,7 @@ function App(props) {
   console.log("🏷 Resolved austingriffith.eth as:",addressFromENS)
   */
   let networkDisplay = "";
-  if (localChainId && selectedChainId && localChainId != selectedChainId) {
+  if (localChainId && selectedChainId && localChainId !== selectedChainId) {
     networkDisplay = (
       <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
         <Alert
@@ -150,7 +162,16 @@ function App(props) {
     );
   } else {
     networkDisplay = (
-      <div style={{ zIndex: -1, position: "absolute", right: 154, top: 28, padding: 16, color: targetNetwork.color }}>
+      <div
+        style={{
+          zIndex: -1,
+          position: "absolute",
+          right: 154,
+          top: 28,
+          padding: 16,
+          color: targetNetwork.color,
+        }}
+      >
         {targetNetwork.name}
       </div>
     );
@@ -178,7 +199,7 @@ function App(props) {
     !faucetClicked &&
     localProvider &&
     localProvider._network &&
-    localProvider._network.chainId == 31337 &&
+    localProvider._network.chainId === 31337 &&
     yourLocalBalance &&
     formatEther(yourLocalBalance) <= 0
   ) {

@@ -56,7 +56,9 @@ function Subgraph(props) {
     {
       title: "Sender",
       key: "id",
-      render: record => <Address value={record.sender.id} ensProvider={props.mainnetProvider} fontSize={16} />,
+      render: record => (
+        <Address value={record.sender.id} ensProvider={props.mainnetProvider} fontSize={16} />
+      ),
     },
     {
       title: "createdAt",
@@ -69,14 +71,16 @@ function Subgraph(props) {
   const [newPurpose, setNewPurpose] = useState("loading...");
 
   const deployWarning = (
-    <div style={{ marginTop: 8, padding: 8 }}>{"Warning: 🤔 Have you deployed your subgraph yet?"}</div>
+    <div style={{ marginTop: 8, padding: 8 }}>
+      {"Warning: 🤔 Have you deployed your subgraph yet?"}
+    </div>
   );
 
   return (
     <>
       <div style={{ margin: "auto", marginTop: 32 }}>
-        You will find that parsing/tracking events with the <span style={highlight}>useEventListener</span> hook becomes
-        a chore for every new project.
+        You will find that parsing/tracking events with the{" "}
+        <span style={highlight}>useEventListener</span> hook becomes a chore for every new project.
       </div>
       <div style={{ margin: "auto", marginTop: 32 }}>
         Instead, you can use{" "}
@@ -103,7 +107,11 @@ function Subgraph(props) {
         <span style={{ marginLeft: 4 }}>
           {" "}
           (requires{" "}
-          <a href="https://www.docker.com/products/docker-desktop" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://www.docker.com/products/docker-desktop"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {" "}
             Docker
           </a>
@@ -129,7 +137,11 @@ function Subgraph(props) {
         Edit your <b>local subgraph</b> in
         <span style={highlight}>packages/subgraph/src</span>
         (learn more about subgraph definition{" "}
-        <a href="https://thegraph.com/docs/define-a-subgraph" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://thegraph.com/docs/define-a-subgraph"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           here
         </a>
         )
@@ -138,7 +150,15 @@ function Subgraph(props) {
       <div style={{ margin: 32 }}>
         <span style={{ marginRight: 8 }}>🤩</span>
         Deploy your <b>contracts and your subgraph</b> in one go by running
-        <span style={{ marginLeft: 4, backgroundColor: "#f9f9f9", padding: 4, borderRadius: 4, fontWeight: "bolder" }}>
+        <span
+          style={{
+            marginLeft: 4,
+            backgroundColor: "#f9f9f9",
+            padding: 4,
+            borderRadius: 4,
+            fontWeight: "bolder",
+          }}
+        >
           yarn deploy-and-graph
         </span>
       </div>

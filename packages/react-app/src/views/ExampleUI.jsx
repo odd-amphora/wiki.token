@@ -1,7 +1,18 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React, { useState } from "react";
-import { Button, List, Divider, Input, Card, DatePicker, Slider, Switch, Progress, Spin } from "antd";
+import {
+  Button,
+  List,
+  Divider,
+  Input,
+  Card,
+  DatePicker,
+  Slider,
+  Switch,
+  Progress,
+  Spin,
+} from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { Address, Balance } from "../components";
 import { parseEther, formatEther } from "@ethersproject/units";
@@ -26,7 +37,15 @@ export default function ExampleUI({
       {/*
         ⚙️ Here is an example UI that displays and sets the purpose in your smart contract:
       */}
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
+      <div
+        style={{
+          border: "1px solid #cccccc",
+          padding: 16,
+          width: 400,
+          margin: "auto",
+          marginTop: 64,
+        }}
+      >
         <h2>Example UI:</h2>
         <h4>purpose: {purpose}</h4>
         <Divider />
@@ -52,7 +71,9 @@ export default function ExampleUI({
         <Divider />
         ENS Address Example:
         <Address
-          value={"0x34aA3F359A9D614239015126635CE7732c18fDF3"} /* this will show as austingriffith.eth */
+          value={
+            "0x34aA3F359A9D614239015126635CE7732c18fDF3"
+          } /* this will show as austingriffith.eth */
           ensProvider={mainnetProvider}
           fontSize={16}
         />
@@ -121,9 +142,10 @@ export default function ExampleUI({
               tx({
                 to: writeContracts.YourContract.address,
                 value: parseEther("0.001"),
-                data: writeContracts.YourContract.interface.encodeFunctionData("setPurpose(string)", [
-                  "🤓 Whoa so 1337!",
-                ]),
+                data: writeContracts.YourContract.interface.encodeFunctionData(
+                  "setPurpose(string)",
+                  ["🤓 Whoa so 1337!"],
+                ),
               });
               /* this should throw an error about "no fallback nor receive function" until you add it */
             }}
@@ -168,7 +190,11 @@ export default function ExampleUI({
         <Card style={{ marginTop: 32 }}>
           <div>
             There are tons of generic components included from{" "}
-            <a href="https://ant.design/components/overview/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://ant.design/components/overview/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               🐜 ant.design
             </a>{" "}
             too!

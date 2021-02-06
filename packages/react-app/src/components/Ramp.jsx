@@ -8,9 +8,9 @@ export default function Ramp(props) {
 
   const type = "default";
 
-  let allFaucets = [];
-  for (let n in props.networks) {
-    if (props.networks[n].chainId != 31337 && props.networks[n].chainId != 1) {
+  const allFaucets = [];
+  for (const n in props.networks) {
+    if (props.networks[n].chainId !== 31337 && props.networks[n].chainId !== 1) {
       allFaucets.push(
         <p key={props.networks[n].id}>
           <Button
@@ -63,7 +63,10 @@ export default function Ramp(props) {
             size="large"
             shape="round"
             onClick={() => {
-              window.open("https://pay.sendwyre.com/purchase?destCurrency=ETH&sourceAmount=25&dest=" + props.address);
+              window.open(
+                "https://pay.sendwyre.com/purchase?destCurrency=ETH&sourceAmount=25&dest=" +
+                  props.address,
+              );
             }}
           >
             <span style={{ paddingRight: 15 }} role="img">
