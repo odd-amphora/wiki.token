@@ -3,14 +3,10 @@ import { PageHeader } from "antd";
 
 export default function Header() {
   return (
-    <a
-      href="https://github.com/austintgriffith/wiki.token"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a href="https://github.com/wiki-token" target="_blank" rel="noopener noreferrer">
       <PageHeader
-        title="🏗 wiki.token"
-        subTitle="forkable Ethereum dev stack focused on fast product iteration"
+        title="📚 wiki.token"
+        subTitle="ERC 721 token aimed to give back to Wikipedia"
         style={{ cursor: "pointer" }}
       />
     </a>
