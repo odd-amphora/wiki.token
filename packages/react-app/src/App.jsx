@@ -19,7 +19,7 @@ import {
 import { Header, Account, Faucet, Ramp, Contract, GasGauge } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
-import { ExampleUI, Subgraph } from "./views";
+// import { ExampleUI, Subgraph } from "./views";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
     Welcome to 🏗 wiki.token !
@@ -237,7 +237,7 @@ function App(props) {
               YourContract
             </Link>
           </Menu.Item>
-          <Menu.Item key="/exampleui">
+          {/* <Menu.Item key="/exampleui">
             <Link
               onClick={() => {
                 setRoute("/exampleui");
@@ -246,8 +246,8 @@ function App(props) {
             >
               ExampleUI
             </Link>
-          </Menu.Item>
-          <Menu.Item key="/subgraph">
+          </Menu.Item> */}
+          {/* <Menu.Item key="/subgraph">
             <Link
               onClick={() => {
                 setRoute("/subgraph");
@@ -256,7 +256,7 @@ function App(props) {
             >
               Subgraph
             </Link>
-          </Menu.Item>
+          </Menu.Item> */}
         </Menu>
 
         <Switch>
@@ -296,7 +296,7 @@ function App(props) {
             />
             */}
           </Route>
-          <Route path="/exampleui">
+          {/* <Route path="/exampleui">
             <ExampleUI
               address={address}
               userProvider={userProvider}
@@ -310,15 +310,15 @@ function App(props) {
               purpose={purpose}
               setPurposeEvents={setPurposeEvents}
             />
-          </Route>
-          <Route path="/subgraph">
+          </Route> */}
+          {/* <Route path="/subgraph">
             <Subgraph
               subgraphUri={props.subgraphUri}
               tx={tx}
               writeContracts={writeContracts}
               mainnetProvider={mainnetProvider}
             />
-          </Route>
+          </Route> */}
         </Switch>
       </BrowserRouter>
 
