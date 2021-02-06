@@ -4,16 +4,16 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import "./index.css";
 import App from "./App";
 
-let subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract"
+let subgraphUri = "http://localhost:8000/subgraphs/name/wiki.token/your-contract";
 
 const client = new ApolloClient({
   uri: subgraphUri,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <App subgraphUri={subgraphUri}/>
+    <App subgraphUri={subgraphUri} />
   </ApolloProvider>,
   document.getElementById("root"),
 );

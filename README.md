@@ -1,4 +1,4 @@
-# 🏗 scaffold-eth
+# 🏗 wiki.token
 
 > is everything you need to get started building decentralized applications powered by smart contracts
 
@@ -7,9 +7,9 @@
 ## quickstart
 
 ```bash
-git clone https://github.com/austintgriffith/scaffold-eth.git
+git clone https://github.com/austintgriffith/wiki.token.git
 
-cd scaffold-eth
+cd wiki.token
 ```
 
 ```bash
@@ -27,7 +27,7 @@ yarn start
 > in a second terminal window:
 
 ```bash
-cd scaffold-eth
+cd wiki.token
 yarn chain
 
 ```
@@ -35,7 +35,7 @@ yarn chain
 > in a third terminal window:
 
 ```bash
-cd scaffold-eth
+cd wiki.token
 yarn deploy
 
 ```
@@ -132,7 +132,7 @@ Look for the [HardHat](https://hardhat.org) console.log() output in the `yarn ru
 
 📟 Events are really handy for signaling to the frontend. [Read more about events here.](https://solidity-by-example.org/0.6/events/)
 
-📲 Spend some time in `App.jsx` in `packages/react-app/src` and learn about the 🛰 [Providers](https://github.com/austintgriffith/scaffold-eth#-web3-providers)
+📲 Spend some time in `App.jsx` in `packages/react-app/src` and learn about the 🛰 [Providers](https://github.com/austintgriffith/wiki.token#-web3-providers)
 
 ⚠️ Big numbers are stored as objects: `formatEther` and `parseEther` (ethers.js) will help with WEI->ETH and ETH->WEI.
 
@@ -170,19 +170,19 @@ Look for the [HardHat](https://hardhat.org) console.log() output in the `yarn ru
 
 ⬇️ Installing a new package to your backend? You need to `cd packages/harthat` and then `yarn add PACKAGE`
 
-( You will probably want to take some of the 🔗 [hooks](#-hooks), 🎛 [components](#-components) with you from 🏗 scaffold-eth so we started 🖇 [eth-hooks](https://www.npmjs.com/package/eth-hooks) )
+( You will probably want to take some of the 🔗 [hooks](#-hooks), 🎛 [components](#-components) with you from 🏗 wiki.token so we started 🖇 [eth-hooks](https://www.npmjs.com/package/eth-hooks) )
 
 🚀 Good luck!
 
 ---
 
-[<H3>⏱ Quickstart: 🔬 Smart Contract Sandbox</H3>](https://github.com/austintgriffith/scaffold-eth#-smart-contract-sandbox)
+[<H3>⏱ Quickstart: 🔬 Smart Contract Sandbox</H3>](https://github.com/austintgriffith/wiki.token#-smart-contract-sandbox)
 
-Learn how to [quickly iterate on a smart contract app](https://github.com/austintgriffith/scaffold-eth#-smart-contract-sandbox) using the <b>\<Contract /\></b> component.
+Learn how to [quickly iterate on a smart contract app](https://github.com/austintgriffith/wiki.token#-smart-contract-sandbox) using the <b>\<Contract /\></b> component.
 
 ---
 
-Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA)  to ask questions and find others building with 🏗 scaffold-eth!
+Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA)  to ask questions and find others building with 🏗 wiki.token!
 
 ---
 
@@ -192,7 +192,7 @@ Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6Aj
 
 
 
-🎥.  [Watch the long form 🏗 scaffold-eth introduction on youtube for the EEA](https://youtu.be/_yRX8Qi75OE?t=289).
+🎥.  [Watch the long form 🏗 wiki.token introduction on youtube for the EEA](https://youtu.be/_yRX8Qi75OE?t=289).
 
 
 [![image](https://user-images.githubusercontent.com/2653167/93264124-e9874200-f763-11ea-9519-94736b95b2d1.png)](https://youtu.be/_yRX8Qi75OE?t=289)
@@ -205,7 +205,7 @@ Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6Aj
 
 [<H3>Tutorial 1: 🛠 Programming Decentralized Money</H3>](https://medium.com/@austin_48503/programming-decentralized-money-300bacec3a4f)
 
-Learn the basics of 🏗 <b>scaffold-eth</b> and building on <b>Ethereum</b>. 👷‍♂️ HardHat, 📦 create-eth-app, 🔥 hot reloading smart contracts, 🛰 providers, 🔗 hooks, 🎛 components, and building a decentralized application.
+Learn the basics of 🏗 <b>wiki.token</b> and building on <b>Ethereum</b>. 👷‍♂️ HardHat, 📦 create-eth-app, 🔥 hot reloading smart contracts, 🛰 providers, 🔗 hooks, 🎛 components, and building a decentralized application.
 [🎥 Guided Tutorial](https://youtu.be/7rq3TPL-tgI)
 
 ---
@@ -224,9 +224,9 @@ Learn the basics of Automated Market Makers like 🦄 Uniswap. Learn how 💰Res
 
 ---
 
-[<H3>Tutorial 4: 🚀 Connecting ETH to IPFS</H3>](https://medium.com/@austin_48503/tl-dr-scaffold-eth-ipfs-20fa35b11c35)
+[<H3>Tutorial 4: 🚀 Connecting ETH to IPFS</H3>](https://medium.com/@austin_48503/tl-dr-wiki.token-ipfs-20fa35b11c35)
 
-Build a simple IPFS application in 🏗 <b>scaffold-eth</b> to learn more about distributed file storage and content addressing.
+Build a simple IPFS application in 🏗 <b>wiki.token</b> to learn more about distributed file storage and content addressing.
   [🎥 Live Tutorial](https://youtu.be/vqrLr5eOjLo?t=342)
 
 ---
@@ -245,7 +245,7 @@ Learn how to deploy your smart contract to a production blockchain. Then deploy 
 
 ---
 
-  📡 Using The Graph with 🏗 scaffold-eth
+  📡 Using The Graph with 🏗 wiki.token
 
 
 [![thegraphplayvideo](https://user-images.githubusercontent.com/2653167/101052782-4664ee00-3544-11eb-8805-887ad4d1406e.png)
@@ -253,7 +253,7 @@ Learn how to deploy your smart contract to a production blockchain. Then deploy 
 
 ---
 
-<h1>built with 🏗 scaffold-eth:</h1>
+<h1>built with 🏗 wiki.token:</h1>
 
 
 [<H3>👩‍🎨 Nifty Ink</H3>](https://nifty.ink)
@@ -262,7 +262,7 @@ Paintings come to life as you "ink" new creations and trade them on Ethereum. A 
 
 🏃‍♂️ SpeedRun 📹 (TODO)
 
-[💾 Source Code ](https://github.com/austintgriffith/scaffold-eth/tree/nifty-ink-dev)
+[💾 Source Code ](https://github.com/austintgriffith/wiki.token/tree/nifty-ink-dev)
 
 ---
 
@@ -271,17 +271,17 @@ Paintings come to life as you "ink" new creations and trade them on Ethereum. A 
 An instant wallet running on xDAI insired by [xdai.io](https://xdai.io).
 
 
-[💾 Source Code ](https://github.com/austintgriffith/scaffold-eth/tree/instantwallet-dev-session)
+[💾 Source Code ](https://github.com/austintgriffith/wiki.token/tree/instantwallet-dev-session)
 
 ---
 
 [<H3>🗳 Personal Token Voting</H3>](https://medium.com/@austin_48503/personal-token-voting-73b44a598d8e)
 
-Poll your holders! Build an example emoji voting system with 🏗 <b>scaffold-eth</b>. 🔏 Cryptographically signed votes but tracked off-chain with 📡 Zapier and 📑 Google Sheets.
+Poll your holders! Build an example emoji voting system with 🏗 <b>wiki.token</b>. 🔏 Cryptographically signed votes but tracked off-chain with 📡 Zapier and 📑 Google Sheets.
 
 [🏃‍♂️ SpeedRun 📹 ](https://youtu.be/Q5zgxcQtwWI)
 
-[💾 Source Code ](https://github.com/austintgriffith/scaffold-eth/tree/emoji-vote-dev)
+[💾 Source Code ](https://github.com/austintgriffith/wiki.token/tree/emoji-vote-dev)
 
 ---
 
@@ -291,7 +291,7 @@ Exchange Reddit MOONs for ETH or DAI through xDAI. Learn about different 🛰 pr
 
 [🏃‍♂️ SpeedRun 📹 ](https://www.youtube.com/watch?v=_ikHSyThDiA)
 
-[💾 Source Code ](https://github.com/austintgriffith/scaffold-eth/tree/xmoon-dev)
+[💾 Source Code ](https://github.com/austintgriffith/wiki.token/tree/xmoon-dev)
 
 ---
 
@@ -301,7 +301,7 @@ Remember someone permanently on the blockchain. Write an obituary and upload a p
 
 ---
 
-^^^ ⛏ <b>PR</b> your 🏗 scaffold-eth project in above!!! ^^^
+^^^ ⛏ <b>PR</b> your 🏗 wiki.token project in above!!! ^^^
 
 ---
 
@@ -317,7 +317,7 @@ First, you'll need [NodeJS>=10](https://nodejs.org/en/download/) plus [Yarn](htt
 💾 <b>install</b>:
 
 ```bash
-git clone https://github.com/austintgriffith/scaffold-eth.git rad-new-dapp
+git clone https://github.com/austintgriffith/wiki.token.git rad-new-dapp
 
 cd rad-new-dapp
 
@@ -432,7 +432,7 @@ yarn run send --from 0 --amount 0.5 --to **YOUR-ADDRESS**
 💾 <b>install</b>:
 
 ```bash
-git clone https://github.com/austintgriffith/scaffold-eth.git smart-contract-sandbox
+git clone https://github.com/austintgriffith/wiki.token.git smart-contract-sandbox
 
 cd smart-contract-sandbox
 

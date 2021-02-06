@@ -8,13 +8,13 @@ export default function Ramp(props) {
 
   const type = "default";
 
-  let allFaucets = []
-  for(let n in props.networks){
-    if(props.networks[n].chainId!=31337&&props.networks[n].chainId!=1){
+  let allFaucets = [];
+  for (let n in props.networks) {
+    if (props.networks[n].chainId != 31337 && props.networks[n].chainId != 1) {
       allFaucets.push(
         <p key={props.networks[n].id}>
           <Button
-            style={{color:props.networks[n].color}}
+            style={{ color: props.networks[n].color }}
             type={type}
             size="large"
             shape="round"
@@ -24,8 +24,8 @@ export default function Ramp(props) {
           >
             {props.networks[n].name}
           </Button>
-        </p>
-      )
+        </p>,
+      );
     }
   }
 
@@ -67,7 +67,9 @@ export default function Ramp(props) {
             }}
           >
             <span style={{ paddingRight: 15 }} role="img">
-              <span role="img" aria-label="flag-us">🇺🇸</span>
+              <span role="img" aria-label="flag-us">
+                🇺🇸
+              </span>
             </span>
             Wyre
           </Button>
@@ -80,8 +82,8 @@ export default function Ramp(props) {
             shape="round"
             onClick={() => {
               new RampInstantSDK({
-                hostAppName: "scaffold-eth",
-                hostLogoUrl: "https://scaffoldeth.io/scaffold-eth.png",
+                hostAppName: "wiki.token",
+                hostLogoUrl: "https://scaffoldeth.io/wiki.token.png",
                 swapAmount: "100000000000000000", // 0.1 ETH in wei  ?
                 swapAsset: "ETH",
                 userAddress: props.address,
@@ -91,7 +93,9 @@ export default function Ramp(props) {
             }}
           >
             <span style={{ paddingRight: 15 }} role="img">
-            <span role="img" aria-label="flag-gb">🇬🇧</span>
+              <span role="img" aria-label="flag-gb">
+                🇬🇧
+              </span>
             </span>
             Ramp
           </Button>
@@ -118,7 +122,6 @@ export default function Ramp(props) {
         <h2>Testnet ETH</h2>
 
         {allFaucets}
-
       </Modal>
     </div>
   );
