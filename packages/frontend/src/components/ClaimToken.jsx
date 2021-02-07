@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import "antd/dist/antd.css";
-import { Form, Image, Input } from "antd";
+import { Button, Form, Image, Input } from "antd";
 import axios from "axios";
 
 // TODO(teddywilson) generalize from english
@@ -16,7 +16,6 @@ const VALIDATION_STATUS_ERROR = "error";
 // TODO(teddywilson) since this is landing page, rename and move somewhere
 export default function ClaimToken() {
   const [validateStatus, setValidateStatus] = useState("");
-  const [metadataResponse, setMetadataResponse] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
   const fetchArticleMetadata = async article => {
@@ -24,7 +23,6 @@ export default function ClaimToken() {
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
     );
     if (response.status == 200) {
-      setMetadataResponse(JSON.stringify(response, null, 2));
       // TODO(teddywilson) use proper default?
       setImageUrl(response.data.thumbnail ? response.data.thumbnail.source : "");
       setValidateStatus(VALIDATION_STATUS_SUCCESS);
@@ -55,7 +53,9 @@ export default function ClaimToken() {
         </Form.Item>
       </Form>
       <Image width={196} src={imageUrl} />
-      <div>{metadataResponse}</div>
+      <div>
+        <Button>Claim</Button>
+      </div>
     </div>
   );
 }
