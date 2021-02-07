@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import "antd/dist/antd.css";
-import { Form, Input } from "antd";
+import { Form, Image, Input } from "antd";
 import axios from "axios";
 
 // TODO(teddywilson) generalize from english
@@ -11,12 +11,20 @@ const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 export default function ClaimToken() {
   const [validateStatus, setValidateStatus] = useState("");
   const [metadataResponse, setMetadataResponse] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   const fetchArticleMetadata = async article => {
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
     );
-    setMetadataResponse(JSON.stringify(response));
+    if (response.status == 200) {
+      setMetadataResponse(JSON.stringify(response, null, 2));
+      // TODO(teddywilson) use proper default?
+      setImageUrl(response.data.thumbnail ? response.data.thumbnail.source : "");
+      setValidateStatus("success");
+    } else {
+      // TODO(teddywilson) failure stuff
+    }
   };
 
   return (
@@ -38,6 +46,7 @@ export default function ClaimToken() {
           />
         </Form.Item>
       </Form>
+      <Image width={196} src={imageUrl} />
       <div>{metadataResponse}</div>
     </div>
   );
