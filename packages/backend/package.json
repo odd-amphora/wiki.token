@@ -1,0 +1,20 @@
+{
+  "name": "@wiki.token/backend",
+  "license": "MIT",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon api.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "chrome-aws-lambda": "^3.1.1",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "handlebars": "^4.7.6",
+    "puppeteer": "^3.2.0",
+    "puppeteer-core": "^3.1.1"
+  }
+}
