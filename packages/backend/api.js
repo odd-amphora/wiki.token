@@ -1,7 +1,11 @@
-const express = require("express");
 const axios = require("axios");
+const cors = require("cors");
+const express = require("express");
 
 const app = express();
+app.use(cors());
+app.options("*", cors());
+
 const port = 5000;
 
 const WIKIPEDIA_API_BASE_URL = `https://en.wikipedia.org/w/api.php`;
@@ -21,13 +25,14 @@ app.get(`/article`, async function (req, res) {
   if (!req.query.name) {
     res.status(400);
     res.send(`{error: You need to specify an article name}`);
+    return;
   }
   const response = await axios.get(`${WIKIPEDIA_ARTICLE_QUERY}${req.query.name}`);
   if (response.data && response.data.query && response.data.query.pages) {
     const page = response.data.query.pages[Object.keys(response.data.query.pages)[0]];
-    if (page.pageProps) {
+    if (page.pageprops) {
       res.status(200);
-      res.send();
+      res.send(page);
       return;
     }
   }
