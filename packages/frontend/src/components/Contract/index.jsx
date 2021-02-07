@@ -92,35 +92,37 @@ export default function Contract({
   );
 
   const [refreshRequired, triggerRefresh] = useState(false);
-  const contractDisplay = displayedContractFunctions.map(fn => {
-    if (isQueryable(fn)) {
-      // If there are no inputs, just display return value
-      return (
-        <DisplayVariable
-          key={fn.name}
-          contractFunction={contract[fn.name]}
-          functionInfo={fn}
-          refreshRequired={refreshRequired}
-          triggerRefresh={triggerRefresh}
-        />
-      );
-    }
-    // If there are inputs, display a form to allow users to provide these
-    return (
-      <FunctionForm
-        key={"FF" + fn.name}
-        contractFunction={
-          fn.stateMutability === "view" || fn.stateMutability === "pure"
-            ? contract[fn.name]
-            : contract.connect(signer)[fn.name]
-        }
-        functionInfo={fn}
-        provider={provider}
-        gasPrice={gasPrice}
-        triggerRefresh={triggerRefresh}
-      />
-    );
-  });
+  // const contractDisplay = displayedContractFunctions.map(fn => {
+  //   if (isQueryable(fn)) {
+  //     // If there are no inputs, just display return value
+  //     return (
+  //       <DisplayVariable
+  //         key={fn.name}
+  //         contractFunction={contract[fn.name]}
+  //         functionInfo={fn}
+  //         refreshRequired={refreshRequired}
+  //         triggerRefresh={triggerRefresh}
+  //       />
+  //     );
+  //   }
+  //   // If there are inputs, display a form to allow users to provide these
+  //   return (
+  //     <FunctionForm
+  //       key={"FF" + fn.name}
+  //       contractFunction={
+  //         fn.stateMutability === "view" || fn.stateMutability === "pure"
+  //           ? contract[fn.name]
+  //           : contract.connect(signer)[fn.name]
+  //       }
+  //       functionInfo={fn}
+  //       provider={provider}
+  //       gasPrice={gasPrice}
+  //       triggerRefresh={triggerRefresh}
+  //     />
+  //   );
+  // });
+
+  const contractDisplay = [];
 
   return (
     <div style={{ margin: "auto", width: "70vw" }}>
