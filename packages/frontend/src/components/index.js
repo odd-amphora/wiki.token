@@ -12,3 +12,6 @@ export { default as Blockie } from "./Blockie";
 export { default as Header } from "./Header";
 export { default as Timeline } from "./Timeline";
 export { default as GasGauge } from "./GasGauge";
+
+// Custom
+export { default as ClaimToken } from "./ClaimToken";

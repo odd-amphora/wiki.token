@@ -15,7 +15,7 @@ import {
   useEventListener,
   useBalance,
 } from "./hooks";
-import { Header, Account, Contract } from "./components";
+import { ClaimToken } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
@@ -201,29 +201,7 @@ function App(props) {
 
   return (
     <div className="App">
-      <Header />
-      {networkDisplay}
-      <Contract
-        name="Token"
-        signer={userProvider.getSigner()}
-        provider={localProvider}
-        address={address}
-        blockExplorer={blockExplorer}
-      />
-      <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
-        <Account
-          address={address}
-          localProvider={localProvider}
-          userProvider={userProvider}
-          mainnetProvider={mainnetProvider}
-          price={price}
-          web3Modal={web3Modal}
-          loadWeb3Modal={loadWeb3Modal}
-          logoutOfWeb3Modal={logoutOfWeb3Modal}
-          blockExplorer={blockExplorer}
-        />
-        {faucetHint}
-      </div>
+      <ClaimToken />
     </div>
   );
 }
