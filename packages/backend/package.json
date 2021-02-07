@@ -7,10 +7,13 @@
     "start": "nodemon api.js"
   },
   "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-google": "^18.2.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
     "chrome-aws-lambda": "^3.1.1",
+    "eslint-config-prettier": "^7.2.0",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "handlebars": "^4.7.6",
