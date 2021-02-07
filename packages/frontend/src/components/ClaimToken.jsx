@@ -7,6 +7,7 @@ import axios from "axios";
 // TODO(teddywilson) generalize from english
 const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 
+// TODO(teddywilson) since this is landing page, rename and move somewhere
 export default function ClaimToken() {
   const [validateStatus, setValidateStatus] = useState("");
   const [metadataResponse, setMetadataResponse] = useState("");
