@@ -1,1 +1,1 @@
-export { default as ClaimToken } from "./ClaimToken";
+export { default as Landing } from "./Landing";

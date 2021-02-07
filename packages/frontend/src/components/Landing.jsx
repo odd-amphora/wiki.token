@@ -14,7 +14,7 @@ const VALIDATION_STATUS_WARNING = "warning";
 const VALIDATION_STATUS_ERROR = "error";
 
 // TODO(teddywilson) since this is landing page, rename and move somewhere
-export default function ClaimToken() {
+export default function Landing() {
   const [validateStatus, setValidateStatus] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 

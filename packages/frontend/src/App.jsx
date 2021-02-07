@@ -15,7 +15,7 @@ import {
   useEventListener,
   useBalance,
 } from "./hooks";
-import { ClaimToken } from "./components";
+import { Landing } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
@@ -190,7 +190,7 @@ function App(props) {
 
   return (
     <div className="App">
-      <ClaimToken />
+      <Landing />
     </div>
   );
 }
