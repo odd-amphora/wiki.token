@@ -7,6 +7,12 @@ import axios from "axios";
 // TODO(teddywilson) generalize from english
 const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 
+// Form validation status
+const VALIDATION_STATUS_SUCCESS = "success";
+const VALIDATION_STATUS_VALIDATING = "validating";
+const VALIDATION_STATUS_WARNING = "warning";
+const VALIDATION_STATUS_ERROR = "error";
+
 // TODO(teddywilson) since this is landing page, rename and move somewhere
 export default function ClaimToken() {
   const [validateStatus, setValidateStatus] = useState("");
@@ -21,9 +27,11 @@ export default function ClaimToken() {
       setMetadataResponse(JSON.stringify(response, null, 2));
       // TODO(teddywilson) use proper default?
       setImageUrl(response.data.thumbnail ? response.data.thumbnail.source : "");
-      setValidateStatus("success");
+      setValidateStatus(VALIDATION_STATUS_SUCCESS);
     } else {
       // TODO(teddywilson) failure stuff
+      setImageUrl("");
+      setValidateStatus(VALIDATION_STATUS_ERROR);
     }
   };
 
@@ -37,10 +45,10 @@ export default function ClaimToken() {
               // TODO(teddywilson) Cancel any pending requests?
               const url = e.target.value;
               if (url.startsWith(WIKIPEDIA_URL_PREFIX)) {
-                setValidateStatus("validating");
+                setValidateStatus(VALIDATION_STATUS_VALIDATING);
                 fetchArticleMetadata(url.split(WIKIPEDIA_URL_PREFIX)[1]);
               } else {
-                setValidateStatus("warning");
+                setValidateStatus(VALIDATION_STATUS_WARNING);
               }
             }}
           />
