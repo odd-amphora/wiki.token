@@ -9,13 +9,13 @@ const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 
 export default function ClaimToken() {
   const [validateStatus, setValidateStatus] = useState("");
-  const cancelTokenSource = axios.CancelToken.source();
+  const [metadataResponse, setMetadataResponse] = useState("");
 
   const fetchArticleMetadata = async article => {
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
     );
-    console.log(response);
+    setMetadataResponse(JSON.stringify(response));
   };
 
   return (
@@ -25,7 +25,7 @@ export default function ClaimToken() {
           <Input
             placeholder="https://en.wikipedia.org/wiki/Earth"
             onChange={e => {
-              // Cancel any pending requests
+              // TODO(teddywilson) Cancel any pending requests?
               const url = e.target.value;
               if (url.startsWith(WIKIPEDIA_URL_PREFIX)) {
                 setValidateStatus("validating");
@@ -37,6 +37,7 @@ export default function ClaimToken() {
           />
         </Form.Item>
       </Form>
+      <div>{metadataResponse}</div>
     </div>
   );
 }
