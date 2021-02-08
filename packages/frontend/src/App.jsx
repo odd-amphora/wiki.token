@@ -46,6 +46,9 @@ function App(props) {
   const address = useUserAddress(userProvider);
   if (DEBUG) console.log("👩‍💼 selected address:", address);
 
+  // -- everything above this line (and outside of this class) is provided by scaffolding
+  // -- and needs to be parsed through. most likely not needed for wiki-coin.
+
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -57,14 +60,11 @@ function App(props) {
     }
   }, [loadWeb3Modal]);
 
-  // -- everything above this line (and outside of this class) is provided by scaffolding
-  // -- and needs to be parsed through. most likely not needed for wiki-coin.
-
   const contracts = useContractLoader(localProvider);
 
   return (
     <div className="App">
-      <Header onConnectWallet={loadWeb3Modal} />
+      <Header address={address} onConnectWallet={loadWeb3Modal} />
       <Landing contracts={contracts} />
       <Footer />
     </div>
