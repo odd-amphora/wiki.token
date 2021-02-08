@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "antd/dist/antd.css";
 import { Button, Form, Image, Input } from "antd";
 import axios from "axios";
+
+import { useContractReader } from "../hooks";
 
 // TODO(teddywilson) generalize from english
 const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
@@ -13,21 +15,23 @@ const VALIDATION_STATUS_VALIDATING = "validating";
 const VALIDATION_STATUS_WARNING = "warning";
 const VALIDATION_STATUS_ERROR = "error";
 
-// TODO(teddywilson) since this is landing page, rename and move somewhere
-export default function Landing() {
+// TODO(teddywilson) show error message
+export default function Landing({ contracts }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [wikidataId, setWikidataId] = useState(0);
+  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [wikidataId]);
 
   const fetchArticleMetadata = async article => {
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
     );
     if (response.status == 200) {
-      // TODO(teddywilson) use proper default?
+      // validate
+      setWikidataId(response.data.pageprops.wikibase_item.substring(1));
       setImageUrl(response.data.thumbnail ? response.data.thumbnail.source : "");
       setValidateStatus(VALIDATION_STATUS_SUCCESS);
     } else {
-      // TODO(teddywilson) failure stuff
       setImageUrl("");
       setValidateStatus(VALIDATION_STATUS_ERROR);
     }
@@ -53,8 +57,8 @@ export default function Landing() {
         </Form.Item>
       </Form>
       <Image width={196} src={imageUrl} />
-      <div>
-        <Button>Claim</Button>
+      <div hidden={validateStatus !== VALIDATION_STATUS_SUCCESS}>
+        {isClaimed ? <Button>Not sure yet?</Button> : <Button>Claim</Button>}
       </div>
     </div>
   );

@@ -11,23 +11,12 @@ import {
   useGasPrice,
   useUserProvider,
   useContractLoader,
-  useContractReader,
-  useEventListener,
   useBalance,
 } from "./hooks";
 import { Landing } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
-/*
-    You should get your own Infura.io ID and put it in `constants.js`
-    (this is your connection to the main Ethereum network for ENS etc.)
-
-
-    📡 EXTERNAL CONTRACTS:
-    You can also bring in contract artifacts in `constants.js`
-    (and then use the `useExternalContractLoader()` hook!)
-*/
 
 /// 📡 What chain are your contracts deployed to?
 const targetNetwork = NETWORKS["localhost"]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
@@ -89,66 +78,6 @@ function App(props) {
       yourMainnetBalance ? formatEther(yourMainnetBalance) : "...",
     );
 
-  // Load in your local 📝 contract and read a value from it:
-  const readContracts = useContractLoader(localProvider);
-  if (DEBUG) console.log("📝 readContracts", readContracts);
-
-  // If you want to make 🔐 write transactions to your contracts, use the userProvider:
-  const writeContracts = useContractLoader(userProvider);
-  if (DEBUG) console.log("🔐 writeContracts", writeContracts);
-
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
-  console.log("🤗 purpose:", purpose);
-
-  //📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(
-    readContracts,
-    "YourContract",
-    "SetPurpose",
-    localProvider,
-    1,
-  );
-  console.log("📟 SetPurpose events:", setPurposeEvents);
-
-  /*
-  const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
-  console.log("🏷 Resolved austingriffith.eth as:",addressFromENS)
-  */
-  let networkDisplay = "";
-  if (localChainId && selectedChainId && localChainId !== selectedChainId) {
-    networkDisplay = (
-      <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
-        <Alert
-          message={"⚠️ Wrong Network"}
-          description={
-            <div>
-              You have <b>{NETWORK(selectedChainId).name}</b> selected and you need to be on{" "}
-              <b>{NETWORK(localChainId).name}</b>.
-            </div>
-          }
-          type="error"
-          closable={false}
-        />
-      </div>
-    );
-  } else {
-    networkDisplay = (
-      <div
-        style={{
-          zIndex: -1,
-          position: "absolute",
-          right: 154,
-          top: 28,
-          padding: 16,
-          color: targetNetwork.color,
-        }}
-      >
-        {targetNetwork.name}
-      </div>
-    );
-  }
-
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -188,9 +117,14 @@ function App(props) {
     );
   }
 
+  // -- everything above this line (and outside of this class) is provided by scaffolding
+  // -- and needs to be parsed through. most likely not needed for wiki-coin.
+
+  const contracts = useContractLoader(localProvider);
+
   return (
     <div className="App">
-      <Landing />
+      <Landing contracts={contracts} />
     </div>
   );
 }

@@ -52,7 +52,6 @@ export default function useContractReader(
           if (formatter && typeof formatter === "function") {
             newValue = formatter(newValue);
           }
-          // console.log("GOT VALUE",newValue)
           if (newValue !== value) {
             setValue(newValue);
           }
