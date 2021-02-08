@@ -7,8 +7,6 @@
     "start": "nodemon api.js"
   },
   "devDependencies": {
-    "eslint": "^7.19.0",
-    "eslint-config-google": "^18.2.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
