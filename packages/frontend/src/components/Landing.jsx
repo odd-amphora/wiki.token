@@ -10,10 +10,10 @@ import { useContractReader } from "../hooks";
 const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 
 // Form validation status
-const VALIDATION_STATUS_SUCCESS = "success";
-const VALIDATION_STATUS_VALIDATING = "validating";
-const VALIDATION_STATUS_WARNING = "warning";
-const VALIDATION_STATUS_ERROR = "error";
+const VALIDATE_STATUS_SUCCESS = "success";
+const VALIDATE_STATUS_VALIDATING = "validating";
+const VALIDATE_STATUS_WARNING = "warning";
+const VALIDATE_STATUS_ERROR = "error";
 
 // TODO(teddywilson) show error message
 export default function Landing({ contracts }) {
@@ -29,10 +29,10 @@ export default function Landing({ contracts }) {
     );
     if (response.status == 200) {
       setArticleQueryResponse(response.data);
-      setValidateStatus(VALIDATION_STATUS_SUCCESS);
+      setValidateStatus(VALIDATE_STATUS_SUCCESS);
     } else {
       setArticleQueryResponse(null);
-      setValidateStatus(VALIDATION_STATUS_ERROR);
+      setValidateStatus(VALIDATE_STATUS_ERROR);
     }
   };
 
@@ -50,17 +50,17 @@ export default function Landing({ contracts }) {
               // TODO(teddywilson) Cancel any pending requests?
               const url = e.target.value;
               if (url.startsWith(WIKIPEDIA_URL_PREFIX)) {
-                setValidateStatus(VALIDATION_STATUS_VALIDATING);
+                setValidateStatus(VALIDATE_STATUS_VALIDATING);
                 fetchArticleMetadata(url.split(WIKIPEDIA_URL_PREFIX)[1]);
               } else {
-                setValidateStatus(VALIDATION_STATUS_WARNING);
+                setValidateStatus(VALIDATE_STATUS_WARNING);
               }
             }}
           />
         </Form.Item>
       </Form>
       <Image width={196} src={articleQueryResponse?.imageUrl} />
-      <div hidden={validateStatus !== VALIDATION_STATUS_SUCCESS}>
+      <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         {isClaimed ? (
           <Button>Not sure yet?</Button>
         ) : (
