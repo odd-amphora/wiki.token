@@ -37,6 +37,11 @@ export default function Landing({ contracts }) {
     }
   };
 
+  const claim = async () => {
+    console.log(`claiming: ${wikidataId}`);
+    // TODO(teddywilson) implement claim token flow
+  };
+
   return (
     <div>
       <Form>
@@ -58,7 +63,17 @@ export default function Landing({ contracts }) {
       </Form>
       <Image width={196} src={imageUrl} />
       <div hidden={validateStatus !== VALIDATION_STATUS_SUCCESS}>
-        {isClaimed ? <Button>Not sure yet?</Button> : <Button>Claim</Button>}
+        {isClaimed ? (
+          <Button>Not sure yet?</Button>
+        ) : (
+          <Button
+            onClick={() => {
+              claim();
+            }}
+          >
+            Claim
+          </Button>
+        )}
       </div>
     </div>
   );

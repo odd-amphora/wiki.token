@@ -6,7 +6,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader } from "./hooks";
-import { Landing } from "./components";
+import { Header, Footer, Landing } from "./components";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 
 /// 📡 What chain are your contracts deployed to?
@@ -64,7 +64,9 @@ function App(props) {
 
   return (
     <div className="App">
+      <Header />
       <Landing contracts={contracts} />
+      <Footer />
     </div>
   );
 }
