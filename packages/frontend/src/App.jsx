@@ -55,29 +55,6 @@ function App(props) {
   const address = useUserAddress(userProvider);
   if (DEBUG) console.log("👩‍💼 selected address:", address);
 
-  // You can warn the user if you would like them to be on a specific network
-  let localChainId = localProvider && localProvider._network && localProvider._network.chainId;
-  if (DEBUG) console.log("🏠 localChainId", localChainId);
-
-  let selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
-  if (DEBUG) console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
-
-  // Faucet Tx can be used to send funds from the faucet
-  const faucetTx = Transactor(localProvider, gasPrice);
-
-  // 🏗 wiki.token is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address);
-  if (DEBUG)
-    console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
-
-  // Just plug in different 🛰 providers to get your balance on different chains:
-  const yourMainnetBalance = useBalance(mainnetProvider, address);
-  if (DEBUG)
-    console.log(
-      "💵 yourMainnetBalance",
-      yourMainnetBalance ? formatEther(yourMainnetBalance) : "...",
-    );
-
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -88,34 +65,6 @@ function App(props) {
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
-
-  let faucetHint = "";
-  const [faucetClicked, setFaucetClicked] = useState(false);
-  if (
-    !faucetClicked &&
-    localProvider &&
-    localProvider._network &&
-    localProvider._network.chainId === 31337 &&
-    yourLocalBalance &&
-    formatEther(yourLocalBalance) <= 0
-  ) {
-    faucetHint = (
-      <div style={{ padding: 16 }}>
-        <Button
-          type={"primary"}
-          onClick={() => {
-            faucetTx({
-              to: address,
-              value: parseEther("0.01"),
-            });
-            setFaucetClicked(true);
-          }}
-        >
-          💰 Grab funds from the faucet ⛽️
-        </Button>
-      </div>
-    );
-  }
 
   // -- everything above this line (and outside of this class) is provided by scaffolding
   // -- and needs to be parsed through. most likely not needed for wiki-coin.
