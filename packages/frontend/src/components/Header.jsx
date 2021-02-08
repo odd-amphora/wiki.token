@@ -1,14 +1,16 @@
 import React from "react";
-import { PageHeader } from "antd";
+import { PageHeader, Button } from "antd";
 
 export default function Header() {
   return (
-    <a href="https://github.com/wiki-token" target="_blank" rel="noopener noreferrer">
-      <PageHeader
-        title="📚 wiki.token"
-        subTitle="ERC 721 token aimed to give back to Wikipedia"
-        style={{ cursor: "pointer" }}
-      />
-    </a>
+    <PageHeader
+      ghost={false}
+      title="wiki.token"
+      extra={[
+        <Button type="primary" shape="round" ghost={true}>
+          Connect
+        </Button>,
+      ]}
+    />
   );
 }
