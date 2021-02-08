@@ -2,20 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
-import { Button, Alert } from "antd";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import {
-  useExchangePrice,
-  useGasPrice,
-  useUserProvider,
-  useContractLoader,
-  useBalance,
-} from "./hooks";
+import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader } from "./hooks";
 import { Landing } from "./components";
-import { Transactor } from "./helpers";
-import { formatEther, parseEther } from "@ethersproject/units";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 
 /// 📡 What chain are your contracts deployed to?
