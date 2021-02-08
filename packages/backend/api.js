@@ -36,6 +36,7 @@ const formatArticleQueryResponse = response => {
     return null;
   }
   return {
+    extract: page.extract,
     imageUrl: page.thumbnail ? page.thumbnail.source : "",
     wikidataId: wikidataId,
   };

@@ -59,19 +59,27 @@ export default function Landing({ contracts }) {
           />
         </Form.Item>
       </Form>
-      <Image width={196} src={articleQueryResponse?.imageUrl} />
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
-        {isClaimed ? (
-          <Button>Not sure yet?</Button>
-        ) : (
-          <Button
-            onClick={() => {
-              claim();
-            }}
-          >
-            Claim
-          </Button>
-        )}
+        <Image width={196} src={articleQueryResponse?.imageUrl} />
+        <div>
+          {isClaimed ? (
+            <Button>Not sure yet?</Button>
+          ) : (
+            <Button
+              onClick={() => {
+                claim();
+              }}
+            >
+              Claim
+            </Button>
+          )}
+        </div>
+        <div
+          dangerouslySetInnerHTML={{ __html: articleQueryResponse?.extract }}
+          style={{
+            textAlign: "left",
+          }}
+        />
       </div>
     </div>
   );
