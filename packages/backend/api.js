@@ -9,7 +9,29 @@ app.options("*", cors());
 const port = 5000;
 
 const WIKIPEDIA_API_BASE_URL = `https://en.wikipedia.org/w/api.php`;
-const WIKIPEDIA_ARTICLE_QUERY = `${WIKIPEDIA_API_BASE_URL}?action=query&prop=pageprops|pageimages&ppprop=wikibase_item&redirects=1&format=json&pithumbsize=1000&titles=`;
+
+const buildWikipediaArticleQuery = articleName => {
+  return `${WIKIPEDIA_API_BASE_URL}?action=query`
+    .concat(`&prop=pageprops|pageimages|extracts`)
+    .concat(`&exintro=`)
+    .concat(`&rvprop=content`)
+    .concat(`&ppprop=wikibase_item`)
+    .concat(`&redirects=1`)
+    .concat(`&format=json`)
+    .concat(`&pithumbsize=1000`)
+    .concat(`&titles=${articleName}`);
+};
+
+const formatArticleQueryResponse = response => {
+  if (!response.data || !response.data.query || !response.data.query.pages) {
+    return null;
+  }
+  const page = response.data.query.pages[Object.keys(response.data.query.pages)[0]];
+  if (!page.pageprops) {
+    return null;
+  }
+  return page;
+};
 
 app.listen(port, () => {
   console.log(`Server is booming on port 5000 Visit http://localhost:5000`);
@@ -27,16 +49,13 @@ app.get(`/article`, async function (req, res) {
     res.send(`{error: You need to specify an article name}`);
     return;
   }
-  const response = await axios.get(`${WIKIPEDIA_ARTICLE_QUERY}${req.query.name}`);
-  if (response.data && response.data.query && response.data.query.pages) {
-    const page = response.data.query.pages[Object.keys(response.data.query.pages)[0]];
-    console.log(page);
-    if (page.pageprops) {
-      res.status(200);
-      res.send(page);
-      return;
-    }
+  const queryResponse = await axios.get(buildWikipediaArticleQuery(req.query.name));
+  const formattedResponse = formatArticleQueryResponse(queryResponse);
+  if (!formattedResponse) {
+    res.status(404);
+    res.send(`{error: No article found}`);
+    return;
   }
-  res.status(404);
-  res.send(`{error: No article found}`);
+  res.status(200);
+  res.send(formattedResponse);
 });

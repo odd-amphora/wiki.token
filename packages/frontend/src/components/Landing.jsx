@@ -20,6 +20,7 @@ export default function Landing({ contracts }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [wikidataId, setWikidataId] = useState(0);
+  const [html, setHtml] = useState("");
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [wikidataId]);
 
   const fetchArticleMetadata = async article => {
@@ -74,6 +75,7 @@ export default function Landing({ contracts }) {
             Claim
           </Button>
         )}
+        <td dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     </div>
   );
