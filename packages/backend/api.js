@@ -22,6 +22,7 @@ const buildWikipediaArticleQuery = articleName => {
     .concat(`&titles=${articleName}`);
 };
 
+// Maybe return validation error instead?
 const formatArticleQueryResponse = response => {
   if (!response.data || !response.data.query || !response.data.query.pages) {
     return null;
@@ -30,7 +31,14 @@ const formatArticleQueryResponse = response => {
   if (!page.pageprops) {
     return null;
   }
-  return page;
+  const wikidataId = page.pageprops.wikibase_item;
+  if (!wikidataId.startsWith(`Q`)) {
+    return null;
+  }
+  return {
+    imageUrl: page.thumbnail ? page.thumbnail.source : "",
+    wikidataId: wikidataId,
+  };
 };
 
 app.listen(port, () => {

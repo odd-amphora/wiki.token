@@ -18,29 +18,26 @@ const VALIDATION_STATUS_ERROR = "error";
 // TODO(teddywilson) show error message
 export default function Landing({ contracts }) {
   const [validateStatus, setValidateStatus] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [wikidataId, setWikidataId] = useState(0);
-  const [html, setHtml] = useState("");
-  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [wikidataId]);
+  const [articleQueryResponse, setArticleQueryResponse] = useState("");
+  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
+    articleQueryResponse?.wikidataId,
+  ]);
 
   const fetchArticleMetadata = async article => {
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
     );
     if (response.status == 200) {
-      // validate
-      setWikidataId(response.data.pageprops.wikibase_item.substring(1));
-      setImageUrl(response.data.thumbnail ? response.data.thumbnail.source : "");
+      setArticleQueryResponse(response.data);
       setValidateStatus(VALIDATION_STATUS_SUCCESS);
     } else {
-      setImageUrl("");
+      setArticleQueryResponse(null);
       setValidateStatus(VALIDATION_STATUS_ERROR);
     }
   };
 
   const claim = async () => {
-    console.log(`claiming: ${wikidataId}`);
-    // TODO(teddywilson) implement claim token flow
+    console.log(`claiming: ${articleQueryResponse?.wikidataId}`);
   };
 
   return (
@@ -62,7 +59,7 @@ export default function Landing({ contracts }) {
           />
         </Form.Item>
       </Form>
-      <Image width={196} src={imageUrl} />
+      <Image width={196} src={articleQueryResponse?.imageUrl} />
       <div hidden={validateStatus !== VALIDATION_STATUS_SUCCESS}>
         {isClaimed ? (
           <Button>Not sure yet?</Button>
@@ -75,7 +72,6 @@ export default function Landing({ contracts }) {
             Claim
           </Button>
         )}
-        <td dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     </div>
   );
