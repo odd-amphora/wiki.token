@@ -64,7 +64,7 @@ function App(props) {
 
   return (
     <div className="App">
-      <Header />
+      <Header onConnectWallet={loadWeb3Modal} />
       <Landing contracts={contracts} />
       <Footer />
     </div>
