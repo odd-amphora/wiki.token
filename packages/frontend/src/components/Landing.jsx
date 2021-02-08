@@ -43,7 +43,7 @@ export default function Landing({ contracts }) {
   };
 
   return (
-    <div>
+    <div style={{ marginLeft: 24, marginRight: 24, marginBottom: 24 }}>
       <Form>
         <Form.Item hasFeedback validateStatus={validateStatus}>
           <Input
