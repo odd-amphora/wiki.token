@@ -45,16 +45,12 @@ export default function Landing({ contracts }) {
       <Form>
         <Form.Item hasFeedback validateStatus={validateStatus}>
           <Input
-            placeholder="https://en.wikipedia.org/wiki/Earth"
+            addonBefore="https://en.wikipedia.org/wiki/"
+            placeholder="Earth"
             onChange={e => {
-              // TODO(teddywilson) Cancel any pending requests?
-              const url = e.target.value;
-              if (url.startsWith(WIKIPEDIA_URL_PREFIX)) {
-                setValidateStatus(VALIDATE_STATUS_VALIDATING);
-                fetchArticleMetadata(url.split(WIKIPEDIA_URL_PREFIX)[1]);
-              } else {
-                setValidateStatus(VALIDATE_STATUS_WARNING);
-              }
+              // TODO(teddywilson) fix damn autocomplete latency..
+              setValidateStatus(VALIDATE_STATUS_VALIDATING);
+              fetchArticleMetadata(e.target.value);
             }}
           />
         </Form.Item>
