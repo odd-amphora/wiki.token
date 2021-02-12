@@ -5,6 +5,7 @@ import { Button, Form, Image, Input } from "antd";
 import axios from "axios";
 
 import { useContractReader } from "../hooks";
+import { BigNumber } from "@ethersproject/bignumber";
 
 // TODO(teddywilson) generalize from english
 const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
@@ -16,7 +17,7 @@ const VALIDATE_STATUS_WARNING = "warning";
 const VALIDATE_STATUS_ERROR = "error";
 
 // TODO(teddywilson) show error message
-export default function Landing({ contracts }) {
+export default function Landing({ contracts, signer, transactor }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
@@ -37,7 +38,10 @@ export default function Landing({ contracts }) {
   };
 
   const claim = async () => {
-    console.log(`claiming: ${articleQueryResponse?.wikidataId}`);
+    if (!articleQueryResponse.wikidataId) {
+      throw "No wikidataId to claim!";
+    }
+    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse.wikidataId));
   };
 
   return (

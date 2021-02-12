@@ -8,6 +8,7 @@ import { useUserAddress } from "eth-hooks";
 import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader } from "./hooks";
 import { Header, Footer, Landing } from "./components";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
+import { Transactor } from "./helpers";
 
 /// 📡 What chain are your contracts deployed to?
 const targetNetwork = NETWORKS["localhost"]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
@@ -49,6 +50,8 @@ function App(props) {
   // -- everything above this line (and outside of this class) is provided by scaffolding
   // -- and needs to be parsed through. most likely not needed for wiki-coin.
 
+  const transactor = Transactor(userProvider, gasPrice);
+
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     setInjectedProvider(new Web3Provider(provider));
@@ -65,7 +68,7 @@ function App(props) {
   return (
     <div className="App">
       <Header address={address} onConnectWallet={loadWeb3Modal} />
-      <Landing contracts={contracts} />
+      <Landing contracts={contracts} signer={userProvider.getSigner()} transactor={transactor} />
       <Footer />
     </div>
   );

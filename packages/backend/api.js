@@ -38,7 +38,7 @@ const formatArticleQueryResponse = response => {
   return {
     extract: page.extract,
     imageUrl: page.thumbnail ? page.thumbnail.source : "",
-    wikidataId: wikidataId,
+    wikidataId: wikidataId.substring(1),
   };
 };
 
