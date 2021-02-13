@@ -31,8 +31,8 @@ contract Token is ERC721, Ownable {
     return _pageIdToAddress[pageId] != 0x0000000000000000000000000000000000000000;
   }
 
-  function myTokens() view public returns (uint256 [] memory) {
-    return _addressToPageIds[msg.sender];
+  function tokens(address adr) view public returns (uint256[] memory) {
+    return _addressToPageIds[adr];
   }
 
   function mint(uint256 pageId) public {

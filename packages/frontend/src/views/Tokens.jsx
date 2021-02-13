@@ -6,9 +6,9 @@ import { Token } from "../components";
 import { useContractReader } from "../hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 
-export default function Tokens({ contracts }) {
+export default function Tokens({ address, contracts }) {
   const [tokens, setTokens] = useState([{}]);
-  const myTokens = useContractReader(contracts, "Token", "myTokens");
+  const myTokens = useContractReader(contracts, "Token", "tokens", [address]);
 
   useEffect(() => {
     myTokens &&
