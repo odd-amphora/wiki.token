@@ -1,3 +1,4 @@
+// TODO(teddywilson) handle errors properly
 const axios = require("axios");
 const cors = require("cors");
 const express = require("express");
@@ -10,7 +11,29 @@ const port = 5000;
 
 const WIKIPEDIA_API_BASE_URL = `https://en.wikipedia.org/w/api.php`;
 
-const buildWikipediaArticleQuery = articleName => {
+const buildBaseWikipediaQuery = () => {
+  return `${WIKIPEDIA_API_BASE_URL}?action=query`
+    .concat(`&prop=pageprops|pageimages|extracts`)
+    .concat(`&exintro=`)
+    .concat(`&rvprop=content`)
+    .concat(`&ppprop=wikibase_item`)
+    .concat(`&redirects=1`)
+    .concat(`&format=json`)
+    .concat(`&pithumbsize=1000`);
+};
+
+const buildPageIdQuery = pageId => {
+  return `${WIKIPEDIA_API_BASE_URL}?action=query`
+    .concat(`&prop=pageprops|pageimages`)
+    .concat(`&exintro=`)
+    .concat(`&ppprop=wikibase_item`)
+    .concat(`&redirects=1`)
+    .concat(`&format=json`)
+    .concat(`&pithumbsize=1000`)
+    .concat(`&pageids=${pageId}`);
+};
+
+const buildTitleQuery = articleName => {
   return `${WIKIPEDIA_API_BASE_URL}?action=query`
     .concat(`&prop=pageprops|pageimages|extracts`)
     .concat(`&exintro=`)
@@ -23,22 +46,20 @@ const buildWikipediaArticleQuery = articleName => {
 };
 
 // Maybe return validation error instead?
-const formatArticleQueryResponse = response => {
+const formatQueryResponse = response => {
   if (!response.data || !response.data.query || !response.data.query.pages) {
     return null;
   }
+  const pageId = Object.keys(response.data.query.pages)[0];
   const page = response.data.query.pages[Object.keys(response.data.query.pages)[0]];
   if (!page.pageprops) {
-    return null;
-  }
-  const wikidataId = page.pageprops.wikibase_item;
-  if (!wikidataId.startsWith(`Q`)) {
     return null;
   }
   return {
     extract: page.extract,
     imageUrl: page.thumbnail ? page.thumbnail.source : "",
-    wikidataId: wikidataId.substring(1),
+    pageId: pageId,
+    pageTitle: page.title,
   };
 };
 
@@ -57,26 +78,31 @@ app.get(`/token`, async function (req, res) {
     res.send(`{error: You need to specify a token id}`);
     return;
   }
-  const mockResponse = {
+  const queryResponse = await axios.get(buildPageIdQuery(req.query.id));
+  const formattedQueryResponse = formatQueryResponse(queryResponse);
+  if (!formattedQueryResponse) {
+    // TODO(teddywilson) handle not found case?
+    res.status(404).send(`{error: Page not found}`);
+    return;
+  }
+  res.status(200).send({
     title: "Asset Metadata",
     type: "object",
     properties: {
       name: {
         type: "string",
-        description: "Identifies the asset to which this NFT represents",
+        description: formattedQueryResponse.pageId,
       },
       description: {
         type: "string",
-        description: "Describes the asset to which this NFT represents",
+        description: formattedQueryResponse.pageTitle,
       },
       image: {
         type: "string",
-        description:
-          "https://www.thesprucepets.com/thmb/rD9vUV_ALr9TgRf3jHbBi_yB7xs=/960x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/beagle-RolfKopfle-Photolibrary-Getty-135631212-56a26b1d3df78cf772756667.jpg",
+        description: formattedQueryResponse.imageUrl,
       },
     },
-  };
-  res.status(200).send(mockResponse);
+  });
 });
 
 app.get(`/article`, async function (req, res) {
@@ -85,13 +111,13 @@ app.get(`/article`, async function (req, res) {
     res.send(`{error: You need to specify an article name}`);
     return;
   }
-  const queryResponse = await axios.get(buildWikipediaArticleQuery(req.query.name));
-  const formattedResponse = formatArticleQueryResponse(queryResponse);
-  if (!formattedResponse) {
+  const queryResponse = await axios.get(buildTitleQuery(req.query.name));
+  const formattedQueryResponse = formatQueryResponse(queryResponse);
+  if (!formattedQueryResponse) {
     res.status(404);
     res.send(`{error: No article found}`);
     return;
   }
   res.status(200);
-  res.send(formattedResponse);
+  res.send(formattedQueryResponse);
 });

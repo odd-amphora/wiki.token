@@ -17,7 +17,7 @@ export default function Claim({ contracts, signer, transactor }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
-    articleQueryResponse?.wikidataId,
+    articleQueryResponse?.pageId,
   ]);
   let cancelRequest;
 
@@ -41,10 +41,10 @@ export default function Claim({ contracts, signer, transactor }) {
   };
 
   const claim = async () => {
-    if (!articleQueryResponse.wikidataId) {
-      throw "No wikidataId to claim!";
+    if (!articleQueryResponse.pageId) {
+      throw "No pageId to claim!";
     }
-    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse.wikidataId));
+    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse.pageId));
   };
 
   return (
