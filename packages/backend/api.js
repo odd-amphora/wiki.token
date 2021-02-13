@@ -46,13 +46,40 @@ app.listen(port, () => {
   console.log(`Server is booming on port 5000 Visit http://localhost:5000`);
 });
 
+app.use(function (req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  next();
+});
+
 app.get(`/token`, async function (req, res) {
-  // TODO(teddywilson)
-  res.status(200).send();
+  if (!req.query.id) {
+    res.status(400);
+    res.send(`{error: You need to specify a token id}`);
+    return;
+  }
+  const mockResponse = {
+    title: "Asset Metadata",
+    type: "object",
+    properties: {
+      name: {
+        type: "string",
+        description: "Identifies the asset to which this NFT represents",
+      },
+      description: {
+        type: "string",
+        description: "Describes the asset to which this NFT represents",
+      },
+      image: {
+        type: "string",
+        description:
+          "https://www.thesprucepets.com/thmb/rD9vUV_ALr9TgRf3jHbBi_yB7xs=/960x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/beagle-RolfKopfle-Photolibrary-Getty-135631212-56a26b1d3df78cf772756667.jpg",
+      },
+    },
+  };
+  res.status(200).send(mockResponse);
 });
 
 app.get(`/article`, async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
   if (!req.query.name) {
     res.status(400);
     res.send(`{error: You need to specify an article name}`);
