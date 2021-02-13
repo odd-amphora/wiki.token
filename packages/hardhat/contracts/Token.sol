@@ -8,7 +8,7 @@ import "hardhat/console.sol";
 
 contract Token is ERC721, Ownable {
   // The number of tokens each address has currently minted
-  mapping (address => uint16) private _mintedTokensPerAddress;
+  mapping (address => uint256) private _mintedTokensPerAddress;
 
   // Maps a wikidataId to an address
   mapping (uint256 => address) private _wikidataIdToAddress;
@@ -28,6 +28,16 @@ contract Token is ERC721, Ownable {
 
   function isClaimed(uint256 wikidataId) view public returns (bool) {
     return _wikidataIdToAddress[wikidataId] != 0x0000000000000000000000000000000000000000;
+  }
+
+  // TODO(teddywilson) implement
+  function myTokens() view public returns (uint256 [] memory) {
+    uint256[] memory myTokensMock = new uint256[](4);
+    myTokensMock[0] = 0;
+    myTokensMock[1] = 1;
+    myTokensMock[2] = 2;
+    myTokensMock[3] = 3;
+    return myTokensMock;
   }
 
   function mint(uint256 wikidataId) public {

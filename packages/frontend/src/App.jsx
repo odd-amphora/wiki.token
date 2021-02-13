@@ -104,7 +104,7 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <Tokens />
+              <Tokens contracts={contracts} />
             </Route>
           </Switch>
         </BrowserRouter>
