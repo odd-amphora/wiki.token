@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { Row, Col, Button, Menu, Alert } from "antd";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
@@ -9,7 +11,7 @@ import { useGasPrice, useUserProvider, useContractLoader } from "./hooks";
 import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { Claim } from "./views";
+import { Claim, Tokens } from "./views";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -61,10 +63,50 @@ function App() {
   const contracts = useContractLoader(localProvider);
   const transactor = Transactor(userProvider, gasPrice);
 
+  const [route, setRoute] = useState();
+  useEffect(() => {
+    setRoute(window.location.pathname);
+  }, [setRoute]);
+
   return (
     <div className="App">
       <Layout address={address} onConnectWallet={loadWeb3Modal}>
-        <Claim contracts={contracts} signer={userProvider.getSigner()} transactor={transactor} />
+        <BrowserRouter>
+          <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
+            <Menu.Item key="/">
+              <Link
+                onClick={() => {
+                  setRoute("/");
+                }}
+                to="/"
+              >
+                Claim
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="/tokens">
+              <Link
+                onClick={() => {
+                  setRoute("/tokens");
+                }}
+                to="/tokens"
+              >
+                Tokens
+              </Link>
+            </Menu.Item>
+          </Menu>
+          <Switch>
+            <Route exact path="/">
+              <Claim
+                contracts={contracts}
+                signer={userProvider.getSigner()}
+                transactor={transactor}
+              />
+            </Route>
+            <Route path="/tokens">
+              <Tokens />
+            </Route>
+          </Switch>
+        </BrowserRouter>
       </Layout>
     </div>
   );

@@ -47,7 +47,7 @@ export default function Claim({ contracts, signer, transactor }) {
   };
 
   return (
-    <div style={{ marginLeft: 24, marginRight: 24, marginBottom: 24 }}>
+    <div className="menu-view">
       <Form>
         <Form.Item hasFeedback validateStatus={validateStatus}>
           <Input
