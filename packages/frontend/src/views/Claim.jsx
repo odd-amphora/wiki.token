@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 
 import "antd/dist/antd.css";
-import { Button, Form, Image, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import axios from "axios";
 
+import { Token } from "../components";
 import { useContractReader } from "../hooks";
 
 // Form validation status
@@ -62,7 +63,7 @@ export default function Claim({ contracts, signer, transactor }) {
         </Form.Item>
       </Form>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
-        <Image width={196} src={articleQueryResponse?.imageUrl} />
+        <Token imageUrl={articleQueryResponse?.imageUrl} />
         <div hidden={isClaimed}>
           <Button
             onClick={() => {

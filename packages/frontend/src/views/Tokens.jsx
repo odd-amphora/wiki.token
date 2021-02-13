@@ -7,36 +7,31 @@ import { useContractReader } from "../hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 
 export default function Tokens({ contracts }) {
-  const [tokenData, setTokenData] = useState();
+  const [tokens, setTokens] = useState([{}]);
   const myTokens = useContractReader(contracts, "Token", "myTokens");
 
-  const fetchTokenData = async id => {
-    const response = await axios.get(
-      `${process.env.REACT_APP_METADATA_API_BASE_URL}/token?id=${id}`,
-    );
-    console.log(response);
-    if (response.status === 200) {
-      setTokenData(response.data);
-    } else {
-      setTokenData(null);
-    }
-  };
-
   useEffect(() => {
-    if (myTokens) {
-      // TODO(teddywilson) obviously this needs to support all tokens
-      let firstToken = BigNumber.from(myTokens[0]).toNumber();
-      fetchTokenData(firstToken);
-    }
+    myTokens &&
+      Promise.all(
+        myTokens.map(token => {
+          return axios
+            .get(
+              `${process.env.REACT_APP_METADATA_API_BASE_URL}/token?id=${BigNumber.from(
+                token,
+              ).toNumber(token)}`,
+            )
+            .then(res => res.data);
+        }),
+      ).then(tokens => {
+        setTokens(tokens);
+      });
   }, [myTokens]);
 
   return (
     <div className="menu-view">
-      {tokenData ? (
-        <Token imageUrl={tokenData.properties?.image?.description} />
-      ) : (
-        <div>No token data</div>
-      )}
+      {tokens.map(token => {
+        return <Token imageUrl={token.properties?.image?.description} />;
+      })}
     </div>
   );
 }
