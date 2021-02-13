@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import { Row, Col, Button, Menu, Alert } from "antd";
+import { Menu } from "antd";
+import { SearchOutlined, TrophyOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
@@ -73,7 +74,7 @@ function App() {
       <Layout address={address} onConnectWallet={loadWeb3Modal}>
         <BrowserRouter>
           <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
-            <Menu.Item key="/">
+            <Menu.Item key="/" icon={<SearchOutlined />}>
               <Link
                 onClick={() => {
                   setRoute("/");
@@ -83,7 +84,7 @@ function App() {
                 Claim
               </Link>
             </Menu.Item>
-            <Menu.Item key="/tokens">
+            <Menu.Item key="/tokens" icon={<TrophyOutlined />}>
               <Link
                 onClick={() => {
                   setRoute("/tokens");
