@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "hardhat/console.sol";
 
 contract Token is ERC721, Ownable {
-  // The number of tokens each address has currently minted
-  mapping (address => uint256) private _mintedTokensPerAddress;
+  // The page ids each address has currently minted
+  mapping (address => uint256[]) private _addressToPageIds;
 
   // Maps a Wikipedia page id to an address
   mapping (uint256 => address) private _pageIdToAddress;
@@ -22,6 +22,7 @@ contract Token is ERC721, Ownable {
     _setBaseURI(baseURI);
   }
 
+  // TODO(teddywilson) this should probably be configurable
   function getMaxMintableTokensPerAddress() public pure returns (uint8) { 
     return 16;
   }
@@ -30,20 +31,14 @@ contract Token is ERC721, Ownable {
     return _pageIdToAddress[pageId] != 0x0000000000000000000000000000000000000000;
   }
 
-  // TODO(teddywilson) implement
   function myTokens() view public returns (uint256 [] memory) {
-    uint256[] memory myTokensMock = new uint256[](4);
-    myTokensMock[0] = 44474;
-    myTokensMock[1] = 14640471;
-    myTokensMock[2] = 44469;
-    myTokensMock[3] = 32745;
-    return myTokensMock;
+    return _addressToPageIds[msg.sender];
   }
 
   function mint(uint256 pageId) public {
     require (!isClaimed(pageId), "Page must not be claimed");
     require (
-      _mintedTokensPerAddress[msg.sender] < getMaxMintableTokensPerAddress(),
+      _addressToPageIds[msg.sender].length < getMaxMintableTokensPerAddress(),
       "Max minted tokens reached"
     );
 
@@ -51,6 +46,6 @@ contract Token is ERC721, Ownable {
     _setTokenURI(pageId, Strings.toString(pageId));
 
     _pageIdToAddress[pageId] = msg.sender;
-    _mintedTokensPerAddress[msg.sender] += 1;
+    _addressToPageIds[msg.sender].push(pageId);
   }
 }

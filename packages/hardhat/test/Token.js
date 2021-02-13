@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+const { BigNumber } = require("@ethersproject/bignumber");
 
 describe("Token Contract", function () {
   let Token;
@@ -49,6 +50,20 @@ describe("Token Contract", function () {
       expect(await hardhatToken.isClaimed(6)).to.be.false;
       expect(await hardhatToken.isClaimed(7)).to.be.false;
       expect(await hardhatToken.isClaimed(8)).to.be.false;
+    });
+  });
+
+  describe("myTokens()", function () {
+    it("Should return tokens that have been claimed", async function () {
+      await hardhatToken.mint(1);
+      await hardhatToken.mint(2);
+      await hardhatToken.mint(3);
+
+      expect(await hardhatToken.myTokens()).to.eql([
+        BigNumber.from(1),
+        BigNumber.from(2),
+        BigNumber.from(3),
+      ]);
     });
   });
 });
