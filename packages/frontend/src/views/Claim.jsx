@@ -17,7 +17,7 @@ const VALIDATE_STATUS_WARNING = "warning";
 const VALIDATE_STATUS_ERROR = "error";
 
 // TODO(teddywilson) show error message
-export default function Landing({ contracts, signer, transactor }) {
+export default function Claim({ contracts, signer, transactor }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
@@ -32,8 +32,8 @@ export default function Landing({ contracts, signer, transactor }) {
       {
         cancelToken: new axios.CancelToken(function executor(canceler) {
           cancelRequest = canceler;
-        })
-      }
+        }),
+      },
     );
     if (response.status == 200) {
       setArticleQueryResponse(response.data);
