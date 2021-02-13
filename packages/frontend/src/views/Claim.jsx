@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import "antd/dist/antd.css";
 import { Button, Form, Image, Input } from "antd";
 import axios from "axios";
 
 import { useContractReader } from "../hooks";
-import { BigNumber } from "@ethersproject/bignumber";
-
-// TODO(teddywilson) generalize from english
-const WIKIPEDIA_URL_PREFIX = `https://en.wikipedia.org/wiki/`;
 
 // Form validation status
 const VALIDATE_STATUS_SUCCESS = "success";
 const VALIDATE_STATUS_VALIDATING = "validating";
-const VALIDATE_STATUS_WARNING = "warning";
 const VALIDATE_STATUS_ERROR = "error";
 
 // TODO(teddywilson) show error message
@@ -35,7 +30,7 @@ export default function Claim({ contracts, signer, transactor }) {
         }),
       },
     );
-    if (response.status == 200) {
+    if (response.status === 200) {
       setArticleQueryResponse(response.data);
       setValidateStatus(VALIDATE_STATUS_SUCCESS);
     } else {
@@ -68,18 +63,14 @@ export default function Claim({ contracts, signer, transactor }) {
       </Form>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         <Image width={196} src={articleQueryResponse?.imageUrl} />
-        <div>
-          {isClaimed ? (
-            <Button>Not sure yet?</Button>
-          ) : (
-            <Button
-              onClick={() => {
-                claim();
-              }}
-            >
-              Claim
-            </Button>
-          )}
+        <div hidden={isClaimed}>
+          <Button
+            onClick={() => {
+              claim();
+            }}
+          >
+            Claim
+          </Button>
         </div>
         <div
           dangerouslySetInnerHTML={{ __html: articleQueryResponse?.extract }}
