@@ -23,10 +23,18 @@ export default function Landing({ contracts, signer, transactor }) {
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
     articleQueryResponse?.wikidataId,
   ]);
+  const cancelTokenSource = axios.CancelToken.source();
+  let cancelRequest;
 
   const fetchArticleMetadata = async article => {
+    cancelRequest && cancelRequest();
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
+      {
+        cancelToken: new axios.CancelToken(function executor(canceler) {
+          cancelRequest = canceler;
+        })
+      }
     );
     if (response.status == 200) {
       setArticleQueryResponse(response.data);
