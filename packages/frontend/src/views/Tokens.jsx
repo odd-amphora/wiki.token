@@ -29,6 +29,7 @@ export default function Tokens({ address, contracts }) {
 
   return (
     <div className="menu-view">
+      <div>You haven't claimed any tokens yet :(</div>
       {tokens.map(token => {
         return <Token imageUrl={token.properties?.image?.description} />;
       })}
