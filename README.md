@@ -1,10 +1,14 @@
 # wiki.token
 
+## Environment setup
+[Scaffolding README](SCAFFOLDING.md)
+
 ## TODO
 ### UI/UX
 - [ ] Clean up claim flow - latency in autocomplete, loading states, etc.
 - [ ] Implement log out flow
 - [ ] Limit functionality when wallet not connected
+- [ ] Figure out what's needed to toggle between local/ropsten/mainnet/etc.
 - [ ] Deploy to GCP
 
 ### Contract
@@ -23,6 +27,4 @@
 
 ### Comms
 - [ ] Write up summary of project
-
-
-[Scaffolding README](SCAFFOLDING.md)
+- [ ] Buy/set up domain(s)
