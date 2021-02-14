@@ -4,7 +4,7 @@ import { Menu } from "antd";
 import { SearchOutlined, TrophyOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
-import "./App.scss";
+import "./styles/App.scss";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
