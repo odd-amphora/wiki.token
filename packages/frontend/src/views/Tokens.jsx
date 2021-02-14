@@ -29,10 +29,12 @@ export default function Tokens({ address, contracts }) {
 
   return (
     <div className="menu-view">
-      <div>You haven't claimed any tokens yet :(</div>
-      {tokens.map(token => {
-        return <Token imageUrl={token.properties?.image?.description} />;
-      })}
+      <div hidden={tokens.length > 0}>You haven't claimed any tokens yet :(</div>
+      <div hidden={tokens.length == 0}>
+        {tokens.map(token => {
+          return <Token imageUrl={token.properties?.image?.description} />;
+        })}
+      </div>
     </div>
   );
 }
