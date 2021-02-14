@@ -12,7 +12,7 @@ import { useGasPrice, useUserProvider, useContractLoader, useTokensProvider } fr
 import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { Claim, Landing, Tokens } from "./views";
+import { About, Claim, Tokens } from "./views";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -108,7 +108,7 @@ function App() {
           </Menu>
           <Switch>
             <Route exact path={["/about", "/"]}>
-              <Landing />
+              <About />
             </Route>
             <Route exact path="/claim">
               <Claim

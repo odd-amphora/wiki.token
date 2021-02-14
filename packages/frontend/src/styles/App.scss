@@ -1,18 +1,31 @@
 @import './antd.css';
-// @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-// @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 * {
-    padding: 0;
-    margin: 0;
-    font-family:"Lucida Console", "Courier New", monospace;
+  padding: 0;
+  margin: 0;
+  font-family:"Lucida Console", "Courier New", monospace;
 }
 
-.menu-view > a {
+.about-text-block {
+  margin-bottom: 16px;
+}
+
+#heading {
+  font-size: 16px;
+}
+
+
+#subheading {
+  font-style: italic;
+}
+
+.about-text-block > a {
   text-decoration: underline;
 }
 
-.menu-view > a:hover {
+.about-text-block > a:hover {
   text-decoration: underline;
 }
 
@@ -26,4 +39,33 @@
 
 .footer-icon {
   margin: 8px;
+}
+
+.token {
+  display: inline-block;
+  margin: 24px;
+  border-color: black;
+  border-width: 1px;
+  border-style: outset;
+}
+
+.token-page-id {
+  font-size: 12px;
+  font-family: "Karla";
+}
+
+.token-page-title {
+  font-size: 16px;
+  font-style: oblique;
+}
+
+.token-text-box {
+  border-color: black;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.token-wrapper {
+  display: flex;
+  flex-direction: column;;
 }

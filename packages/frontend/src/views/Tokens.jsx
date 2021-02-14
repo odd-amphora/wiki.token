@@ -8,7 +8,13 @@ export default function Tokens({ tokens }) {
       <div hidden={tokens.length > 0}>You haven't claimed any tokens yet :(</div>
       <div hidden={tokens.length == 0}>
         {tokens.map(token => {
-          return <Token imageUrl={token.properties?.image?.description} />;
+          return (
+            <Token
+              imageUrl={token.properties?.image?.description}
+              pageTitle={token.properties?.name?.description}
+              pageId={token.properties?.description?.description}
+            />
+          );
         })}
       </div>
     </div>
