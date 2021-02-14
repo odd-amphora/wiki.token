@@ -1,6 +1,5 @@
 import React from "react";
 
-import Footer from "./Footer";
 import Header from "./Header";
 
 export default function Layout({ address, onConnectWallet, children }) {
@@ -8,7 +7,6 @@ export default function Layout({ address, onConnectWallet, children }) {
     <>
       <Header address={address} onConnectWallet={onConnectWallet} />
       {children}
-      <Footer />
     </>
   );
 }
