@@ -11,8 +11,8 @@ export default function Tokens({ tokens }) {
           return (
             <Token
               imageUrl={token.properties?.image?.description}
-              pageTitle={token.properties?.name?.description}
-              pageId={token.properties?.description?.description}
+              pageTitle={token.properties?.description?.description}
+              pageId={token.properties?.name?.description}
             />
           );
         })}
