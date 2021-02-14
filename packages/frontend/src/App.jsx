@@ -15,6 +15,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import {
   useContractReader,
+  useExchangePrice,
   useGasPrice,
   useUserProvider,
   useContractLoader,
@@ -48,6 +49,8 @@ const logoutOfWeb3Modal = async () => {
 
 const targetNetwork = NETWORKS["localhost"];
 
+const mainnetProvider = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
+
 const localProviderUrl = targetNetwork.rpcUrl;
 const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER
   ? process.env.REACT_APP_PROVIDER
@@ -57,6 +60,7 @@ const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 function App() {
   const [injectedProvider, setInjectedProvider] = useState();
 
+  const price = useExchangePrice(targetNetwork, mainnetProvider);
   const gasPrice = useGasPrice(targetNetwork, "fast");
 
   const userProvider = useUserProvider(injectedProvider, localProvider);
@@ -107,7 +111,12 @@ function App() {
 
   return (
     <div className="App">
-      <Layout address={address} onConnectWallet={loadWeb3Modal}>
+      <Layout
+        address={address}
+        onConnectWallet={loadWeb3Modal}
+        provider={userProvider}
+        price={price}
+      >
         <BrowserRouter>
           <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
             <Menu.Item key="/claim" icon={<SearchOutlined />}>
