@@ -29,15 +29,6 @@ contract Token is ERC721, Ownable {
         _setBaseURI(baseURI);
     }
 
-    /// Max number of tokens per address
-    /// @return the max number of tokens
-    // TODO(teddywilson) this should probably be configurable, or maybe it's not
-    // needed at all. At any rate, if it's removed, we may need some pagination mechanism
-    // for returning tokens for a users address.
-    function getMaxMintableTokensPerAddress() public pure returns (uint8) {
-        return 16;
-    }
-
     /// Check if token for `pageId` is claimed
     /// @param pageId unique id of token in question
     function isClaimed(uint256 pageId) public view returns (bool) {
@@ -48,7 +39,7 @@ contract Token is ERC721, Ownable {
     /// @param address_ address that tokens will be queried for
     /// @param cursor the index results should start at
     /// @param howMany how many results should be returned
-    /// @dev `resultsPerPage` and `page` allow us to paginate results
+    /// @dev `cursor` and `howMany` allow us to paginate results
     function tokens(
         address address_,
         uint256 cursor,
