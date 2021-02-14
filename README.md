@@ -11,6 +11,11 @@
 - [ ] Donation distribution flow
 - [ ] Clean up URI injection
 - [ ] Deploy to Ropsten
+- [ ] Update tests since refactor
+
+### CI
+- [ ] Run tests on push
+- [ ] Build frontend on push
 
 ### API
 - [ ] Lock down error states - are they compliant with ERC721?
