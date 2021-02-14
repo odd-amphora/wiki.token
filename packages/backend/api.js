@@ -10,6 +10,7 @@ app.options("*", cors());
 const port = 5000;
 
 const WIKIPEDIA_API_BASE_URL = `https://en.wikipedia.org/w/api.php`;
+const DEFAULT_IMAGE_URL = `https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg`;
 
 const buildBaseWikipediaQuery = () => {
   return `${WIKIPEDIA_API_BASE_URL}?action=query`
@@ -57,7 +58,7 @@ const formatQueryResponse = response => {
   }
   return {
     extract: page.extract,
-    imageUrl: page.thumbnail ? page.thumbnail.source : "",
+    imageUrl: page.thumbnail ? page.thumbnail.source : DEFAULT_IMAGE_URL,
     pageId: pageId,
     pageTitle: page.title,
   };
