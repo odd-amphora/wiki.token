@@ -7,10 +7,11 @@ import { BigNumber } from "@ethersproject/bignumber";
 function useTokensProvider(contracts, address) {
   const [tokens, setTokens] = useState([]);
   // Pagination if available if needed, but we won't worry about using it for now.
-  const tokensResult = useContractReader(contracts, "Token", "tokens", [
+  const tokensResult = useContractReader(contracts, "Token", "tokensOf", [
     address,
     /*cursor=*/ 0,
-    /*howMany*/ 10000,
+    /*howMany=*/ 10000,
+    /*ascending=*/ true,
   ]);
 
   useEffect(() => {

@@ -9,14 +9,13 @@ import "hardhat/console.sol";
 
 /// @author The Wiki Token team
 /// @title Wiki Token ERC 721 contract
-/// TODO(teddywilson) Create "explore" API to browse recently minted tokens
 /// TODO(teddywilson) Figure out Wikipedia distribution mechanism
 contract Token is ERC721, Ownable {
     /// The page ids each address has currently minted
     mapping (address => uint256[]) private _addressToPageIds;
 
-    /// Maps a Wikipedia page id to an address
-    mapping (uint256 => address) private _pageIdToAddress;
+    /// Minted page ids in order, used for pagination
+    uint256[] private _mintedPageIds;
 
     constructor () public ERC721("WikiToken", "WIKI") {
         // TODO(teddywilson) this will be replaced by a homegrown API.
@@ -32,48 +31,77 @@ contract Token is ERC721, Ownable {
     /// Check if token for `pageId` is claimed
     /// @param pageId unique id of token in question
     function isClaimed(uint256 pageId) public view returns (bool) {
-        return _pageIdToAddress[pageId] != 0x0000000000000000000000000000000000000000;
+        return _exists(pageId);
     }
 
-    /// Fetches tokens owned by an address
+    /// Paginates items in an array
+    /// @param cursor position to start at
+    /// @param howMan max number of items to return
+    /// @param ascending index array in ascending/descending order
+    /// @param array data that will be indexed
+    function _paginate(
+        uint256 cursor,
+        uint256 howMany,
+        bool ascending,
+        uint256[] storage array
+    ) private view returns (uint256[] memory result, uint256 newCursor, bool reachedEnd) {
+        require (
+            cursor < array.length,
+            "Cursor position out of bounds"
+        );
+        uint cursor_ = cursor;
+        uint256 length = Math.min(howMany, array.length - cursor);
+        uint256 cursorInternal = ascending
+            ? cursor
+            : array.length - 1 - cursor;
+        result = new uint256[](length);
+        for (uint i = 0; i < length; i++) {
+            result[i] = array[cursorInternal];
+            if (ascending) {
+                cursorInternal++;
+            } else {
+                cursorInternal--;
+            }
+            cursor_++;
+        }
+        return (result, cursor_, cursor == array.length);
+    }
+
+    /// Fetches tokens belonging to any address
     /// @param address_ address that tokens will be queried for
     /// @param cursor the index results should start at
     /// @param howMany how many results should be returned
     /// @dev `cursor` and `howMany` allow us to paginate results
     function tokens(
+        uint256 cursor,
+        uint256 howMany,
+        bool ascending
+    ) public view returns (uint256[] memory result, uint256 newCursor, bool reachedEnd) {
+        return _paginate(cursor, howMany, ascending, _mintedPageIds);
+    }
+
+    /// Fetches tokens of an address
+    /// @param address_ address that tokens will be queried for
+    /// @param cursor the index results should start at
+    /// @param howMany how many results should be returned
+    /// @dev `cursor` and `howMany` allow us to paginate results
+    function tokensOf(
         address address_,
         uint256 cursor,
-        uint256 howMany
+        uint256 howMany,
+        bool ascending
     ) public view returns (uint256[] memory result, uint256 newCursor, bool reachedEnd) {
-        require (
-            cursor < _addressToPageIds[address_].length,
-            "Cursor position out of bounds"
-        );
-        uint256 length = Math.min(
-            howMany,
-            _addressToPageIds[address_].length - cursor
-        );
-        result = new uint256[](length);
-        for (uint i = 0; i < length; i++) {
-            result[i] = _addressToPageIds[address_][cursor++];
-        }
-        return (result, cursor, cursor == _addressToPageIds[address_].length);
+        return _paginate(cursor, howMany, ascending, _addressToPageIds[address_]);
     }
 
     /// Mints a Wiki Token
     /// @param pageId Wikipedia page (by id) that will be minted as a token
     /// TODO(teddywilson) enforce payment
     function mint(uint256 pageId) public {
-        require (!isClaimed(pageId), "Page must not be claimed");
-        require (
-            _addressToPageIds[msg.sender].length < getMaxMintableTokensPerAddress(),
-            "Max minted tokens reached"
-        );
-
         _mint(msg.sender, pageId);
         _setTokenURI(pageId, Strings.toString(pageId));
 
-        _pageIdToAddress[pageId] = msg.sender;
         _addressToPageIds[msg.sender].push(pageId);
+        _mintedPageIds.push(pageId);
     }
 }
