@@ -63,7 +63,11 @@ export default function Claim({ contracts, signer, transactor }) {
         </Form.Item>
       </Form>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
-        <Token imageUrl={articleQueryResponse?.imageUrl} />
+        <Token
+          imageUrl={articleQueryResponse?.imageUrl}
+          pageId={articleQueryResponse?.pageId}
+          pageTitle={articleQueryResponse?.pageTitle}
+        />
         <div hidden={isClaimed}>
           <Button
             onClick={() => {
@@ -73,12 +77,12 @@ export default function Claim({ contracts, signer, transactor }) {
             Claim
           </Button>
         </div>
-        <div
+        {/* <div
           dangerouslySetInnerHTML={{ __html: articleQueryResponse?.extract }}
           style={{
             textAlign: "left",
           }}
-        />
+        /> */}
       </div>
     </div>
   );
