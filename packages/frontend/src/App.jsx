@@ -24,6 +24,7 @@ import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
 import { About, Claim, Discover, MyTokens } from "./views";
+import { BigNumber } from "@ethersproject/bignumber";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -97,6 +98,13 @@ function App() {
   ]);
   const discoveryTokens = useTokensProvider(discoveryTokensResult);
 
+  // Fetch total supply
+  const totalSupplyBigNumber = useContractReader(contracts, "Token", "totalSupply");
+  const [totalSupply, setTotalSupply] = useState(0);
+  useEffect(() => {
+    totalSupplyBigNumber && setTotalSupply(BigNumber.from(totalSupplyBigNumber).toNumber());
+  }, [totalSupplyBigNumber]);
+
   return (
     <div className="App">
       <Layout address={address} onConnectWallet={loadWeb3Modal}>
@@ -144,7 +152,7 @@ function App() {
           </Menu>
           <Switch>
             <Route exact path={["/about", "/"]}>
-              <About />
+              <About totalSupply={totalSupply} />
             </Route>
             <Route exact path="/claim">
               <Claim

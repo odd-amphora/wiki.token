@@ -10,7 +10,7 @@ export default function Account({ address, onConnectWallet }) {
   }
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", fontFamily: "karla" }}>
       <Button type="primary" shape="round" ghost={true} onClick={onConnectWallet}>
         {address ? formatAddress(address) : "Connect"}
       </Button>

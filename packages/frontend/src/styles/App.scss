@@ -1,6 +1,5 @@
 @import './antd.css';
 @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 
 #root {
   display: flex;
@@ -33,15 +32,11 @@ body {
 
 .about-text-block {
   margin-bottom: 16px;
+  font-style: italic;
 }
 
 #heading {
   font-size: 16px;
-}
-
-
-#subheading {
-  font-style: italic;
 }
 
 .about-text-block > a {
@@ -50,6 +45,11 @@ body {
 
 .about-text-block > a:hover {
   text-decoration: underline;
+}
+
+.about-text-counter {
+  font-family: 'karla';
+  font-weight: bold;
 }
 
 .App {
