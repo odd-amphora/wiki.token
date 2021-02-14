@@ -5,13 +5,19 @@ import axios from "axios";
 import { BigNumber } from "@ethersproject/bignumber";
 
 function useTokensProvider(contracts, address) {
-  const [tokens, setTokens] = useState([{}]);
-  const myTokens = useContractReader(contracts, "Token", "tokens", [address]);
+  const [tokens, setTokens] = useState([]);
+  // Pagination if available if needed, but we won't worry about using it for now.
+  const tokensResult = useContractReader(contracts, "Token", "tokens", [
+    address,
+    /*cursor=*/ 0,
+    /*howMany*/ 10000,
+  ]);
 
   useEffect(() => {
-    myTokens &&
+    tokensResult &&
+      tokensResult.length == 3 &&
       Promise.all(
-        myTokens.map(token => {
+        tokensResult[0].map(token => {
           return axios
             .get(
               `${process.env.REACT_APP_METADATA_API_BASE_URL}/token?id=${BigNumber.from(
@@ -23,7 +29,7 @@ function useTokensProvider(contracts, address) {
       ).then(tokens => {
         setTokens(tokens);
       });
-  }, [myTokens]);
+  }, [tokensResult]);
 
   return tokens;
 }
