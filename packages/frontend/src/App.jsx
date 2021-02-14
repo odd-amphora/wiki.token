@@ -93,7 +93,7 @@ function App() {
                 }}
                 to="/tokens"
               >
-                Tokens
+                My Tokens
               </Link>
             </Menu.Item>
             <Menu.Item key="/about" icon={<QuestionCircleOutlined />}>
