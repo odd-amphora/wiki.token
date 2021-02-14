@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { Menu } from "antd";
-import { SearchOutlined, TrophyOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, SearchOutlined, TrophyOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./styles/App.scss";
@@ -12,7 +12,7 @@ import { useGasPrice, useUserProvider, useContractLoader } from "./hooks";
 import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { Claim, Tokens } from "./views";
+import { Claim, Landing, Tokens } from "./views";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -74,12 +74,12 @@ function App() {
       <Layout address={address} onConnectWallet={loadWeb3Modal}>
         <BrowserRouter>
           <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
-            <Menu.Item key="/" icon={<SearchOutlined />}>
+            <Menu.Item key="/claim" icon={<SearchOutlined />}>
               <Link
                 onClick={() => {
-                  setRoute("/");
+                  setRoute("/claim");
                 }}
-                to="/"
+                to="/claim"
               >
                 Claim
               </Link>
@@ -94,9 +94,21 @@ function App() {
                 Tokens
               </Link>
             </Menu.Item>
+            <Menu.Item key="/about" icon={<QuestionCircleOutlined />}>
+              <Link
+                onClick={() => {
+                  setRoute("/about");
+                }}
+                to="/about"
+              />
+              About
+            </Menu.Item>
           </Menu>
           <Switch>
-            <Route exact path="/">
+            <Route exact path={["/about", "/"]}>
+              <Landing />
+            </Route>
+            <Route exact path="/claim">
               <Claim
                 contracts={contracts}
                 signer={userProvider.getSigner()}

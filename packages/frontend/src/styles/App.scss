@@ -8,6 +8,14 @@
     font-family:"Lucida Console", "Courier New", monospace;
 }
 
+.menu-view > a {
+  text-decoration: underline;
+}
+
+.menu-view > a:hover {
+  text-decoration: underline;
+}
+
 .App {
   text-align: center;
 }
