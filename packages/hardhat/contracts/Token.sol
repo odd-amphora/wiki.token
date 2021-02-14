@@ -22,11 +22,6 @@ contract Token is ERC721, Ownable {
     _setBaseURI(baseURI);
   }
 
-  // TODO(teddywilson) this should probably be configurable
-  function getMaxMintableTokensPerAddress() public pure returns (uint8) { 
-    return 16;
-  }
-
   function isClaimed(uint256 pageId) view public returns (bool) {
     return _pageIdToAddress[pageId] != 0x0000000000000000000000000000000000000000;
   }
@@ -37,10 +32,6 @@ contract Token is ERC721, Ownable {
 
   function mint(uint256 pageId) public {
     require (!isClaimed(pageId), "Page must not be claimed");
-    require (
-      _addressToPageIds[msg.sender].length < getMaxMintableTokensPerAddress(),
-      "Max minted tokens reached"
-    );
 
     _mint(msg.sender, pageId);
     _setTokenURI(pageId, Strings.toString(pageId));
