@@ -24,26 +24,11 @@ const buildBaseWikipediaQuery = () => {
 };
 
 const buildPageIdQuery = pageId => {
-  return `${WIKIPEDIA_API_BASE_URL}?action=query`
-    .concat(`&prop=pageprops|pageimages`)
-    .concat(`&exintro=`)
-    .concat(`&ppprop=wikibase_item`)
-    .concat(`&redirects=1`)
-    .concat(`&format=json`)
-    .concat(`&pithumbsize=1000`)
-    .concat(`&pageids=${pageId}`);
+  return buildBaseWikipediaQuery().concat(`&pageids=${pageId}`);
 };
 
 const buildTitleQuery = articleName => {
-  return `${WIKIPEDIA_API_BASE_URL}?action=query`
-    .concat(`&prop=pageprops|pageimages|extracts`)
-    .concat(`&exintro=`)
-    .concat(`&rvprop=content`)
-    .concat(`&ppprop=wikibase_item`)
-    .concat(`&redirects=1`)
-    .concat(`&format=json`)
-    .concat(`&pithumbsize=1000`)
-    .concat(`&titles=${articleName}`);
+  return buildBaseWikipediaQuery().concat(`&titles=${articleName}`);
 };
 
 // Maybe return validation error instead?
