@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "hardhat/console.sol";
 
+// TODO(teddywilson) Create "explore" API to browse recently minted tokens
+// TODO(teddywilson) Figure out Wikipedia distribution mechanism
 contract Token is ERC721, Ownable {
   // The page ids each address has currently minted
   mapping (address => uint256[]) private _addressToPageIds;
@@ -22,7 +24,9 @@ contract Token is ERC721, Ownable {
     _setBaseURI(baseURI);
   }
 
-  // TODO(teddywilson) this should probably be configurable
+  // TODO(teddywilson) this should probably be configurable, or maybe it's not
+  // needed at all. At any rate, if it's removed, we may need some pagination mechanism
+  // for returning tokens for a users address.
   function getMaxMintableTokensPerAddress() public pure returns (uint8) { 
     return 16;
   }
@@ -31,10 +35,12 @@ contract Token is ERC721, Ownable {
     return _pageIdToAddress[pageId] != 0x0000000000000000000000000000000000000000;
   }
 
+  // TODO(teddywilson) this should be paginated
   function tokens(address adr) view public returns (uint256[] memory) {
     return _addressToPageIds[adr];
   }
 
+  // TODO(teddywilson) enforce payment
   function mint(uint256 pageId) public {
     require (!isClaimed(pageId), "Page must not be claimed");
     require (
