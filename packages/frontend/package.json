@@ -45,6 +45,7 @@
     "graphiql": "^1.0.5",
     "graphql": "^15.3.0",
     "isomorphic-fetch": "^3.0.0",
+    "less": "^4.1.1",
     "qrcode.react": "^1.0.0",
     "react": "^16.14.0",
     "react-blockies": "^1.4.1",
@@ -65,10 +66,11 @@
     "surge": "^0.21.5"
   },
   "scripts": {
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "start": "react-scripts start",
-    "test": "react-scripts test",
+    "compile-antd-overrides": "lessc ./src/styles/antd.less ./src/styles/antd.css --js",
+    "build": "yarn compile-antd-overrides && react-scripts build",
+    "eject": "yarn compile-antd-overrides && react-scripts eject",
+    "start": "yarn compile-antd-overrides && react-scripts start",
+    "test": "yarn compile-antd-overrides && react-scripts test",
     "ipfs": "node ./scripts/ipfs.js",
     "surge": "surge ./build",
     "s3": "node ./scripts/s3.js",

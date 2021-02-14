@@ -37,3 +37,6 @@ yarn-error.log*
 # vercel
 .vercelignore
 .vercel
+
+# generated antd overrides
+packages/frontend/src/styles/antd.less
