@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from "react";
-
-import axios from "axios";
+import React from "react";
 
 import { Token } from "../components";
-import { useContractReader } from "../hooks";
-import { BigNumber } from "@ethersproject/bignumber";
 
 export default function Tokens({ tokens }) {
   return (
