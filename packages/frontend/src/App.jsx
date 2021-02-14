@@ -1,18 +1,29 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { Menu } from "antd";
-import { QuestionCircleOutlined, SearchOutlined, TrophyOutlined } from "@ant-design/icons";
+import {
+  GlobalOutlined,
+  QuestionCircleOutlined,
+  SearchOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./styles/App.scss";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import { useGasPrice, useUserProvider, useContractLoader, useTokensProvider } from "./hooks";
+import {
+  useContractReader,
+  useGasPrice,
+  useUserProvider,
+  useContractLoader,
+  useTokensProvider,
+} from "./hooks";
 import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { About, Claim, Tokens } from "./views";
+import { About, Claim, Discover, MyTokens } from "./views";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -69,7 +80,22 @@ function App() {
     setRoute(window.location.pathname);
   }, [setRoute]);
 
-  const tokens = useTokensProvider(contracts, address);
+  // Fetch my tokens
+  const myTokensResult = useContractReader(contracts, "Token", "tokensOf", [
+    address,
+    /*cursor=*/ 0,
+    /*howMany=*/ 10000,
+    /*ascending=*/ true,
+  ]);
+  const myTokens = useTokensProvider(myTokensResult);
+
+  // Fetch discovery tokens
+  const discoveryTokensResult = useContractReader(contracts, "Token", "discover", [
+    /*cursor=*/ 0,
+    /*howMany=*/ 10000,
+    /*ascending=*/ true,
+  ]);
+  const discoveryTokens = useTokensProvider(discoveryTokensResult);
 
   return (
     <div className="App">
@@ -96,6 +122,16 @@ function App() {
                 My Tokens
               </Link>
             </Menu.Item>
+            <Menu.Item key="/discover" icon={<GlobalOutlined />}>
+              <Link
+                onClick={() => {
+                  setRoute("/discover");
+                }}
+                to="/discover"
+              >
+                Discover
+              </Link>
+            </Menu.Item>
             <Menu.Item key="/about" icon={<QuestionCircleOutlined />}>
               <Link
                 onClick={() => {
@@ -118,7 +154,10 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <Tokens tokens={tokens} />
+              <MyTokens tokens={myTokens} />
+            </Route>
+            <Route path="/discover">
+              <Discover tokens={discoveryTokens} />
             </Route>
           </Switch>
         </BrowserRouter>

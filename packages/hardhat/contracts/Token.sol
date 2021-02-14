@@ -36,7 +36,7 @@ contract Token is ERC721, Ownable {
 
     /// Paginates items in an array
     /// @param cursor position to start at
-    /// @param howMan max number of items to return
+    /// @param howMany max number of items to return
     /// @param ascending index array in ascending/descending order
     /// @param array data that will be indexed
     function _paginate(
@@ -68,11 +68,10 @@ contract Token is ERC721, Ownable {
     }
 
     /// Fetches tokens belonging to any address
-    /// @param address_ address that tokens will be queried for
     /// @param cursor the index results should start at
     /// @param howMany how many results should be returned
     /// @dev `cursor` and `howMany` allow us to paginate results
-    function tokens(
+    function discover(
         uint256 cursor,
         uint256 howMany,
         bool ascending
