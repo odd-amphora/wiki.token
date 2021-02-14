@@ -8,7 +8,7 @@ import "./styles/App.scss";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import { useGasPrice, useUserProvider, useContractLoader } from "./hooks";
+import { useGasPrice, useUserProvider, useContractLoader, useTokensProvider } from "./hooks";
 import { Layout } from "./components";
 import { INFURA_ID, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
@@ -69,6 +69,8 @@ function App() {
     setRoute(window.location.pathname);
   }, [setRoute]);
 
+  const tokens = useTokensProvider(contracts, address);
+
   return (
     <div className="App">
       <Layout address={address} onConnectWallet={loadWeb3Modal}>
@@ -116,7 +118,7 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <Tokens address={address} contracts={contracts} />
+              <Tokens tokens={tokens} />
             </Route>
           </Switch>
         </BrowserRouter>
