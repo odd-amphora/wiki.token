@@ -48,6 +48,6 @@ export const fetchPageByTitle = title => {
 
 export const fetchPageById = id => {
   return axios.get(buildPageIdQuery(id)).then(response => {
-    return formatQueryResponse(queryResponse);
+    return formatQueryResponse(response);
   });
 };
