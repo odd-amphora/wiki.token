@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Tag } from "antd";
+import { PageHeader } from "antd";
 
 import Account from "./Account";
 

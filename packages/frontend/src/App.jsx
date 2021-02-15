@@ -40,12 +40,12 @@ const web3Modal = new Web3Modal({
   },
 });
 
-const logoutOfWeb3Modal = async () => {
-  await web3Modal.clearCachedProvider();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1);
-};
+// const logoutOfWeb3Modal = async () => {
+//   await web3Modal.clearCachedProvider();
+//   setTimeout(() => {
+//     window.location.reload();
+//   }, 1);
+// };
 
 const targetNetwork = NETWORKS["localhost"];
 

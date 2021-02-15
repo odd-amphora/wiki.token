@@ -41,10 +41,7 @@ export default function Claim({ contracts, signer, transactor }) {
   };
 
   const claim = async () => {
-    if (!articleQueryResponse.pageId) {
-      throw "No pageId to claim!";
-    }
-    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse.pageId));
+    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse?.pageId));
   };
 
   return (

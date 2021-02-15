@@ -2,11 +2,13 @@ import React from "react";
 
 import { Token } from "../components";
 
+// TODO(teddywilson) perhaps abstract this view with MyTokens but it probably will need its
+// own sp
 export default function Discover({ tokens }) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>No Wiki Tokens have been claimed yet :(</div>
-      <div hidden={!tokens || tokens.length == 0}>
+      <div hidden={!tokens || tokens.length === 0}>
         {tokens.map(token => {
           return (
             <Token

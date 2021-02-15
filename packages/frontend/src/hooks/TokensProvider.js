@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useContractReader } from ".";
 
 import axios from "axios";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -9,7 +8,7 @@ function useTokensProvider(tokensResult) {
 
   useEffect(() => {
     tokensResult &&
-      tokensResult.length == 3 &&
+      tokensResult.length === 3 &&
       Promise.all(
         tokensResult[0].map(token => {
           return axios
