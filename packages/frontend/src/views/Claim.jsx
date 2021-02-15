@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "antd/dist/antd.css";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import { Token } from "../components";
 import { useContractReader } from "../hooks";
@@ -16,13 +17,23 @@ const VALIDATE_STATUS_ERROR = "error";
 export default function Claim({ contracts, signer, transactor }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
-  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [
-    articleQueryResponse?.pageId,
-  ]);
+  const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
+  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [currentPageId]);
   let cancelRequest;
+
+  useEffect(() => {
+    setCurrentPageId(
+      BigNumber.from(
+        articleQueryResponse && articleQueryResponse.pageId ? articleQueryResponse.pageId : 0,
+      ),
+    );
+  }, [articleQueryResponse]);
 
   const fetchArticleMetadata = async article => {
     cancelRequest && cancelRequest();
+    if (!article || article.length === 0) {
+      return;
+    }
     const response = await axios.get(
       `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/article/${article}`,
       {

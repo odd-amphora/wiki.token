@@ -12,6 +12,7 @@ export default function Discover({ tokens }) {
         {tokens.map(token => {
           return (
             <Token
+              key={token.properties?.name?.description}
               imageUrl={token.properties?.image?.description}
               pageTitle={token.properties?.description?.description}
               pageId={token.properties?.name?.description}

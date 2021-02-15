@@ -10,6 +10,7 @@ export default function Header({ address, onConnectWallet, price, provider }) {
       title="wiki.token"
       extra={[
         <Account
+          key="0"
           address={address}
           onConnectWallet={onConnectWallet}
           price={price}
