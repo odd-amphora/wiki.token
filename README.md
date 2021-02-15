@@ -9,7 +9,7 @@
 - [ ] Implement log out flow
 - [ ] Limit functionality when wallet not connected
 - [ ] Figure out what's needed to toggle between local/ropsten/mainnet/etc.
-- [ ] Deploy to GCP
+- [ ] Deploy to vercel
 
 ### Contract
 - [ ] Donation distribution flow
