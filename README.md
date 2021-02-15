@@ -28,4 +28,4 @@
 
 ### Comms
 - [ ] Write up summary of project
-- [ ] Buy/set up domain(s)
+- [x] Buy `wikitoken.org` domain
