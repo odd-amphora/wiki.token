@@ -28,7 +28,7 @@
     "fork": "yarn workspace @wiki.token/hardhat fork",
     "node": "yarn workspace @wiki.token/hardhat chain",
     "test": "yarn workspace @wiki.token/hardhat test",
-    "backend:start": "yarn workspace @wiki.token/backend start",
+    "backend:start": "yarn workspace @wiki.token/backend dev",
     "compile": "yarn workspace @wiki.token/hardhat compile",
     "deploy": "yarn workspace @wiki.token/hardhat deploy",
     "watch": "yarn workspace @wiki.token/hardhat watch",

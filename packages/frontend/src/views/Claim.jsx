@@ -24,7 +24,7 @@ export default function Claim({ contracts, signer, transactor }) {
   const fetchArticleMetadata = async article => {
     cancelRequest && cancelRequest();
     const response = await axios.get(
-      `${process.env.REACT_APP_METADATA_API_BASE_URL}/article?name=${article}`,
+      `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/article/${article}`,
       {
         cancelToken: new axios.CancelToken(function executor(canceler) {
           cancelRequest = canceler;

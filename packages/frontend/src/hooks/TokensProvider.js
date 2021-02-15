@@ -14,7 +14,7 @@ function useTokensProvider(tokensResult) {
         tokensResult[0].map(token => {
           return axios
             .get(
-              `${process.env.REACT_APP_METADATA_API_BASE_URL}/token?id=${BigNumber.from(
+              `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/token/${BigNumber.from(
                 token,
               ).toNumber(token)}`,
             )
