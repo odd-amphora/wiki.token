@@ -23,7 +23,8 @@
 
 ### API
 - [ ] Lock down error states - are they compliant with ERC721?
-- [ ] Deploy to GCP
+- [x] Refactor as serverless with nextjs
+- [x] Deploy to vercel
 
 ### Comms
 - [ ] Write up summary of project
