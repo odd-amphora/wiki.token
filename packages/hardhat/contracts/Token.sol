@@ -17,9 +17,8 @@ contract Token is ERC721, Ownable {
     /// Minted page ids in order, used for pagination
     uint256[] private _mintedPageIds;
 
-    constructor () public ERC721("WikiToken", "WIKI") {
-        // TODO(teddywilson) this will be replaced by a homegrown API.
-        _setBaseURI("https://en.wikipedia.org/wiki/");
+    constructor (string memory baseURI) public ERC721("WikiToken", "WIKI") {
+        _setBaseURI(baseURI);
     }
 
     /// Sets base URI for tokens

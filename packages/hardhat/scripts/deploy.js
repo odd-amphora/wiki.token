@@ -8,7 +8,20 @@ const R = require("ramda");
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
-  const token = await deploy("Token");
+  if (!process.env.WIKI_TOKEN_BASE_URI) {
+    throw "❌ WIKI_TOKEN_BASE_URI is not set";
+  }
+
+  // Page ID will be directly concatenated to URI to save memory
+  // so is vital that the URI ends with a slash.
+  if (
+    !process.env.WIKI_TOKEN_BASE_URI.startsWith("http") ||
+    !process.env.WIKI_TOKEN_BASE_URI.endsWith("/")
+  ) {
+    throw "❌ Invalid WIKI_TOKEN_BASE_URI";
+  }
+
+  const token = await deploy("Token", [process.env.WIKI_TOKEN_BASE_URI]);
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",

@@ -14,7 +14,7 @@
 
 ### Contract
 - [ ] Donation distribution flow
-- [ ] Clean up URI injection
+- [x] Clean up URI injection
 - [ ] Deploy to Ropsten
 - [ ] Update tests since refactor
 

@@ -1,6 +1,8 @@
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
 
+const TEST_BASE_URI = "https://bananabread.com/api/";
+
 describe("Token Contract", function () {
   let Token;
   let hardhatToken;
@@ -13,7 +15,8 @@ describe("Token Contract", function () {
     Token = await ethers.getContractFactory("Token");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    hardhatToken = await Token.deploy();
+    args = [TEST_BASE_URI];
+    hardhatToken = await Token.deploy(...args);
   });
 
   describe("mint()", function () {
@@ -25,12 +28,18 @@ describe("Token Contract", function () {
       await expect(hardhatToken.mint(2)).to.be.reverted;
     });
 
-    it("Should limit number of mintable tokens per address", async function () {
-      const maxMintableTokensPerAddress = await hardhatToken.getMaxMintableTokensPerAddress();
-      for (var i = 1; i <= maxMintableTokensPerAddress; i++) {
-        await expect(hardhatToken.mint(i)).to.not.be.reverted;
-      }
-      await expect(hardhatToken.mint(maxMintableTokensPerAddress + 1)).to.be.reverted;
+    it("Should mint tokens with proper URI", async function () {
+      await hardhatToken.mint(1);
+      expect(await hardhatToken.tokenURI(1)).to.equal(TEST_BASE_URI.concat(1));
+
+      await hardhatToken.mint(9226);
+      expect(await hardhatToken.tokenURI(9226)).to.equal(TEST_BASE_URI.concat(9226));
+
+      await hardhatToken.mint(29384);
+      expect(await hardhatToken.tokenURI(29384)).to.equal(TEST_BASE_URI.concat(29384));
+
+      await hardhatToken.mint(12891648290);
+      expect(await hardhatToken.tokenURI(12891648290)).to.equal(TEST_BASE_URI.concat(12891648290));
     });
   });
 
@@ -53,17 +62,5 @@ describe("Token Contract", function () {
     });
   });
 
-  describe("myTokens()", function () {
-    it("Should return tokens that have been claimed", async function () {
-      await hardhatToken.mint(1);
-      await hardhatToken.mint(2);
-      await hardhatToken.mint(3);
-
-      expect(await hardhatToken.myTokens()).to.eql([
-        BigNumber.from(1),
-        BigNumber.from(2),
-        BigNumber.from(3),
-      ]);
-    });
-  });
+  // TODO(teddywilson) add tests to tokensOf() and discover()
 });
