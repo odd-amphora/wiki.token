@@ -13,7 +13,7 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      <Layout.Footer style={{ textAlign: "center" }}>
+      <Layout.Footer>
         <div>wiki.token ©2021</div>
         <div style={{ display: "inline-flex", justifyContent: "center" }}>
           <FontAwesomeIcon

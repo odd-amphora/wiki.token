@@ -22,7 +22,7 @@ import {
   useTokensProvider,
 } from "./hooks";
 import { Layout } from "./components";
-import { INFURA_ID, NETWORKS } from "./constants";
+import { NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
 import { About, Claim, Discover, MyTokens } from "./views";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -34,7 +34,7 @@ const web3Modal = new Web3Modal({
     walletconnect: {
       package: WalletConnectProvider, // required
       options: {
-        infuraId: INFURA_ID,
+        infuraId: process.env.REACT_APP_INFURA_PROJECT_ID,
       },
     },
   },
@@ -47,14 +47,20 @@ const web3Modal = new Web3Modal({
 //   }, 1);
 // };
 
-const targetNetwork = NETWORKS["localhost"];
+const networkName = process.env.REACT_APP_INFURA_NETWORK
+  ? process.env.REACT_APP_INFURA_NETWORK
+  : "localhost";
+const targetNetwork = NETWORKS[networkName];
 
-const mainnetProvider = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
+const mainnetProvider = new JsonRpcProvider(
+  "https://mainnet.infura.io/v3/" + process.env.REACT_APP_INFURA_PROJECT_ID,
+);
 
 const localProviderUrl = targetNetwork.rpcUrl;
-const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER
-  ? process.env.REACT_APP_PROVIDER
-  : localProviderUrl;
+const localProviderUrlFromEnv =
+  process.env.REACT_APP_PROVIDER && networkName !== "localhost"
+    ? process.env.REACT_APP_PROVIDER
+    : localProviderUrl;
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
 function App() {

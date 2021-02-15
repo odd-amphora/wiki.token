@@ -41,7 +41,6 @@ contract Token is ERC721, Ownable {
     /// @param howMany max number of items to return
     /// @param ascending index array in ascending/descending order
     /// @param array data that will be indexed
-    /// @return pagination results, new cursor position, true if cursor reached end 
     /// @dev uint256 array type could be templated once solidity supports this
     function _paginate(
         uint256 cursor,
@@ -74,8 +73,6 @@ contract Token is ERC721, Ownable {
     /// Fetches tokens belonging to any address
     /// @param cursor the index results should start at
     /// @param howMany how many results should be returned
-    /// @dev `cursor` and `howMany` allow us to paginate results
-    /// @return pagination results, new cursor position, true if cursor reached end 
     function discover(
         uint256 cursor,
         uint256 howMany,
@@ -89,7 +86,6 @@ contract Token is ERC721, Ownable {
     /// @param cursor the index results should start at
     /// @param howMany how many results should be returned
     /// @dev `cursor` and `howMany` allow us to paginate results
-    /// @return pagination results, new cursor position, true if cursor reached end 
     function tokensOf(
         address address_,
         uint256 cursor,

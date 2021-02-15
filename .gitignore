@@ -41,3 +41,6 @@ yarn-error.log*
 
 # generated antd overrides
 packages/frontend/src/styles/antd.css
+
+# environment
+.env*
