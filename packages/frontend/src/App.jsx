@@ -58,10 +58,6 @@ const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
 function App() {
-  if (process.env.NODE_ENV === "production") {
-    return <div>wikitoken.org coming soon</div>;
-  }
-
   const [injectedProvider, setInjectedProvider] = useState();
 
   const price = useExchangePrice(targetNetwork, mainnetProvider);
