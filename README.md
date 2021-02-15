@@ -4,12 +4,13 @@
 [Scaffolding README](SCAFFOLDING.md)
 
 ## TODO
-### UI/UX
+### Frontend
 - [ ] Clean up claim flow - latency in autocomplete, loading states, etc.
 - [ ] Implement log out flow
 - [ ] Limit functionality when wallet not connected
 - [ ] Figure out what's needed to toggle between local/ropsten/mainnet/etc.
-- [ ] Deploy to vercel
+- [ ] Swap favicon
+- [x] Deploy to vercel
 
 ### Contract
 - [ ] Donation distribution flow
