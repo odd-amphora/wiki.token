@@ -14,14 +14,14 @@ export default function Layout({
 }) {
   return (
     <>
-      <Alert
+      {/* <Alert
         message={`Network: ${process.env.REACT_APP_INFURA_NETWORK}`}
         type="warning"
         style={{
           visibility: process.env.REACT_APP_INFURA_NETWORK === "mainnet" ? "gone" : "visible",
         }}
       />
-      <Alert message="Wiki Token is still in development, use at your own risk" type="error" />
+      <Alert message="Wiki Token is still in development, use at your own risk" type="error" /> */}
       <Header
         address={address}
         web3Modal={web3Modal}
