@@ -180,7 +180,7 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <MyTokens tokens={myTokens} />
+              <MyTokens tokens={myTokens} web3Modal={web3Modal} />
             </Route>
             <Route path="/discover">
               <Discover tokens={discoveryTokens} />

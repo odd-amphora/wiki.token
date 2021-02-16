@@ -1,11 +1,17 @@
 import React from "react";
 
+import { Divider } from "antd";
+
 import { Token } from "../components";
 
-export default function Tokens({ tokens }) {
+export default function Tokens({ tokens, web3Modal }) {
   return (
     <div className="menu-view">
-      <div hidden={tokens && tokens.length > 0}>You haven't claimed any tokens yet :(</div>
+      <div hidden={tokens && tokens.length > 0}>You haven't claimed any tokens yet 😔</div>
+      <div hidden={web3Modal && web3Modal.cachedProvider}>
+        <Divider />
+        Connect a wallet to claim your first one 🚀
+      </div>
       <div hidden={!tokens || tokens.length === 0}>
         {tokens.map(token => {
           return (

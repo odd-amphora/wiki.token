@@ -73,7 +73,7 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
       </Form>
       {/* For whatever reason, style/visibility isn't working for alert so we have to wrap it */}
       <div hidden={web3Modal && web3Modal.cachedProvider}>
-        <Alert message="You must connect a wallet in order to claim tokens" type="error" />
+        <Alert message="You must connect a wallet in order to claim tokens 😢" type="error" />
       </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         <Token

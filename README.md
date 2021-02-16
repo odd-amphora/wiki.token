@@ -7,7 +7,7 @@
 ### Frontend
 - [ ] Clean up claim flow - latency in autocomplete, loading states, etc.
 - [x] Implement log out flow
-- [ ] Limit functionality when wallet not connected
+- [x] Limit functionality when wallet not connected
 - [ ] Figure out what's needed to toggle between local/ropsten/mainnet/etc.
 - [x] Swap favicon
 - [x] Deploy to vercel
