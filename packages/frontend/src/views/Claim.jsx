@@ -14,7 +14,6 @@ const VALIDATE_STATUS_SUCCESS = "success";
 const VALIDATE_STATUS_VALIDATING = "validating";
 const VALIDATE_STATUS_ERROR = "error";
 
-// TODO(teddywilson) show error message
 export default function Claim({ contracts, signer, transactor, web3Modal }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
