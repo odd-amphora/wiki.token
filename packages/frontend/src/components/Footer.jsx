@@ -30,7 +30,7 @@ export default function Footer() {
             size={FA_ICON_SIZE}
             // TODO(teddywilson) replace with real link
             onClick={() => {
-              openSocialLink(`https://github.com/wiki-token`);
+              openSocialLink(`https://github.com/teddywilson/wiki.token`);
             }}
           />
           <FontAwesomeIcon
