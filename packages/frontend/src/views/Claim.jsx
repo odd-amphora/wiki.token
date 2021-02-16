@@ -9,6 +9,7 @@ import { Token } from "../components";
 import { useContractReader } from "../hooks";
 
 // Form validation status
+const VALIDATE_STATUS_IDLE = "idle";
 const VALIDATE_STATUS_SUCCESS = "success";
 const VALIDATE_STATUS_VALIDATING = "validating";
 const VALIDATE_STATUS_ERROR = "error";
@@ -32,23 +33,27 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
   const fetchArticleMetadata = async article => {
     cancelRequest && cancelRequest();
     if (!article || article.length === 0) {
+      setArticleQueryResponse(null);
+      setValidateStatus(VALIDATE_STATUS_IDLE);
       return;
     }
-    const response = await axios.get(
-      `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/article/${article}`,
-      {
+    axios
+      .get(`${process.env.REACT_APP_METADATA_API_BASE_URL}/api/article/${article}`, {
         cancelToken: new axios.CancelToken(function executor(canceler) {
           cancelRequest = canceler;
         }),
-      },
-    );
-    if (response.status === 200) {
-      setArticleQueryResponse(response.data);
-      setValidateStatus(VALIDATE_STATUS_SUCCESS);
-    } else {
-      setArticleQueryResponse(null);
-      setValidateStatus(VALIDATE_STATUS_ERROR);
-    }
+      })
+      .then(response => {
+        setArticleQueryResponse(response?.data);
+        setValidateStatus(
+          response.status === 200 ? VALIDATE_STATUS_SUCCESS : VALIDATE_STATUS_ERROR,
+        );
+      })
+      .catch(error => {
+        console.log("Error: ", error);
+        setArticleQueryResponse(null);
+        setValidateStatus(VALIDATE_STATUS_ERROR);
+      });
   };
 
   const claim = async () => {

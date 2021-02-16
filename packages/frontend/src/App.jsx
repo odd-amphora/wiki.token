@@ -51,6 +51,9 @@ const networkName = process.env.REACT_APP_INFURA_NETWORK
   ? process.env.REACT_APP_INFURA_NETWORK
   : "localhost";
 const targetNetwork = NETWORKS[networkName];
+if (!targetNetwork) {
+  throw new Error(`Invalid network name: ${networkName}`);
+}
 
 const mainnetProvider = new JsonRpcProvider(
   "https://mainnet.infura.io/v3/" + process.env.REACT_APP_INFURA_PROJECT_ID,
