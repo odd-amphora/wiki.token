@@ -37,11 +37,7 @@ export default function Balance({ address, provider, price }) {
 
   return (
     <span
-      style={{
-        verticalAlign: "middle",
-        padding: 8,
-        cursor: "pointer",
-      }}
+      className="balance"
       onClick={() => {
         setDollarMode(!dollarMode);
       }}

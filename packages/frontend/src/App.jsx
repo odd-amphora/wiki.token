@@ -40,12 +40,12 @@ const web3Modal = new Web3Modal({
   },
 });
 
-// const logoutOfWeb3Modal = async () => {
-//   await web3Modal.clearCachedProvider();
-//   setTimeout(() => {
-//     window.location.reload();
-//   }, 1);
-// };
+const logoutOfWeb3Modal = async () => {
+  await web3Modal.clearCachedProvider();
+  setTimeout(() => {
+    window.location.reload();
+  }, 1);
+};
 
 const networkName = process.env.REACT_APP_INFURA_NETWORK
   ? process.env.REACT_APP_INFURA_NETWORK
@@ -119,7 +119,9 @@ function App() {
     <div className="App">
       <Layout
         address={address}
+        web3Modal={web3Modal}
         onConnectWallet={loadWeb3Modal}
+        onLogout={logoutOfWeb3Modal}
         provider={userProvider}
         price={price}
       >

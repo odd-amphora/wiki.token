@@ -6,10 +6,10 @@
 ## TODO
 ### Frontend
 - [ ] Clean up claim flow - latency in autocomplete, loading states, etc.
-- [ ] Implement log out flow
+- [x] Implement log out flow
 - [ ] Limit functionality when wallet not connected
 - [ ] Figure out what's needed to toggle between local/ropsten/mainnet/etc.
-- [ ] Swap favicon
+- [x] Swap favicon
 - [x] Deploy to vercel
 
 ### Contract
