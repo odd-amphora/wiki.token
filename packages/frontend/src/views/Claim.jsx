@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import "antd/dist/antd.css";
-import { Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input } from "antd";
 import axios from "axios";
 import { BigNumber } from "@ethersproject/bignumber";
 
@@ -14,7 +14,7 @@ const VALIDATE_STATUS_VALIDATING = "validating";
 const VALIDATE_STATUS_ERROR = "error";
 
 // TODO(teddywilson) show error message
-export default function Claim({ contracts, signer, transactor }) {
+export default function Claim({ contracts, signer, transactor, web3Modal }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
@@ -62,6 +62,7 @@ export default function Claim({ contracts, signer, transactor }) {
           <Input
             addonBefore="https://en.wikipedia.org/wiki/"
             placeholder="Earth"
+            disabled={!web3Modal || !web3Modal.cachedProvider}
             onChange={e => {
               // TODO(teddywilson) fix damn autocomplete latency..
               setValidateStatus(VALIDATE_STATUS_VALIDATING);
@@ -70,6 +71,10 @@ export default function Claim({ contracts, signer, transactor }) {
           />
         </Form.Item>
       </Form>
+      {/* For whatever reason, style/visibility isn't working for alert so we have to wrap it */}
+      <div hidden={web3Modal && web3Modal.cachedProvider}>
+        <Alert message="You must connect a wallet in order to claim tokens" type="error" />
+      </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         <Token
           imageUrl={articleQueryResponse?.imageUrl}

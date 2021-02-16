@@ -176,6 +176,7 @@ function App() {
                 contracts={contracts}
                 signer={userProvider.getSigner()}
                 transactor={transactor}
+                web3Modal={web3Modal}
               />
             </Route>
             <Route path="/tokens">
