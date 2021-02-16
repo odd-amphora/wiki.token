@@ -8,11 +8,17 @@ export default function Tokens({ tokens, web3Modal }) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>
-        You haven't claimed any tokens yet <span role="img">😔</span>
+        You haven't claimed any tokens yet{" "}
+        <span role="img" aria-label="sad-face">
+          😔
+        </span>
       </div>
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
-        Connect a wallet to claim your first one <span role="img">🚀</span>
+        Connect a wallet to claim your first one{" "}
+        <span role="img" aria-label="rocket">
+          🚀
+        </span>
       </div>
       <div hidden={!tokens || tokens.length === 0}>
         {tokens.map(token => {

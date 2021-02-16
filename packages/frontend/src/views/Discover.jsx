@@ -8,7 +8,10 @@ export default function Discover({ tokens }) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>
-        No Wiki Tokens have been claimed yet <span role="img">😔</span>
+        No Wiki Tokens have been claimed yet{" "}
+        <span role="img" aria-label="sad-face">
+          😔
+        </span>
       </div>
       <div hidden={!tokens || tokens.length === 0}>
         {tokens.map(token => {
