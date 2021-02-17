@@ -18,6 +18,7 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
+  const [isClaiming, setIsClaiming] = useState(false);
   const isClaimed = useContractReader(contracts, "Token", "isClaimed", [currentPageId]);
   let cancelRequest;
 
@@ -56,7 +57,9 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
   };
 
   const claim = async () => {
-    await transactor(contracts["Token"].connect(signer)["mint"](articleQueryResponse?.pageId));
+    setIsClaiming(true);
+    await transactor(contracts["Token"].connect(signer)["mint"](currentPageId));
+    setIsClaiming(false);
   };
 
   return (
@@ -66,7 +69,7 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
           <Input
             addonBefore="https://en.wikipedia.org/wiki/"
             placeholder="Earth"
-            disabled={!web3Modal || !web3Modal.cachedProvider}
+            disabled={!web3Modal || !web3Modal.cachedProvider || isClaiming}
             onChange={e => {
               // TODO(teddywilson) fix damn autocomplete latency..
               setValidateStatus(VALIDATE_STATUS_VALIDATING);
@@ -87,6 +90,7 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
         />
         <div hidden={isClaimed}>
           <Button
+            loading={isClaiming}
             onClick={() => {
               claim();
             }}
