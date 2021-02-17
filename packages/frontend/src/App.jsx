@@ -94,29 +94,55 @@ function App() {
     setRoute(window.location.pathname);
   }, [setRoute]);
 
+  // TODO(teddywilson) mess begins
+
+  // Shared function to format token result
+  const formatTokensResult = result => {
+    if (!result || result.length !== 3) {
+      return [];
+    }
+    // Ridiculous hack for array equality
+    return JSON.stringify(
+      result[0].map(token => {
+        return BigNumber.from(token).toNumber();
+      }),
+    );
+  };
+
   // Fetch my tokens
-  const myTokensResult = useContractReader(contracts, "Token", "tokensOf", [
-    address,
-    /*cursor=*/ 0,
-    /*howMany=*/ 10000,
-    /*ascending=*/ true,
-  ]);
+  const myTokensResult = useContractReader(
+    contracts,
+    "Token",
+    "tokensOf",
+    [address, 0, 100000, true],
+    2000,
+    formatTokensResult,
+  );
   const myTokens = useTokensProvider(myTokensResult);
 
   // Fetch discovery tokens
-  const discoveryTokensResult = useContractReader(contracts, "Token", "discover", [
-    /*cursor=*/ 0,
-    /*howMany=*/ 10000,
-    /*ascending=*/ true,
-  ]);
+  const discoveryTokensResult = useContractReader(
+    contracts,
+    "Token",
+    "discover",
+    [0, 10000, true],
+    2000,
+    formatTokensResult,
+  );
   const discoveryTokens = useTokensProvider(discoveryTokensResult);
 
-  // Fetch total supply
-  const totalSupplyBigNumber = useContractReader(contracts, "Token", "totalSupply");
-  const [totalSupply, setTotalSupply] = useState(0);
-  useEffect(() => {
-    totalSupplyBigNumber && setTotalSupply(BigNumber.from(totalSupplyBigNumber).toNumber());
-  }, [totalSupplyBigNumber]);
+  const totalSupply = useContractReader(
+    contracts,
+    "Token",
+    "totalSupply",
+    [],
+    10000,
+    newTotalSupply => {
+      return newTotalSupply ? BigNumber.from(newTotalSupply).toNumber() : 0;
+    },
+  );
+
+  // TODO(teddywilson) mess ends
 
   return (
     <div className="App">
