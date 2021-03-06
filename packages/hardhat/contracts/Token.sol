@@ -262,7 +262,7 @@ contract Token is ERC721, Ownable {
         balanceOf[bid.bidder]++;
         Transfer(seller, bid.bidder, 1);
 
-        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         pendingWithdrawals[seller] += amount;
