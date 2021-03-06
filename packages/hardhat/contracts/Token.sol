@@ -29,7 +29,7 @@ contract Token is ERC721, Ownable {
     /// Maps a page id to the highest outstanding offer
     mapping (uint256 => Bid) public pageBids;
 
-    /// TODO what is this
+    /// Pending funds to be withdrawn for each address
     mapping (address => uint) public pendingWithdrawals;
 
     struct Offer {
@@ -37,7 +37,6 @@ contract Token is ERC721, Ownable {
         uint pageId;
         address seller;
         uint minValue; // in ether
-        address onlySellTo;
     }
 
     struct Bid {
@@ -50,7 +49,7 @@ contract Token is ERC721, Ownable {
     event Assign(address indexed to, uint256 pageId);
     event Transfer(address indexed from, address indexed to, uint256 value);
     event PageTransfer(address indexed from, address indexed to, uint256 pageId);
-    event PageOffered(uint indexed pageId, uint minValue, address indexed toAddress);
+    event PageOffered(uint indexed pageId, uint minValue);
     event PageBidEntered(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBidWithdrawn(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBought(uint indexed pageId, uint value, address indexed fromAddress, address indexed toAddress);
@@ -180,7 +179,7 @@ contract Token is ERC721, Ownable {
     /// @param pageId ID of the page that the seller is taking off the market
     function pageNoLongerForSale(uint256 pageId) {
         if (pageIdToAddress[pageId] != msg.sender) throw;
-        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0x0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
         PageNoLongerForSale(pageId);
     }
 
@@ -189,18 +188,8 @@ contract Token is ERC721, Ownable {
     /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
     function offerPageForSale(uint256 pageId, uint minSalePriceInWei) {
         if (pageIdToAddress[pageId] != msg.sender) throw;
-        pagesOfferedForSale[pageId] = Offer(true, pageId, msg.sender, minSalePriceInWei, 0x0);
+        pagesOfferedForSale[pageId] = Offer(true, pageId, msg.sender, minSalePriceInWei);
         PageOffered(pageId, minSalePriceInWei, 0x0);
-    }
-
-    /// Allows a seller to make a page available for purchase by a specific address
-    /// @param pageId ID of the page in question
-    /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
-    /// @param toAddress Address the seller will allow the page to be sold to
-    function offerPageForSaleToAddress(uint256 pageId, uint minSalePriceInWei, address toAddress) {
-        if (pageIdToAddress[pageId] != msg.sender) throw;
-        pagesOfferedForSale[pageId] = Offer(true, pageId, msg.sender, minSalePriceInWei, toAddress);
-        PageOffered(pageId, minSalePriceInWei, toAddress);
     }
 
     /// Purchases a page for the full offer price (or more)
@@ -273,7 +262,7 @@ contract Token is ERC721, Ownable {
         balanceOf[bid.bidder]++;
         Transfer(seller, bid.bidder, 1);
 
-        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0, 0x0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         pendingWithdrawals[seller] += amount;
