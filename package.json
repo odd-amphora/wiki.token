@@ -17,7 +17,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-prettier": "^3.1.4"
-  },  
+  },
   "scripts": {
     "frontend:build": "yarn workspace @wiki.token/frontend build --max-old-space-size=12288",
     "frontend:eject": "yarn workspace @wiki.token/frontend eject",

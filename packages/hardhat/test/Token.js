@@ -4,6 +4,17 @@ const { BigNumber } = require("@ethersproject/bignumber");
 const TEST_BASE_URI = "https://bananabread.com/api/";
 const TEST_INITIAL_DONATION_PERCENTAGE = 1;
 
+function sanitizeOffer(offer) {
+  var minValue = BigNumber.from(offer.minValue).toNumber();
+  var requiredDonation = BigNumber.from(offer.requiredDonation).toNumber();
+  return {
+    isForSale: offer.isForSale,
+    seller: offer.seller,
+    minValue: minValue,
+    requiredDonation: requiredDonation,
+  };
+}
+
 describe("Token Contract", function () {
   let Token;
   let hardhatToken;
@@ -105,14 +116,30 @@ describe("Token Contract", function () {
     it("Should successfully offer page and emit event", async function () {
       await hardhatToken.mintPage(1);
       await hardhatToken.offerPageForSale(1, 100);
-      // We expect minValue to equal 100, the price set for the token and the required
-      // donation to be 1% of this = 1.
-      var offer = await hardhatToken.pagesOfferedForSale(1);
-      expect(offer.isForSale).to.be.true;
-      expect(offer.seller).to.equal(owner.address);
-      expect(BigNumber.from(offer.minValue)).to.equal(100);
-      expect(BigNumber.from(offer.requiredDonation)).to.equal(1);
-      // TODO(teddywilson) validate events emitted, add more cases.
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(1))).to.deep.equals({
+        isForSale: true,
+        seller: owner.address,
+        minValue: 100,
+        requiredDonation: 1,
+      });
+
+      // TODO(teddywilson) call function from another address
+      // await hardhatToken.mintPage(100, { from: addr1.address });
+      // await hardhatToken.offerPageForSale(100, 2000);
+      // expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(100))).to.deep.equals({
+      //   isForSale: true,
+      //   seller: addr1.address,
+      //   minValue: 2000,
+      //   requiredDonation: 1,
+      // });
     });
   });
 });
+
+describe("pageNoLongerForSale()", function () {});
+
+describe("withdrawPendingFunds()", function () {});
+
+describe("enterBidForPage()", function () {});
+
+describe("acceptBidForPage()", function () {});
