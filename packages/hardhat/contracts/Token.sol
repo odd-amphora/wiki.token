@@ -157,7 +157,7 @@ contract Token is ERC721, Ownable {
         _addressToPageIds[msg.sender].push(pageId);
         _mintedPageIds.push(pageId);
 
-        // TODO: find out what to do with this..
+        /// TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
         emit Assign(msg.sender, pageId);
     }
@@ -166,7 +166,7 @@ contract Token is ERC721, Ownable {
     /// @param pageId ID of the page being purchased.
     function buyPage(uint pageId) public payable {
         Offer offer = pagesOfferedForSale[pageId];
-        // TODO(teddywilson) is null validation needed?
+        /// TODO(teddywilson) is null validation needed?
         require (offer.isForSale, "Page is not for sale");
         require (
             msg.value >= (offer.minValue + offer.requiredDonation),
@@ -177,25 +177,20 @@ contract Token is ERC721, Ownable {
             "Offer seller is incorrect"
         );
 
-        address seller = offer.seller;
-        address owner = owner();
-
+        /// Transfer ownership of the page and indicate that it is no longer for sale
         pageIdToAddress[pageId] = msg.sender;
-        uint amountToSeller = msg.value - offer.requiredDonation;
-        uint amountDonated = offer.requiredDonation;
+        pageNoLongerForSale(pageId);        
 
-        emit Transfer(seller, msg.sender, amountToSeller);
-        emit Donate(msg.sender, owner, amountDonated);
-
-        pageNoLongerForSale(pageId);
-
-        pendingWithdrawals[seller] += amountToSeller;
-        pendingWithdrawals[owner] += amountDonated;
+        /// Transfer funds to seller and donation address (owner).        
+        pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
+        pendingWithdrawals[owner()] += offer.requiredDonation;        
         
-        emit PageBought(pageId, msg.value, seller, msg.sender);
+        emit Transfer(seller, msg.sender, msg.value - offer.requiredDonation);
+        emit Donate(msg.sender, owner(), offer.requiredDonation);
+        emit PageBought(pageId, msg.value, offer.seller, msg.sender);
 
-        // Check for the case where there is a bid from the new owner and refund it.
-        // Any other bid can stay in place.
+        /// Check for the case where there is a bid from the new owner and refund it.
+        /// Any other bid can stay in place.
         Bid bid = pageBids[pageId];
         if (bid.bidder == msg.sender) {
             // Kill bid and refund value
