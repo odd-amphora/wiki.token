@@ -141,12 +141,8 @@ contract Token is ERC721, Ownable {
 
         _addressToPageIds[msg.sender].push(pageId);
         _mintedPageIds.push(pageId);
-    
-    }
 
-    /// TODO: this is just like mint, consolidate
-    function claimPage(uint pageId) {
-        if (pageIdToAddress[pageId] != 0x0) throw;
+        // TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
         balanceOf[msg.sender]++;
         Assign(msg.sender, pageId);
