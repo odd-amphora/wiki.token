@@ -14,6 +14,12 @@ contract Token is ERC721, Ownable {
     /// Minted page ids in order, used for pagination
     uint[] private _mintedPageIds;
 
+    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
+    /// e.g., 4 => 4%
+    /// TODO(teddywilson) We could make this more granular (multiply by N), but maybe it's not worth dealing
+    /// gas inflated multiplication + overflow logic.
+    uint public _donationPercentage;    
+
     /// Maps an address to the page ids they own
     mapping (address => uint[]) private _addressToPageIds;
 
@@ -28,12 +34,6 @@ contract Token is ERC721, Ownable {
 
     /// Pending funds to be withdrawn for each address
     mapping (address => uint) public pendingWithdrawals;
-
-    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
-    /// e.g., 4 => 4%
-    /// TODO(teddywilson) We could make this more granular (multiply by N), but maybe it's not worth dealing
-    /// gas inflated multiplication + overflow logic.
-    uint public donationPercentage;
 
     struct Offer {
         bool isForSale;
@@ -62,8 +62,9 @@ contract Token is ERC721, Ownable {
 
     /// Wiki Token constructor
     /// @param baseURI the base URI that will be applied to all tokens
-    constructor (string memory baseURI) public ERC721("WikiToken", "WIKI") {
+    constructor (string memory baseURI, uint donationPercentage) public ERC721("WikiToken", "WIKI") {
         _setBaseURI(baseURI);
+        setDonationPercentage(donationPercentage);
     }
 
     /// Sets base URI for tokens
@@ -73,13 +74,18 @@ contract Token is ERC721, Ownable {
     }
 
     /// Sets the donation percentage that will be baked into every marketplace transaction
-    /// @param newDonationPercentage The new donation percentage that will be set
-    function setDonationPercentage(uint newDonationPercentage) public onlyOwner {
+    /// @param donationPercentage The donation percentage that will be set
+    function setDonationPercentage(uint donationPercentage) public onlyOwner {
         require (
-            newDonationPercentage > 0 && newDonationPercentage <= 10000,
+            donationPercentage > 0 && donationPercentage <= 100,
             "Donation percentage must be greater than 0 and less than or equal to 100"
         );
-        donationPercentage = newDonationPercentage;
+        _donationPercentage = donationPercentage;
+    }
+
+    /// Returns the donation percentage that is currently set.
+    function donationPercentage() public view returns (uint) {
+        return _donationPercentage;
     }
 
     /// Check if token for `pageId` is claimed
@@ -200,17 +206,6 @@ contract Token is ERC721, Ownable {
         }
     }
 
-    /// Allows a seller to indicate that a page they own is no longer for sale
-    /// @param pageId ID of the page that the seller is taking off the market
-    function pageNoLongerForSale(uint pageId)  public {
-        require (
-            pageIdToAddress[pageId] == msg.sender,
-            "Page must be owned by sender"
-        );
-        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
-        emit PageNoLongerForSale(pageId);
-    }
-
     /// Allows a seller to indicate that that a page they own is up for purchase
     /// @param pageId ID of they page that the seller is putting on the market
     /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
@@ -224,7 +219,7 @@ contract Token is ERC721, Ownable {
         bool calculatedDonationSuccessfully;
         uint256 requiredDonationTimesOneHundred;
         (calculatedDonationSuccessfully, requiredDonationTimesOneHundred) = SafeMath.tryMul(
-            donationPercentage,
+            _donationPercentage,
             minSalePriceInWei
         );
         require (calculatedDonationSuccessfully, "Could not calculate donation, min sale price too high");
@@ -238,6 +233,17 @@ contract Token is ERC721, Ownable {
         );
         emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
     }
+
+    /// Allows a seller to indicate that a page they own is no longer for sale
+    /// @param pageId ID of the page that the seller is taking off the market
+    function pageNoLongerForSale(uint pageId)  public {
+        require (
+            pageIdToAddress[pageId] == msg.sender,
+            "Page must be owned by sender"
+        );
+        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
+        emit PageNoLongerForSale(pageId);
+    }    
 
     /// Withdraw pending funds received from bids and buys
     function withdrawPendingFunds()  public {
