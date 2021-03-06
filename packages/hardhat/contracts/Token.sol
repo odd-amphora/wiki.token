@@ -210,10 +210,14 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        // Calculate required donation
-        // TODO(teddywilson) this doesn't work! can't use double
-        uint requiredDonation = (donationPercentage / 100) * 100;
-
+        // Calculate required donation. If this operation overflows, the min sale price is too high.
+        // TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
+        bool, uint calculatedDonation, requiredDonationTimesOneHundred = SafeMath.mul(
+            donationPercentage,
+            minSalePriceInWei
+        );
+        require (calculatedDonation, "Could not calculate donation, min sale price too high");
+        uint requiredDonation = requiredDonationTimesOneHundred / 100;
         pagesOfferedForSale[pageId] = Offer(
             true,
             pageId,
