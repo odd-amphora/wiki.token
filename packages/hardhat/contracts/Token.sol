@@ -17,9 +17,6 @@ contract Token is ERC721, Ownable {
     /// Maps an address to the page ids they own
     mapping (address => uint[]) private _addressToPageIds;
 
-    /// Maps an address to the number of pages they own
-    mapping (address => uint) public balanceOf;
-
     /// Maps a page id to an address
     mapping (uint => address) public pageIdToAddress;
 
@@ -54,9 +51,10 @@ contract Token is ERC721, Ownable {
     }
 
     event Assign(address indexed to, uint pageId);
-    event Transfer(address indexed from, address indexed to, uint value);
+    event Transfer(address indexed from, address indexed to, uint amount);
+    event Donate(address indexed from, address indexed to, uint amount);
     event PageTransfer(address indexed from, address indexed to, uint pageId);
-    event PageOffered(uint indexed pageId, uint minValue);
+    event PageOffered(uint indexed pageId, uint minValue, uint requiredDonation);
     event PageBidEntered(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBidWithdrawn(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBought(uint indexed pageId, uint value, address indexed fromAddress, address indexed toAddress);
@@ -161,7 +159,6 @@ contract Token is ERC721, Ownable {
 
         // TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
-        balanceOf[msg.sender]++;
         emit Assign(msg.sender, pageId);
     }
 
@@ -177,8 +174,6 @@ contract Token is ERC721, Ownable {
             pageNoLongerForSale(pageId);
         }
         pageIdToAddress[pageId] = to;
-        balanceOf[msg.sender]--;
-        balanceOf[to]++;
         emit Transfer(msg.sender, to, 1);
         emit PageTransfer(msg.sender, to, pageId);
         // Check for the case where there is a bid from the new owner and refund it.
@@ -225,8 +220,7 @@ contract Token is ERC721, Ownable {
             minSalePriceInWei,
             requiredDonation
         );
-
-        emit PageOffered(pageId, minSalePriceInWei, 0x0);
+        emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
     }
 
     /// Purchases a page for the full offer price (or more)
@@ -245,16 +239,20 @@ contract Token is ERC721, Ownable {
         );
 
         address seller = offer.seller;
+        address owner = owner();
 
         pageIdToAddress[pageId] = msg.sender;
-        balanceOf[seller]--;
-        balanceOf[msg.sender]++;
-        emit Transfer(seller, msg.sender, 1);
+        uint amountToSeller = msg.value - offer.requiredDonation;
+        uint amountDonated = offer.requiredDonation;
 
-        // TODO(teddywilson) add donation bits
+        emit Transfer(seller, msg.sender, amountToSeller);
+        emit Donate(msg.sender, owner, amountDonated);
 
         pageNoLongerForSale(pageId);
-        pendingWithdrawals[seller] += msg.value;
+
+        pendingWithdrawals[seller] += amountToSeller;
+        pendingWithdrawals[owner] += amountDonated;
+        
         emit PageBought(pageId, msg.value, seller, msg.sender);
 
         // Check for the case where there is a bid from the new owner and refund it.
@@ -323,9 +321,8 @@ contract Token is ERC721, Ownable {
         );
 
         pageIdToAddress[pageId] = bid.bidder;
-        balanceOf[seller]--;
-        balanceOf[bid.bidder]++;
         emit Transfer(seller, bid.bidder, 1);
+        // TODO(teddywilson) add donation bits similar to BuyPage().
 
         pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0);
         uint amount = bid.value;
