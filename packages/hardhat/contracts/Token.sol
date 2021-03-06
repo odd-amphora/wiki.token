@@ -206,7 +206,7 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
         emit PageNoLongerForSale(pageId);
     }
 
@@ -218,8 +218,8 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        // Calculate required donation. If this operation overflows, the min sale price is too high.
-        // TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
+        /// Calculate required donation. If this operation overflows, the min sale price is too high.
+        /// TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
         bool, uint calculatedDonation, requiredDonationTimesOneHundred = SafeMath.mul(
             donationPercentage,
             minSalePriceInWei
@@ -239,8 +239,7 @@ contract Token is ERC721, Ownable {
     /// Withdraw pending funds received from bids and buys
     function withdrawPendingFunds()  public {
         uint amount = pendingWithdrawals[msg.sender];
-        // Remember to zero the pending refund before
-        // sending to prevent re-entrancy attacks
+        /// Remember to zero the pending refund before sending to prevent re-entrancy attacks
         pendingWithdrawals[msg.sender] = 0;
         msg.sender.transfer(amount);
     }
@@ -266,7 +265,7 @@ contract Token is ERC721, Ownable {
             msg.value > existing.value,
             "Bid value must be greater than outstanding bid value"
         );
-        // If all criteria is met, we can refund the outstanding bid.
+        /// If all criteria is met, we can refund the outstanding bid.
         if (existing.value > 0) {
             pendingWithdrawals[existing.bidder] += existing.value;
         }
@@ -293,11 +292,12 @@ contract Token is ERC721, Ownable {
 
         pageIdToAddress[pageId] = bid.bidder;
         emit Transfer(seller, bid.bidder, 1);
-        // TODO(teddywilson) add donation bits similar to BuyPage().
+        /// TODO(teddywilson) add donation bits similar to BuyPage().
 
-        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0, 0);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
+
         pendingWithdrawals[seller] += amount;
         emit PageBought(pageId, bid.value, seller, bid.bidder);
     }
@@ -322,7 +322,7 @@ contract Token is ERC721, Ownable {
         emit PageBidWithdrawn(pageId, bid.value, msg.sender);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
-        // Refund the bid money
+        /// Refund the bid amount
         msg.sender.transfer(amount);
     }
 
