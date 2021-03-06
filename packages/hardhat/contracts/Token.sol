@@ -73,7 +73,7 @@ contract Token is ERC721, Ownable {
     }
 
     /// Sets the donation percentage that will be baked into every marketplace transaction
-    /// @param newDonationPercentageTimesOneHundred
+    /// @param newDonationPercentage The new donation percentage that will be set
     function setDonationPercentage(uint newDonationPercentage) public onlyOwner {
         require (
             newDonationPercentage > 0 && newDonationPercentage <= 10000,
@@ -165,7 +165,7 @@ contract Token is ERC721, Ownable {
     /// Purchases a page for the full offer price (or more)
     /// @param pageId ID of the page being purchased.
     function buyPage(uint pageId) public payable {
-        Offer offer = pagesOfferedForSale[pageId];
+        Offer memory offer = pagesOfferedForSale[pageId];
         /// TODO(teddywilson) is null validation needed?
         require (offer.isForSale, "Page is not for sale");
         require (
@@ -192,21 +192,12 @@ contract Token is ERC721, Ownable {
 
         /// Check for the case where there is a bid from the new owner and refund it.
         /// Any other bid can stay in place.
-        Bid bid = pageBids[pageId];
+        Bid memory bid = pageBids[pageId];
         if (bid.bidder == msg.sender) {
             // Kill bid and refund value
             pendingWithdrawals[msg.sender] += bid.value;
-            pageBids[pageId] = Bid(false, pageId, 0x0, 0);
+            pageBids[pageId] = Bid(false, pageId, address(0), 0);
         }
-    }
-
-    /// Returns a blank offer object
-    function offer() private pure returns Offer {
-        return Offer(false, pageId, msg.sender, 0, 0);
-    }
-
-    function bid() private pure returns Bid {
-        return Bid(false, pageId, 0x0, 0);
     }
 
     /// Allows a seller to indicate that a page they own is no longer for sale
@@ -216,7 +207,7 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        pagesOfferedForSale[pageId] = offer();
+        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
         emit PageNoLongerForSale(pageId);
     }
 
@@ -230,11 +221,13 @@ contract Token is ERC721, Ownable {
         );
         /// Calculate required donation. If this operation overflows, the min sale price is too high.
         /// TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
-        bool, uint calculatedDonation, requiredDonationTimesOneHundred = SafeMath.mul(
+        bool calculatedDonationSuccessfully;
+        uint256 requiredDonationTimesOneHundred;
+        (calculatedDonationSuccessfully, requiredDonationTimesOneHundred) = SafeMath.tryMul(
             donationPercentage,
             minSalePriceInWei
         );
-        require (calculatedDonation, "Could not calculate donation, min sale price too high");
+        require (calculatedDonationSuccessfully, "Could not calculate donation, min sale price too high");
         uint requiredDonation = requiredDonationTimesOneHundred / 100;
         pagesOfferedForSale[pageId] = Offer(
             true,
@@ -258,7 +251,7 @@ contract Token is ERC721, Ownable {
     /// @param pageId ID of the page will be placed on
     function enterBidForPage(uint pageId) public payable  {
         require (
-            pageIdToAddress[pageId] != 0x0,
+            pageIdToAddress[pageId] != address(0),
             "Page has no owner"
         );
         require (
@@ -270,7 +263,7 @@ contract Token is ERC721, Ownable {
             "Bid must be greater than zero"
         );
 
-        Bid existing = pageBids[pageId];
+        Bid memory existing = pageBids[pageId];
         require (
             msg.value > existing.value,
             "Bid value must be greater than outstanding bid value"
@@ -293,25 +286,26 @@ contract Token is ERC721, Ownable {
         );
 
         address seller = msg.sender;
-        Bid bid = pageBids[pageId];
-        require (bid.value > 0, "Bid value must be greater than zero");
+        Bid memory _bid = pageBids[pageId];
+        require (_bid.value > 0, "Bid value must be greater than zero");
         require (
-            bid.value >= minPrice,
+            _bid.value >= minPrice,
             "Bid value must be greater than or equal to minimum price"
         );
         // TODO(teddywilson) validate amount can cover donation
 
         // Null out offer and bid
-        pagesOfferedForSale[pageId] = offer();
-        pageBids[pageId] = bid();
+        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
+        pageBids[pageId] = Bid(false, pageId, address(0), 0);
 
         /// Transfer ownership of the page to the bidder and indicate that it is no longer for sale
-        pageIdToAddress[pageId] = bid.bidder;
+        pageIdToAddress[pageId] = _bid.bidder;
         pageNoLongerForSale(pageId);
 
         /// Transfer funds to owner and donation address (owner).
-        pendingWithdrawals[msg.sender] += bid.value - offer.requiredDonation;
-        pendingWithdrawals[owner()] += offer.requiredDonation;
+        // TODO(teddywilson) yup fix
+        // pendingWithdrawals[msg.sender] += _bid.value - offer.requiredDonation;
+        // pendingWithdrawals[owner()] += offer.requiredDonation;
 
         /// TODO(teddywilson) rethink these events
         // emit Transfer(bid.bidder, bid.bidder, bid.value - offer.requiredDonation);
@@ -323,7 +317,7 @@ contract Token is ERC721, Ownable {
     /// @param pageId ID of the page the bid is placed against
     function withdrawBidForPage(uint pageId)  public {
         require (
-            pageIdToAddress[pageId] != 0x0,
+            pageIdToAddress[pageId] != address(0),
             "Page is not currently owned"
         );
         require (
@@ -331,14 +325,14 @@ contract Token is ERC721, Ownable {
             "Page cannot be owned by the sender"
         );
 
-        Bid bid = pageBids[pageId];
+        Bid memory _bid = pageBids[pageId];
         require (
-            bid.bidder == msg.sender,
+            _bid.bidder == msg.sender,
             "Outstanding bid must be owned by sender"
         );
-        emit PageBidWithdrawn(pageId, bid.value, msg.sender);
-        uint amount = bid.value;
-        pageBids[pageId] = Bid(false, pageId, 0x0, 0);
+        emit PageBidWithdrawn(pageId, _bid.value, msg.sender);
+        uint amount = _bid.value;
+        pageBids[pageId] = Bid(false, pageId, address(0), 0);
         /// Refund the bid amount
         msg.sender.transfer(amount);
     }
