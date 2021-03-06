@@ -60,7 +60,7 @@ contract Token is ERC721, Ownable {
     event PageBidEntered(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBidWithdrawn(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBought(uint indexed pageId, uint value, address indexed fromAddress, address indexed toAddress);
-    event PageNoLongerForSale(uint indexed pageId);    
+    event PageNoLongerForSale(uint indexed pageId);
 
     /// Wiki Token constructor
     /// @param baseURI the base URI that will be applied to all tokens
@@ -77,8 +77,10 @@ contract Token is ERC721, Ownable {
     /// Sets the donation percentage that will be baked into every marketplace transaction
     /// @param newDonationPercentageTimesOneHundred
     function setDonationPercentage(uint newDonationPercentage) public onlyOwner {
-        require (newDonationPercentage > 0 && newDonationPercentage <= 10000,
-                "Donation percentage must be greater than 0 and less than or equal to 100");
+        require (
+            newDonationPercentage > 0 && newDonationPercentage <= 10000,
+            "Donation percentage must be greater than 0 and less than or equal to 100"
+        );
         donationPercentage = newDonationPercentage;
     }
 
@@ -160,13 +162,13 @@ contract Token is ERC721, Ownable {
         // TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
         balanceOf[msg.sender]++;
-        Assign(msg.sender, pageId);
+        emit Assign(msg.sender, pageId);
     }
 
     /// Transfer ownership of a page to another user without requiring payment
     /// @param address Address the page will be transferred to
     /// @param pageId ID of the page that will be transferred
-    function transferPage(address to, uint pageId) {
+    function transferPage(address to, uint pageId)  public {
         require (
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
@@ -177,8 +179,8 @@ contract Token is ERC721, Ownable {
         pageIdToAddress[pageId] = to;
         balanceOf[msg.sender]--;
         balanceOf[to]++;
-        Transfer(msg.sender, to, 1);
-        PageTransfer(msg.sender, to, pageId);
+        emit Transfer(msg.sender, to, 1);
+        emit PageTransfer(msg.sender, to, pageId);
         // Check for the case where there is a bid from the new owner and refund it.
         // Any other bid can stay in place.
         Bid bid = pageBids[pageId];
@@ -191,16 +193,19 @@ contract Token is ERC721, Ownable {
 
     /// Allows a seller to indicate that a page they own is no longer for sale
     /// @param pageId ID of the page that the seller is taking off the market
-    function pageNoLongerForSale(uint pageId) {
-        if (pageIdToAddress[pageId] != msg.sender) throw;
+    function pageNoLongerForSale(uint pageId)  public {
+        require (
+            pageIdToAddress[pageId] == msg.sender,
+            "Page must be owned by sender"
+        );
         pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
-        PageNoLongerForSale(pageId);
+        emit PageNoLongerForSale(pageId);
     }
 
     /// Allows a seller to indicate that that a page they own is up for purchase
     /// @param pageId ID of they page that the seller is putting on the market
     /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
-    function offerPageForSale(uint pageId, uint minSalePriceInWei) {
+    function offerPageForSale(uint pageId, uint minSalePriceInWei)  public {
         require (
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
@@ -210,21 +215,21 @@ contract Token is ERC721, Ownable {
         uint requiredDonation = (donationPercentage / 100) * 100;
 
         pagesOfferedForSale[pageId] = Offer(
-            /*isForSale=*/true,
+            true,
             pageId,
-            /*seller=*/msg.sender,
+            msg.sender,
             minSalePriceInWei,
             requiredDonation
         );
 
-        PageOffered(pageId, minSalePriceInWei, 0x0);
+        emit PageOffered(pageId, minSalePriceInWei, 0x0);
     }
 
     /// Purchases a page for the full offer price (or more)
     /// @param pageId ID of the page being purchased.
-    function buyPage(uint pageId) payable {
+    function buyPage(uint pageId) public payable {
         Offer offer = pagesOfferedForSale[pageId];
-        // TODO(teddywilson) is null validation needed?    
+        // TODO(teddywilson) is null validation needed?
         require (offer.isForSale, "Page is not for sale");
         require (
             msg.value >= (offer.minValue + offer.requiredDonation),
@@ -240,13 +245,13 @@ contract Token is ERC721, Ownable {
         pageIdToAddress[pageId] = msg.sender;
         balanceOf[seller]--;
         balanceOf[msg.sender]++;
-        Transfer(seller, msg.sender, 1);
+        emit Transfer(seller, msg.sender, 1);
 
         // TODO(teddywilson) add donation bits
 
         pageNoLongerForSale(pageId);
         pendingWithdrawals[seller] += msg.value;
-        PageBought(pageId, msg.value, seller, msg.sender);
+        emit PageBought(pageId, msg.value, seller, msg.sender);
 
         // Check for the case where there is a bid from the new owner and refund it.
         // Any other bid can stay in place.
@@ -259,7 +264,7 @@ contract Token is ERC721, Ownable {
     }
 
     /// Withdraw pending funds
-    function withdraw() {
+    function withdraw()  public {
         uint amount = pendingWithdrawals[msg.sender];
         // Remember to zero the pending refund before
         // sending to prevent re-entrancy attacks
@@ -269,8 +274,9 @@ contract Token is ERC721, Ownable {
 
     /// Places a purchasing bid on a page
     /// @param pageId ID of the page will be placed on
-    function enterBidForPage(uint pageId) payable {
-        require (pageIdToAddress[pageId] != 0x0,
+    function enterBidForPage(uint pageId) public payable  {
+        require (
+            pageIdToAddress[pageId] != 0x0,
             "Page has no owner"
         );
         require (
@@ -292,16 +298,16 @@ contract Token is ERC721, Ownable {
             pendingWithdrawals[existing.bidder] += existing.value;
         }
         pageBids[pageId] = Bid(true, pageId, msg.sender, msg.value);
-        PageBidEntered(pageId, msg.value, msg.sender);
+        emit PageBidEntered(pageId, msg.value, msg.sender);
     }
 
     /// Accepts a bid for a page a seller owns
     /// @param pageId ID of the page in question
     /// @param minPrice minimum price the selleer will accept for the page
-    function acceptBidForPage(uint pageId, uint minPrice) {
+    function acceptBidForPage(uint pageId, uint minPrice)  public {
         require (
             pageIdToAddress[pageId] == msg.sender,
-            "Page is not owned by the sender"
+            "Page must be owned by sender"
         );
 
         address seller = msg.sender;
@@ -315,18 +321,18 @@ contract Token is ERC721, Ownable {
         pageIdToAddress[pageId] = bid.bidder;
         balanceOf[seller]--;
         balanceOf[bid.bidder]++;
-        Transfer(seller, bid.bidder, 1);
+        emit Transfer(seller, bid.bidder, 1);
 
         pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         pendingWithdrawals[seller] += amount;
-        PageBought(pageId, bid.value, seller, bid.bidder);
+        emit PageBought(pageId, bid.value, seller, bid.bidder);
     }
 
     /// Withdraws an outstanding bid made against a page
     /// @param pageId ID of the page the bid is placed against
-    function withdrawBidForPage(uint pageId) {
+    function withdrawBidForPage(uint pageId)  public {
         require (
             pageIdToAddress[pageId] != 0x0,
             "Page is not currently owned"
@@ -341,7 +347,7 @@ contract Token is ERC721, Ownable {
             bid.bidder == msg.sender,
             "Outstanding bid must be owned by sender"
         );
-        PageBidWithdrawn(pageId, bid.value, msg.sender);
+        emit PageBidWithdrawn(pageId, bid.value, msg.sender);
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         // Refund the bid money
