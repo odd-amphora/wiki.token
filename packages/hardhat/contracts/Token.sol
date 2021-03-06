@@ -185,9 +185,10 @@ contract Token is ERC721, Ownable {
         pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
         pendingWithdrawals[owner()] += offer.requiredDonation;
 
-        emit Transfer(seller, msg.sender, msg.value - offer.requiredDonation);
-        emit Donate(msg.sender, owner(), offer.requiredDonation);
-        emit PageBought(pageId, msg.value, offer.seller, msg.sender);
+        /// TODO(teddywilson) rethink these events
+        // emit Transfer(bid.bidder, bid.bidder, bid.value - offer.requiredDonation);
+        // emit Donate(msg.sender, owner(), offer.requiredDonation);
+        // emit PageBought(pageId, msg.value, offer.seller, msg.sender);     
 
         /// Check for the case where there is a bid from the new owner and refund it.
         /// Any other bid can stay in place.
@@ -200,8 +201,12 @@ contract Token is ERC721, Ownable {
     }
 
     /// Returns a blank offer object
-    function offer() private pure {
+    function offer() private pure returns Offer {
         return Offer(false, pageId, msg.sender, 0, 0);
+    }
+
+    function bid() private pure returns Bid {
+        return Bid(false, pageId, 0x0, 0);
     }
 
     /// Allows a seller to indicate that a page they own is no longer for sale
@@ -294,17 +299,24 @@ contract Token is ERC721, Ownable {
             bid.value >= minPrice,
             "Bid value must be greater than or equal to minimum price"
         );
+        // TODO(teddywilson) validate amount can cover donation
 
-        pageIdToAddress[pageId] = bid.bidder;
-        emit Transfer(seller, bid.bidder, 1);
-        /// TODO(teddywilson) add donation bits similar to BuyPage().
-
+        // Null out offer and bid
         pagesOfferedForSale[pageId] = offer();
-        uint amount = bid.value;
-        pageBids[pageId] = Bid(false, pageId, 0x0, 0);
+        pageBids[pageId] = bid();
 
-        pendingWithdrawals[seller] += amount;
-        emit PageBought(pageId, bid.value, seller, bid.bidder);
+        /// Transfer ownership of the page to the bidder and indicate that it is no longer for sale
+        pageIdToAddress[pageId] = bid.bidder;
+        pageNoLongerForSale(pageId);
+
+        /// Transfer funds to owner and donation address (owner).
+        pendingWithdrawals[msg.sender] += bid.value - offer.requiredDonation;
+        pendingWithdrawals[owner()] += offer.requiredDonation;
+
+        /// TODO(teddywilson) rethink these events
+        // emit Transfer(bid.bidder, bid.bidder, bid.value - offer.requiredDonation);
+        // emit Donate(msg.sender, owner(), offer.requiredDonation);
+        // emit PageBought(pageId, msg.value, offer.seller, msg.sender);        
     }
 
     /// Withdraws an outstanding bid made against a page
