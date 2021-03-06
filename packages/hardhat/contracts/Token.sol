@@ -179,12 +179,12 @@ contract Token is ERC721, Ownable {
 
         /// Transfer ownership of the page and indicate that it is no longer for sale
         pageIdToAddress[pageId] = msg.sender;
-        pageNoLongerForSale(pageId);        
+        pageNoLongerForSale(pageId);
 
-        /// Transfer funds to seller and donation address (owner).        
+        /// Transfer funds to seller and donation address (owner).
         pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
-        pendingWithdrawals[owner()] += offer.requiredDonation;        
-        
+        pendingWithdrawals[owner()] += offer.requiredDonation;
+
         emit Transfer(seller, msg.sender, msg.value - offer.requiredDonation);
         emit Donate(msg.sender, owner(), offer.requiredDonation);
         emit PageBought(pageId, msg.value, offer.seller, msg.sender);
@@ -197,7 +197,12 @@ contract Token is ERC721, Ownable {
             pendingWithdrawals[msg.sender] += bid.value;
             pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         }
-    }    
+    }
+
+    /// Returns a blank offer object
+    function offer() private pure {
+        return Offer(false, pageId, msg.sender, 0, 0);
+    }
 
     /// Allows a seller to indicate that a page they own is no longer for sale
     /// @param pageId ID of the page that the seller is taking off the market
@@ -206,7 +211,7 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
+        pagesOfferedForSale[pageId] = offer();
         emit PageNoLongerForSale(pageId);
     }
 
@@ -294,7 +299,7 @@ contract Token is ERC721, Ownable {
         emit Transfer(seller, bid.bidder, 1);
         /// TODO(teddywilson) add donation bits similar to BuyPage().
 
-        pagesOfferedForSale[pageId] = Offer(false, pageId, bid.bidder, 0, 0);
+        pagesOfferedForSale[pageId] = offer();
         uint amount = bid.value;
         pageBids[pageId] = Bid(false, pageId, 0x0, 0);
 
