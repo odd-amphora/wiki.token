@@ -162,30 +162,6 @@ contract Token is ERC721, Ownable {
         emit Assign(msg.sender, pageId);
     }
 
-    /// Transfer ownership of a page to another user without requiring payment
-    /// @param address Address the page will be transferred to
-    /// @param pageId ID of the page that will be transferred
-    function transferPage(address to, uint pageId)  public {
-        require (
-            pageIdToAddress[pageId] == msg.sender,
-            "Page must be owned by sender"
-        );
-        if (pagesOfferedForSale[pageId].isForSale) {
-            pageNoLongerForSale(pageId);
-        }
-        pageIdToAddress[pageId] = to;
-        emit Transfer(msg.sender, to, 1);
-        emit PageTransfer(msg.sender, to, pageId);
-        // Check for the case where there is a bid from the new owner and refund it.
-        // Any other bid can stay in place.
-        Bid bid = pageBids[pageId];
-        if (bid.bidder == to) {
-            // Kill bid and refund value
-            pendingWithdrawals[to] += bid.value;
-            pageBids[pageId] = Bid(false, pageId, 0x0, 0);
-        }
-    }
-
     /// Allows a seller to indicate that a page they own is no longer for sale
     /// @param pageId ID of the page that the seller is taking off the market
     function pageNoLongerForSale(uint pageId)  public {
