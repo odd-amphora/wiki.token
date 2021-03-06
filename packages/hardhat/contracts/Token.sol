@@ -150,7 +150,7 @@ contract Token is ERC721, Ownable {
 
     /// Mints a Wiki Token
     /// @param pageId Wikipedia page (by id) that will be minted as a token
-    function mint(uint pageId) public {
+    function mintPage(uint pageId) public {
         _mint(msg.sender, pageId);
         _setTokenURI(pageId, Strings.toString(pageId));
 
@@ -160,43 +160,6 @@ contract Token is ERC721, Ownable {
         // TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
         emit Assign(msg.sender, pageId);
-    }
-
-    /// Allows a seller to indicate that a page they own is no longer for sale
-    /// @param pageId ID of the page that the seller is taking off the market
-    function pageNoLongerForSale(uint pageId)  public {
-        require (
-            pageIdToAddress[pageId] == msg.sender,
-            "Page must be owned by sender"
-        );
-        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
-        emit PageNoLongerForSale(pageId);
-    }
-
-    /// Allows a seller to indicate that that a page they own is up for purchase
-    /// @param pageId ID of they page that the seller is putting on the market
-    /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
-    function offerPageForSale(uint pageId, uint minSalePriceInWei)  public {
-        require (
-            pageIdToAddress[pageId] == msg.sender,
-            "Page must be owned by sender"
-        );
-        // Calculate required donation. If this operation overflows, the min sale price is too high.
-        // TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
-        bool, uint calculatedDonation, requiredDonationTimesOneHundred = SafeMath.mul(
-            donationPercentage,
-            minSalePriceInWei
-        );
-        require (calculatedDonation, "Could not calculate donation, min sale price too high");
-        uint requiredDonation = requiredDonationTimesOneHundred / 100;
-        pagesOfferedForSale[pageId] = Offer(
-            true,
-            pageId,
-            msg.sender,
-            minSalePriceInWei,
-            requiredDonation
-        );
-        emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
     }
 
     /// Purchases a page for the full offer price (or more)
@@ -239,10 +202,47 @@ contract Token is ERC721, Ownable {
             pendingWithdrawals[msg.sender] += bid.value;
             pageBids[pageId] = Bid(false, pageId, 0x0, 0);
         }
+    }    
+
+    /// Allows a seller to indicate that a page they own is no longer for sale
+    /// @param pageId ID of the page that the seller is taking off the market
+    function pageNoLongerForSale(uint pageId)  public {
+        require (
+            pageIdToAddress[pageId] == msg.sender,
+            "Page must be owned by sender"
+        );
+        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
+        emit PageNoLongerForSale(pageId);
     }
 
-    /// Withdraw pending funds
-    function withdraw()  public {
+    /// Allows a seller to indicate that that a page they own is up for purchase
+    /// @param pageId ID of they page that the seller is putting on the market
+    /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
+    function offerPageForSale(uint pageId, uint minSalePriceInWei)  public {
+        require (
+            pageIdToAddress[pageId] == msg.sender,
+            "Page must be owned by sender"
+        );
+        // Calculate required donation. If this operation overflows, the min sale price is too high.
+        // TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
+        bool, uint calculatedDonation, requiredDonationTimesOneHundred = SafeMath.mul(
+            donationPercentage,
+            minSalePriceInWei
+        );
+        require (calculatedDonation, "Could not calculate donation, min sale price too high");
+        uint requiredDonation = requiredDonationTimesOneHundred / 100;
+        pagesOfferedForSale[pageId] = Offer(
+            true,
+            pageId,
+            msg.sender,
+            minSalePriceInWei,
+            requiredDonation
+        );
+        emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
+    }
+
+    /// Withdraw pending funds received from bids and buys
+    function withdrawPendingFunds()  public {
         uint amount = pendingWithdrawals[msg.sender];
         // Remember to zero the pending refund before
         // sending to prevent re-entrancy attacks

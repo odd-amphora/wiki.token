@@ -58,7 +58,7 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
 
   const claim = async () => {
     setIsClaiming(true);
-    await transactor(contracts["Token"].connect(signer)["mint"](currentPageId));
+    await transactor(contracts["Token"].connect(signer)["mintPage"](currentPageId));
     setIsClaiming(false);
   };
 
