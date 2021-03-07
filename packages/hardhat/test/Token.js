@@ -1,3 +1,5 @@
+// TODO(teddywilson) validate events emitted
+
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
 
@@ -116,7 +118,6 @@ describe("Token Contract", function () {
     // TODO(teddywilson) implemet
     it("Should fail on overflow", async function () {});
 
-    // TODO(teddywilson) validate event emitted
     it("Should successfully offer page and emit event", async function () {
       await hardhatToken.mintPage(1);
       await hardhatToken.offerPageForSale(1, 100);
@@ -146,9 +147,38 @@ describe("Token Contract", function () {
       });
     });
   });
-});
 
-describe("pageNoLongerForSale()", function () {});
+  describe("pageNoLongerForSale()", function () {
+    it("Should fail if page not owned by sender", async function () {
+      await expect(hardhatToken.pageNoLongerForSale(1)).to.be.reverted;
+
+      await hardhatToken.mintPage(1);
+      await expect(hardhatToken.connect(addr1).pageNoLongerForSale(1)).to.be.reverted;
+    });
+
+    it("Should successfully remove page from marketplace", async function () {
+      await hardhatToken.mintPage(1);
+      await hardhatToken.offerPageForSale(1, 100);
+      await hardhatToken.pageNoLongerForSale(1);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(1))).to.deep.equals({
+        isForSale: false,
+        seller: owner.address,
+        minValue: 0,
+        requiredDonation: 0,
+      });
+
+      await hardhatToken.connect(addr1).mintPage(2);
+      await hardhatToken.connect(addr1).offerPageForSale(2, 3829);
+      await hardhatToken.connect(addr1).pageNoLongerForSale(2);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
+        isForSale: false,
+        seller: addr1.address,
+        minValue: 0,
+        requiredDonation: 0,
+      });
+    });
+  });
+});
 
 describe("withdrawPendingFunds()", function () {});
 

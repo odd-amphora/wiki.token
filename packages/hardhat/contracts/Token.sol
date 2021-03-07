@@ -241,7 +241,7 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
         emit PageNoLongerForSale(pageId);
     }    
 
