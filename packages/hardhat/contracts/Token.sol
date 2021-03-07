@@ -315,7 +315,6 @@ contract Token is ERC721, Ownable {
             "Page must be owned by sender"
         );
 
-        address seller = msg.sender;
         Bid memory _bid = pageBids[pageId];
         require (_bid.value > 0, "Bid value must be greater than zero");
         require (
@@ -323,15 +322,14 @@ contract Token is ERC721, Ownable {
             "Bid value must be greater than or equal to minimum price"
         );
 
-        // Null out offer and bid
-        pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
+        // Transfer ownership of page offer to bidder and indicate that it is not currently for sale.
+        pageIdToAddress[pageId] = _bid.bidder;        
+        pagesOfferedForSale[pageId] = Offer(false, pageId, _bid.bidder, 0, 0);
+
+        // Null out the outstanding bid now that it has been accepted.
         pageBids[pageId] = Bid(false, pageId, address(0), 0);
 
-        /// Transfer ownership of the page to the bidder and indicate that it is no longer for sale
-        pageIdToAddress[pageId] = _bid.bidder;
-        pageNoLongerForSale(pageId);
-
-        /// Calculate donated amount from bid
+        /// Calculate donated amount from bid.
         uint256 donation = calculateDonationFromValue(_bid.value);
 
         // Transfer funds to owner and donation address (owner).

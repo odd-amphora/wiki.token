@@ -3,8 +3,10 @@
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
 
-const TEST_BASE_URI = "https://bananabread.com/api/";
+const TEST_BASE_URI = `https://bananabread.com/api/`;
 const TEST_INITIAL_DONATION_PERCENTAGE = 1;
+
+const EXCEPTION_PREFIX = `VM Exception while processing transaction: revert `;
 
 function sanitizeOffer(offer) {
   return {
@@ -24,7 +26,7 @@ function sanitizeBid(bid) {
   };
 }
 
-function calculateRequiredDonation(value, donationPercentage = TEST_INITIAL_DONATION_PERCENTAGE) {
+function calculateDonation(value, donationPercentage = TEST_INITIAL_DONATION_PERCENTAGE) {
   return Math.floor((donationPercentage * value) / 100);
 }
 
@@ -137,7 +139,7 @@ describe("Token Contract", function () {
       }
       expect(error).to.be.an(`Error`);
       expect(error.message).to.equal(
-        `VM Exception while processing transaction: revert Not enough to cover minValue + requiredDonation`,
+        EXCEPTION_PREFIX.concat(`Not enough to cover minValue + requiredDonation`),
       );
     });
 
@@ -175,7 +177,7 @@ describe("Token Contract", function () {
         isForSale: true,
         seller: owner.address,
         minValue: 100,
-        requiredDonation: calculateRequiredDonation(100),
+        requiredDonation: calculateDonation(100),
       });
 
       await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 2);
@@ -184,7 +186,7 @@ describe("Token Contract", function () {
         isForSale: true,
         seller: addr1.address,
         minValue: 1000,
-        requiredDonation: calculateRequiredDonation(1000),
+        requiredDonation: calculateDonation(1000),
       });
 
       await hardhatToken.connect(addr2).mintPage(/*pageId=*/ 3);
@@ -193,7 +195,7 @@ describe("Token Contract", function () {
         isForSale: true,
         seller: addr2.address,
         minValue: 1270,
-        requiredDonation: calculateRequiredDonation(1270),
+        requiredDonation: calculateDonation(1270),
       });
     });
   });
@@ -270,9 +272,7 @@ describe("Token Contract", function () {
       }
 
       expect(error).to.be.an(`Error`);
-      expect(error.message).to.equal(
-        `VM Exception while processing transaction: revert Bid must be greater than zero`,
-      );
+      expect(error.message).to.equal(EXCEPTION_PREFIX.concat(`Bid must be greater than zero`));
     });
 
     it("Should succeed if no previous bid has been made", async function () {
@@ -342,11 +342,71 @@ describe("Token Contract", function () {
     });
 
     it("Should fail if bid value is less than min price", async function () {
-      // TODO(teddywilson) implement
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 30 });
+
+      let error = null;
+      try {
+        await hardhatToken.acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 31);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error).to.be.an(`Error`);
+      expect(error.message).to.equal(
+        EXCEPTION_PREFIX.concat(`Bid value must be greater than or equal to minimum price`),
+      );
     });
 
-    it("Should succeed succeed if validation criteria is met", async function () {
-      // TODO(teddywilson) implement
+    it("Should receive no donation if bid value below 100", async function () {
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 30 });
+      await hardhatToken.acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 30);
+
+      // Offer should belong to the bidder (address 1) and not be for sale.
+      expect(await hardhatToken.pageIdToAddress(1)).to.equal(addr1.address);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(/*pageId=*/ 1))).to.deep.equals({
+        isForSale: false,
+        seller: addr1.address,
+        minValue: 0,
+        requiredDonation: 0,
+      });
+
+      // Bid should be reset for this page.
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: false,
+        pageId: 1,
+        bidder: "0x0000000000000000000000000000000000000000",
+        value: 0,
+      });
+
+      // The donation holder and the owner of pageId 1 are the same, so we expect the balance to
+      // increase by (bid.value + donatedAmount). However, since the bid value is 30, the donated
+      // amount will be rounded to zero, thus only receiving the bid value.
+      expect(await hardhatToken.pendingWithdrawals(owner.address)).to.equal(30);
+    });
+
+    it("Owner should receive full value if owner", async function () {
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 300 });
+      await hardhatToken.acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 300);
+
+      // Similar to the previous test, except this time the bid value is sufficient to yield a donation.
+      // That said, we still only expect the page owner's (the contract owner) total amount to equal
+      // the cost of the bid. That is because the calculation is done in the following way:
+      //   balance[pageOwner] += bid.value - donatedAmount
+      //   balance[contractOwner] += donatedAmount
+      expect(await hardhatToken.pendingWithdrawals(owner.address)).to.equal(300);
+    });
+
+    it("Contract owner should receive donation and page owner should receive bid value", async function () {
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr2).enterBidForPage(/*pageId=*/ 1, { value: 300 });
+      await hardhatToken.connect(addr1).acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 300);
+
+      let donation = calculateDonation(/*value=*/ 300);
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(300 - donation);
+      expect(await hardhatToken.pendingWithdrawals(owner.address)).to.equal(donation);
     });
   });
 
