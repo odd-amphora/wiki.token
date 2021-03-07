@@ -1,23 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image } from "antd";
 
 import { useContractReader } from "../hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { Alert, Button } from "antd";
+import { Alert, Button, Modal } from "antd";
 
-export default function Token({ address, contracts, imageUrl, pageId, pageTitle }) {
+export default function Token({
+  address,
+  contracts,
+  imageUrl,
+  pageId,
+  pageTitle,
+  transactor,
+  signer,
+}) {
   function openWikipediaPage() {
     window.open(`https://en.wikipedia.org/?curid=${pageId}`);
   }
 
-  function listToken() {
-    // TODO(bingbongle) Implement.
-  }
+  const listToken = async () => {
+    // TODO(bingbongle) validation, loading spinner, etc.
+    // TODO(bingbongle) list amount should be input by user.
+    await transactor(
+      contracts["Token"].connect(signer)["offerPageForSale"](pageId, BigNumber.from(2)),
+    );
+  };
 
-  function unlistToken() {
-    // TODO(bingbongle) Implement.
-  }
+  const unlistToken = async () => {
+    // TODO(bingbongle) validation, loading spinner, etc.
+    await transactor(contracts["Token"].connect(signer)["pageNoLongerForSale"](pageId));
+  };
 
   function placeBid() {
     // TODO(bingbongle) Implement.
@@ -42,6 +55,9 @@ export default function Token({ address, contracts, imageUrl, pageId, pageTitle 
 
   // Poll the owner of the page ID.
   const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
+
+  const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
+  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
 
   return (
     <div className="token">
@@ -69,12 +85,46 @@ export default function Token({ address, contracts, imageUrl, pageId, pageTitle 
       </div>
       {/* Owner actions */}
       <div hidden={offer === undefined || owner !== address}>
-        <div className="token-button" hidden={offer === undefined || offer.isForSale}>
+        <div
+          className="token-button"
+          hidden={offer === undefined || offer.isForSale}
+          onClick={() => {
+            setListTokenModalVisible(true);
+          }}
+        >
           List
         </div>
-        <div hidden={offer === undefined || !offer.isForSale}>Unlist</div>
+        <div
+          className="token-button"
+          hidden={offer === undefined || !offer.isForSale}
+          onClick={() => {
+            setUnlistTokenModalVisible(true);
+          }}
+        >
+          Unlist
+        </div>
       </div>
       <div>{owner}</div>
+      {/* TODO(bingbongle) Add price form */}
+      <Modal
+        title={`List "` + pageTitle + `" for sale`}
+        visible={listTokenModalVisible}
+        onOk={() => {
+          setListTokenModalVisible(false);
+          listToken();
+        }}
+        onCancel={() => setListTokenModalVisible(false)}
+      ></Modal>
+      <Modal
+        title={`Unlist "` + pageTitle + `" from marketplace`}
+        visible={unlistTokenModalVisible}
+        onOk={() => {
+          setUnlistTokenModalVisible(false);
+          unlistToken();
+        }}
+        onCancel={() => setUnlistTokenModalVisible(false)}
+      ></Modal>
+      {/* TODO(bingbongle) Add bid modal */}
     </div>
   );
 }

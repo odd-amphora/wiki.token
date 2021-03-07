@@ -214,10 +214,18 @@ function App() {
                 tokens={myTokens}
                 web3Modal={web3Modal}
                 contracts={contracts}
+                transactor={transactor}
+                signer={userProvider.getSigner()}
               />
             </Route>
             <Route path="/discover">
-              <Discover address={address} tokens={discoveryTokens} contracts={contracts} />
+              <Discover
+                address={address}
+                tokens={discoveryTokens}
+                contracts={contracts}
+                transactor={transactor}
+                signer={userProvider.getSigner()}
+              />
             </Route>
           </Switch>
         </BrowserRouter>

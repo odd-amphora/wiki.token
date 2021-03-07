@@ -4,7 +4,7 @@ import { Divider } from "antd";
 
 import { Token } from "../components";
 
-export default function Tokens({ address, tokens, web3Modal, contracts }) {
+export default function Tokens({ address, tokens, web3Modal, contracts, transactor, signer }) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>
@@ -24,6 +24,8 @@ export default function Tokens({ address, tokens, web3Modal, contracts }) {
         {tokens.map(token => {
           return (
             <Token
+              transactor={transactor}
+              signer={signer}
               address={address}
               contracts={contracts}
               key={token.properties?.name?.description}
