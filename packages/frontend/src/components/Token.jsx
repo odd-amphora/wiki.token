@@ -4,7 +4,7 @@ import { Image } from "antd";
 import { useContractReader } from "../hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { Alert, Button, Modal } from "antd";
+import { Alert, InputNumber, Modal } from "antd";
 
 export default function Token({
   address,
@@ -114,7 +114,22 @@ export default function Token({
           listToken();
         }}
         onCancel={() => setListTokenModalVisible(false)}
-      ></Modal>
+      >
+        <InputNumber
+          style={{
+            width: 200,
+          }}
+          size="large"
+          defaultValue="1"
+          formatter={value => `$ ${value}`.replace(/[^0-9.]/g, "")}
+          min="0"
+          step="0.0000001"
+          stringMode
+        />{" "}
+        ETH
+        {/* TODO add conversion */}
+        <div>~ $10,000 USD</div>
+      </Modal>
       <Modal
         title={`Unlist "` + pageTitle + `" from marketplace`}
         visible={unlistTokenModalVisible}
