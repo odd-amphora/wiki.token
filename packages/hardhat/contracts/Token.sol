@@ -21,18 +21,6 @@ contract Token is ERC721, Ownable {
     /// max percentage is 100, we need padding for this operation otherwise it will overflow.
     uint constant MAX_PRICE = 1157920892373161954235709850086879078532699846656405640394575840079131296399;
 
-    /// Minted page ids in order, used for pagination
-    uint[] private _mintedPageIds;
-
-    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
-    /// e.g., 4 => 4%
-    /// TODO(teddywilson) We could make this more granular (multiply by N), but maybe it's not worth dealing
-    /// gas inflated multiplication + overflow logic.
-    uint public _donationPercentage;    
-
-    /// Maps an address to the page ids they own
-    mapping (address => uint[]) private _addressToPageIds;
-
     /// Maps a page id to an address
     mapping (uint => address) public pageIdToAddress;
 
@@ -45,19 +33,50 @@ contract Token is ERC721, Ownable {
     /// Pending funds to be withdrawn for each address
     mapping (address => uint) public pendingWithdrawals;
 
+    /// Minted page ids in order, used for pagination
+    uint[] private _mintedPageIds;
+
+    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
+    /// e.g., 4 => 4%
+    /// TODO(teddywilson) We could make this more granular (multiply by N), but maybe it's not worth dealing
+    /// gas inflated multiplication + overflow logic.
+    uint public _donationPercentage;    
+
+    /// Maps an address to the page ids they own
+    mapping (address => uint[]) private _addressToPageIds;    
+
+    /// Represents an offer that a seller has made for a page they own.
     struct Offer {
+        /// True if the offer is currently active, false otherwise.
         bool isForSale;
+
+        /// The ID of the page this offer represents.
         uint pageId;
+
+        /// Address of the seller that owns this offer and corresponding page.
         address seller;
-        uint minValue; // in ether
-        uint requiredDonation; // in ether
+
+        /// The minimum value (in Ether) the seller will accept for the page.
+        uint minValue;
+
+        /// Required donation (in Ether), in addition to the minValue, a buy is required to pay in
+        /// order to execute the offer.
+        uint requiredDonation;
     }
 
+    /// Represents a bid that a buys has made against a page another seller owns.
     struct Bid {
+        /// True if this bid is currently active, false otherwise.
         bool hasBid;
+
+        /// The ID of the page this bid is being made against.
         uint pageId;
+
+        /// Address of the bidder that has made this bid.
         address bidder;
-        uint value; // in ether
+
+        /// Amount (in Ether) the bidder has agreed to pay for the corresponding page.
+        uint value; 
     }
 
     /// TODO(teddywilson) revisit and implement all of these
@@ -104,40 +123,6 @@ contract Token is ERC721, Ownable {
     /// @return true if claimed, false otherwise
     function isClaimed(uint pageId) public view returns (bool) {
         return _exists(pageId);
-    }
-
-    /// Paginates items in a uint array
-    /// @param cursor position to start at
-    /// @param howMany max number of items to return
-    /// @param ascending index array in ascending/descending order
-    /// @param array data that will be indexed
-    /// @dev uint array type could be templated once solidity supports this
-    function _paginate(
-        uint cursor,
-        uint howMany,
-        bool ascending,
-        uint[] storage array
-    ) private view returns (uint[] memory result, uint newCursor, bool reachedEnd) {
-        require (
-            cursor < array.length,
-            "Cursor position out of bounds"
-        );
-        uint cursor_ = cursor;
-        uint length = Math.min(howMany, array.length - cursor);
-        uint cursorInternal = ascending
-            ? cursor
-            : array.length - 1 - cursor;
-        result = new uint[](length);
-        for (uint i = 0; i < length; i++) {
-            result[i] = array[cursorInternal];
-            if (ascending) {
-                cursorInternal++;
-            } else {
-                cursorInternal--;
-            }
-            cursor_++;
-        }
-        return (result, cursor_, cursor == array.length);
     }
 
     /// Fetches tokens belonging to any address
@@ -212,24 +197,6 @@ contract Token is ERC721, Ownable {
             pendingWithdrawals[msg.sender] += bid.value;
             pageBids[pageId] = Bid(false, pageId, address(0), 0);
         }
-    }
-
-    /// Helper function to calculate a donation amount from a given value
-    /// @param value Value the donation amount will be derived from.
-    function calculateDonationFromValue(uint value) private view returns(uint256) {
-        bool succeeded;
-        uint256 donationTimesOneHundred;
-        /// Using `tryMul` as opposed to `mul` is a defense in depth mechanism to safeguard against
-        /// overflow. This should never occur since we should always validate prices against MAX_PRICE
-        /// before entering this codepath.
-        (succeeded, donationTimesOneHundred) = SafeMath.tryMul(
-            _donationPercentage,
-            value
-        );
-        if (!succeeded) {
-            // TODO(teddywilson) alert, log, etc.
-        }
-        return donationTimesOneHundred / 100;
     }
 
     /// Allows a seller to indicate that that a page they own is up for purchase
@@ -382,5 +349,57 @@ contract Token is ERC721, Ownable {
         /// TODO(teddywilson) events 
         /// emit PageBidWithdrawn(pageId, _bid.value, msg.sender);        
     }
+
+    /// Helper function to calculate a donation amount from a given value
+    /// @param value Value the donation amount will be derived from.
+    function calculateDonationFromValue(uint value) private view returns(uint256) {
+        bool succeeded;
+        uint256 donationTimesOneHundred;
+        /// Using `tryMul` as opposed to `mul` is a defense in depth mechanism to safeguard against
+        /// overflow. This should never occur since we should always validate prices against MAX_PRICE
+        /// before entering this codepath.
+        (succeeded, donationTimesOneHundred) = SafeMath.tryMul(
+            _donationPercentage,
+            value
+        );
+        if (!succeeded) {
+            // TODO(teddywilson) alert, log, etc.
+        }
+        return donationTimesOneHundred / 100;
+    }    
+
+    /// Paginates items in a uint array
+    /// @param cursor position to start at
+    /// @param howMany max number of items to return
+    /// @param ascending index array in ascending/descending order
+    /// @param array data that will be indexed
+    /// @dev uint array type could be templated once solidity supports this
+    function _paginate(
+        uint cursor,
+        uint howMany,
+        bool ascending,
+        uint[] storage array
+    ) private view returns (uint[] memory result, uint newCursor, bool reachedEnd) {
+        require (
+            cursor < array.length,
+            "Cursor position out of bounds"
+        );
+        uint cursor_ = cursor;
+        uint length = Math.min(howMany, array.length - cursor);
+        uint cursorInternal = ascending
+            ? cursor
+            : array.length - 1 - cursor;
+        result = new uint[](length);
+        for (uint i = 0; i < length; i++) {
+            result[i] = array[cursorInternal];
+            if (ascending) {
+                cursorInternal++;
+            } else {
+                cursorInternal--;
+            }
+            cursor_++;
+        }
+        return (result, cursor_, cursor == array.length);
+    }    
 
 }
