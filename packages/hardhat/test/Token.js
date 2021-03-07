@@ -15,6 +15,10 @@ function sanitizeOffer(offer) {
   };
 }
 
+function calculateRequiredDonation(value, donationPercentage = TEST_INITIAL_DONATION_PERCENTAGE) {
+  return Math.floor((donationPercentage * value) / 100);
+}
+
 describe("Token Contract", function () {
   let Token;
   let hardhatToken;
@@ -109,10 +113,10 @@ describe("Token Contract", function () {
       );
     });
 
-    it("Should fail on overflow", async function () {
-      // TODO(teddywilson) add
-    });
+    // TODO(teddywilson) implemet
+    it("Should fail on overflow", async function () {});
 
+    // TODO(teddywilson) validate event emitted
     it("Should successfully offer page and emit event", async function () {
       await hardhatToken.mintPage(1);
       await hardhatToken.offerPageForSale(1, 100);
@@ -120,18 +124,26 @@ describe("Token Contract", function () {
         isForSale: true,
         seller: owner.address,
         minValue: 100,
-        requiredDonation: 1,
+        requiredDonation: calculateRequiredDonation(100),
       });
 
-      // TODO(teddywilson) call function from another address
-      // await hardhatToken.mintPage(100, { from: addr1.address });
-      // await hardhatToken.offerPageForSale(100, 2000);
-      // expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(100))).to.deep.equals({
-      //   isForSale: true,
-      //   seller: addr1.address,
-      //   minValue: 2000,
-      //   requiredDonation: 1,
-      // });
+      await hardhatToken.connect(addr1).mintPage(2);
+      await hardhatToken.connect(addr1).offerPageForSale(2, 1000);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
+        isForSale: true,
+        seller: addr1.address,
+        minValue: 1000,
+        requiredDonation: calculateRequiredDonation(1000),
+      });
+
+      await hardhatToken.connect(addr2).mintPage(3);
+      await hardhatToken.connect(addr2).offerPageForSale(3, 1270);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(3))).to.deep.equals({
+        isForSale: true,
+        seller: addr2.address,
+        minValue: 1270,
+        requiredDonation: calculateRequiredDonation(1270),
+      });
     });
   });
 });
