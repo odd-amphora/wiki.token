@@ -123,7 +123,7 @@ describe("Token Contract", function () {
 
     it("Should fail if buyer attempts to repurchase a page they already own", async function () {
       await hardhatToken.mintPage(/*pageId=*/ 1);
-      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, /*minSalePriceInWei=*/ 100);
       await expect(hardhatToken.buyPage(/*pageId=*/ 1)).to.be.revertedWith(
         `Buyer can't repurchase their own pages`,
       );
@@ -149,15 +149,31 @@ describe("Token Contract", function () {
       await hardhatToken.mintPage(/*pageId=*/ 1);
       expect(await hardhatToken.pageIdToAddress(1)).to.equal(owner.address);
 
-      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, /*minSalePriceInWei=*/ 100);
       // Expect no error to be thrown
       await hardhatToken.connect(addr1).buyPage(/*pageId=*/ 1, { value: 101 });
 
       expect(await hardhatToken.pageIdToAddress(1)).to.equal(addr1.address);
     });
 
-    it("Should cover bid case", async function () {
-      // TODO(teddywilson) implement once bidding implemented
+    it("Should remove pending bid from buyer if they buy up front", async function () {
+      let minSalePriceInWei = 100;
+      let donation = calculateDonation(minSalePriceInWei);
+
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, minSalePriceInWei);
+
+      let buyPrice = minSalePriceInWei + donation;
+      await hardhatToken.connect(addr1).enterBidForPage(1, { value: buyPrice });
+      await hardhatToken.connect(addr1).buyPage(/*pageId=*/ 1, { value: buyPrice });
+
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(buyPrice);
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: false,
+        pageId: 1,
+        bidder: `0x0000000000000000000000000000000000000000`,
+        value: 0,
+      });
     });
   });
 
@@ -433,7 +449,7 @@ describe("Token Contract", function () {
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: false,
         pageId: 1,
-        bidder: "0x0000000000000000000000000000000000000000",
+        bidder: `0x0000000000000000000000000000000000000000`,
         value: 0,
       });
 
@@ -524,7 +540,7 @@ describe("Token Contract", function () {
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: false,
         pageId: 1,
-        bidder: "0x0000000000000000000000000000000000000000",
+        bidder: `0x0000000000000000000000000000000000000000`,
         value: 0,
       });
     });
