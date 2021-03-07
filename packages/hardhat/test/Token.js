@@ -2,12 +2,6 @@
 
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
-const { hardhatArguments } = require("hardhat");
-
-var Web3 = require("web3");
-var TestRPC = require("ethereumjs-testrpc");
-// web3.setProvider(TestRPC.provider());
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 const TEST_BASE_URI = `https://bananabread.com/api/`;
 const TEST_INITIAL_DONATION_PERCENTAGE = 1;
@@ -469,7 +463,7 @@ describe("Token Contract", function () {
       let balanceAfterBidWithdrawal = BigNumber.from(await addr1.getBalance());
       expect(balanceBeforeBid.eq(balanceAfterBidWithdrawal)).to.be.true;
 
-      // Bid for the page should be removed
+      // Bid for the page should be removed.
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: false,
         pageId: 1,
@@ -480,8 +474,55 @@ describe("Token Contract", function () {
   });
 
   describe("withdrawPendingFunds()", function () {
-    it("Funds should be transfered and reset afterwards", async function () {
-      // TODO(teddywilson) implement
+    it("Balance should not change after previous bid overridden", async function () {
+      let originalBalance = BigNumber.from(await addr1.getBalance());
+
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 10, gasPrice: 0 });
+      await hardhatToken.connect(addr2).enterBidForPage(/*pageId=*/ 1, { value: 30 });
+
+      await hardhatToken.connect(addr1).withdrawPendingFunds({ gasPrice: 0 });
+
+      // The balance should remain the same after funds are withdrawn.
+      let balanceAfterFundsWithdrawn = BigNumber.from(await addr1.getBalance());
+      expect(originalBalance.eq(balanceAfterFundsWithdrawn)).to.be.true;
+
+      // Bidder's internal balances should be reset after funds withdrawn.
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(0);
+    });
+
+    it("Seller balance should increase after page is bought", async function () {
+      let originalSellerBalance = BigNumber.from(await addr1.getBalance());
+      let originalOwnerBalance = BigNumber.from(await owner.getBalance());
+
+      let pagePrice = 100;
+      let donatedAmount = calculateDonation(pagePrice);
+
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 1, { gasPrice: 0 });
+      await hardhatToken.connect(addr1).offerPageForSale(/*pageId=*/ 1, pagePrice, { gasPrice: 0 });
+
+      await hardhatToken
+        .connect(addr2)
+        .buyPage(/*pageId=*/ 1, { value: pagePrice + donatedAmount });
+
+      await hardhatToken.connect(addr1).withdrawPendingFunds({ gasPrice: 0 });
+      await hardhatToken.connect(owner).withdrawPendingFunds({ gasPrice: 0 });
+
+      let sellerBalanceAfterFundsWithdrawn = BigNumber.from(await addr1.getBalance());
+      let ownerBalanceAfterFundsWithdrawn = BigNumber.from(await owner.getBalance());
+
+      // Balance of seller should increase by price of page; balance of owner should increase
+      // by donated amount.
+      expect(sellerBalanceAfterFundsWithdrawn.sub(originalSellerBalance).toNumber()).to.equal(
+        pagePrice,
+      );
+      expect(ownerBalanceAfterFundsWithdrawn.sub(originalOwnerBalance).toNumber()).to.equal(
+        donatedAmount,
+      );
+
+      // Seller and owner internal balances should be reset after funds withdrawn.
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(0);
+      expect(await hardhatToken.pendingWithdrawals(owner.address)).to.equal(0);
     });
   });
 });
