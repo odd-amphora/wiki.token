@@ -8,12 +8,14 @@ const TEST_INITIAL_DONATION_PERCENTAGE = 1;
 
 const EXCEPTION_PREFIX = `VM Exception while processing transaction: revert `;
 
-function sanitizeOffer(offer) {
+function sanitizeOffer(offer, convertBigNumber = true) {
   return {
     isForSale: offer.isForSale,
     seller: offer.seller,
-    minValue: BigNumber.from(offer.minValue).toNumber(),
-    requiredDonation: BigNumber.from(offer.requiredDonation).toNumber(),
+    minValue: convertBigNumber ? BigNumber.from(offer.minValue).toNumber() : offer.minValue,
+    requiredDonation: convertBigNumber
+      ? BigNumber.from(offer.requiredDonation).toNumber()
+      : offer.requiredDonation,
   };
 }
 
@@ -166,11 +168,20 @@ describe("Token Contract", function () {
       );
     });
 
-    it("Should fail on overflow", async function () {
-      // TODO(teddywilson) implement
+    it("Should fail if max price exceeded", async function () {
+      await hardhatToken.setDonationPercentage(/*donationPercentage=*/ 100);
+
+      /// minSalePriceInWei = MAX_PRICE + 1
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(
+        hardhatToken.offerPageForSale(
+          /*pageId=*/ 1,
+          /*minSalePriceInWei=*/ `1157920892373161954235709850086879078532699846656405640394575840079131296400`,
+        ),
+      ).to.be.revertedWith(`Min sale price exceeds MAX_PRICE`);
     });
 
-    it("Should successfully offer page and emit event", async function () {
+    it("Should successfully offer page with valid page and price", async function () {
       await hardhatToken.mintPage(/*pageId=*/ 1);
       await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(/*pageId=*/ 1))).to.deep.equals({
@@ -181,7 +192,9 @@ describe("Token Contract", function () {
       });
 
       await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 2);
-      await hardhatToken.connect(addr1).offerPageForSale(/*pageId=*/ 2, 1000);
+      await hardhatToken
+        .connect(addr1)
+        .offerPageForSale(/*pageId=*/ 2, /*minSalePriceInWei=*/ 1000);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
         isForSale: true,
         seller: addr1.address,
@@ -190,12 +203,38 @@ describe("Token Contract", function () {
       });
 
       await hardhatToken.connect(addr2).mintPage(/*pageId=*/ 3);
-      await hardhatToken.connect(addr2).offerPageForSale(/*pageId=*/ 3, 1270);
+      await hardhatToken
+        .connect(addr2)
+        .offerPageForSale(/*pageId=*/ 3, /*minSalePriceInWei=*/ 1270);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(3))).to.deep.equals({
         isForSale: true,
         seller: addr2.address,
         minValue: 1270,
         requiredDonation: calculateDonation(1270),
+      });
+
+      /// minSalePriceInWei = MAX_PRICE
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 4);
+      await hardhatToken
+        .connect(addr1)
+        .offerPageForSale(
+          /*pageId=*/ 2,
+          /*minSalePriceInWei=*/ `1157920892373161954235709850086879078532699846656405640394575840079131296399`,
+        );
+      /// These cases where big number can not be converted can be converted in the frontend, but, we're talking
+      /// on the order of 1,907,987,308,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000 USD
+      /// At least on 03/07/21 :)
+      expect(
+        sanitizeOffer(await hardhatToken.pagesOfferedForSale(2), /*convertBigNumber=*/ false),
+      ).to.deep.equals({
+        isForSale: true,
+        seller: addr1.address,
+        minValue: BigNumber.from(
+          `0x028f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f`,
+        ),
+        requiredDonation: BigNumber.from(
+          `0x068db8bac710cb295e9e1b089a027525460aa64c2f837b4a2339c0ebedfa43`,
+        ),
       });
     });
   });

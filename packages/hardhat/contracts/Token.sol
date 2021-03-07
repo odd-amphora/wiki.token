@@ -3,6 +3,7 @@ pragma solidity >=0.6.0 <0.7.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
@@ -14,6 +15,12 @@ import "hardhat/console.sol";
 /// TODO(teddywilson) Revisit use of public/private variables
 /// TODO(teddywilson) Add comments that indicate defense in depth mechanismm
 contract Token is ERC721, Ownable {
+    /// The maximum price that a token can be offered for or bidded on.
+    /// This is calculated by: ((2^256) - 1) / 100
+    /// Since we need to multiply prices by a percentage to yield donation amount, and the
+    /// max percentage is 100, we need padding for this operation otherwise it will overflow.
+    uint constant MAX_PRICE = 1157920892373161954235709850086879078532699846656405640394575840079131296399;
+
     /// Minted page ids in order, used for pagination
     uint[] private _mintedPageIds;
 
@@ -212,17 +219,17 @@ contract Token is ERC721, Ownable {
     function calculateDonationFromValue(uint value) private view returns(uint256) {
         bool succeeded;
         uint256 donationTimesOneHundred;
+        /// Using `tryMul` as opposed to `mul` is a defense in depth mechanism to safeguard against
+        /// overflow. This should never occur since we should always validate prices against MAX_PRICE
+        /// before entering this codepath.
         (succeeded, donationTimesOneHundred) = SafeMath.tryMul(
             _donationPercentage,
             value
         );
         if (!succeeded) {
-            // TODO(teddywilson) this is a rare case and we can probably swallow it, but perhaps we 
-            // should log an event that this occurred. Overflow would mean an egregiously priced token
-            // which is quite unlikely. In these cases, we can donate nothing, or take a fixed value?
-            // The former is probably more "fair" but less fortunate.
+            // TODO(teddywilson) alert, log, etc.
         }
-        return donationTimesOneHundred / 100;        
+        return donationTimesOneHundred / 100;
     }
 
     /// Allows a seller to indicate that that a page they own is up for purchase
@@ -232,6 +239,10 @@ contract Token is ERC721, Ownable {
         require (
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
+        );
+        require (
+            minSalePriceInWei <= MAX_PRICE,
+            "Min sale price exceeds MAX_PRICE"
         );
         uint256 requiredDonation = calculateDonationFromValue(minSalePriceInWei);
         pagesOfferedForSale[pageId] = Offer(
@@ -286,6 +297,10 @@ contract Token is ERC721, Ownable {
         require (
             msg.value > 0,
             "Bid must be greater than zero"
+        );
+        require (
+            msg.value <= MAX_PRICE,
+            "Bid value exceeds MAX_PRICE"
         );
 
         /// Check if there is already an existing bid for this pageId.
