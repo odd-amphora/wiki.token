@@ -5,6 +5,8 @@ const { ethers } = require("hardhat");
 const { utils } = require("ethers");
 const R = require("ramda");
 
+const DEFAULT_DONATION_PERCENTAGE = 1;
+
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
@@ -21,7 +23,10 @@ const main = async () => {
     throw "❌ Invalid WIKI_TOKEN_BASE_URI";
   }
 
-  const token = await deploy("Token", [process.env.WIKI_TOKEN_BASE_URI]);
+  const token = await deploy("Token", [
+    process.env.WIKI_TOKEN_BASE_URI,
+    DEFAULT_DONATION_PERCENTAGE,
+  ]);
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",
