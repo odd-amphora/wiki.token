@@ -9,7 +9,9 @@ import "hardhat/console.sol";
 
 /// @author The Wiki Token team
 /// @title Wiki Token ERC 721 contract
-/// TODO(teddywilson) Figure out Wikipedia distribution mechanism
+/// TODO(teddywilson) (WIP) Figure out Wikipedia distribution mechanism
+/// TODO(teddywilson) Implement events
+/// TODO(teddywilson) Revisit use of public/private variables
 contract Token is ERC721, Ownable {
     /// Minted page ids in order, used for pagination
     uint[] private _mintedPageIds;
@@ -164,9 +166,10 @@ contract Token is ERC721, Ownable {
         _addressToPageIds[msg.sender].push(pageId);
         _mintedPageIds.push(pageId);
 
-        /// TODO: find out what to do with this..
         pageIdToAddress[pageId] = msg.sender;
-        emit Assign(msg.sender, pageId);
+
+        /// TODO(teddywilson) events
+        /// emit Assign(msg.sender, pageId);
     }
 
     /// Purchases a page for the full offer price (or more)
@@ -203,7 +206,8 @@ contract Token is ERC721, Ownable {
         }
     }
 
-    /// TODO(teddywilson) docs
+    /// Helper function to calculate a donation amount from a given value
+    /// @param value Value the donation amount will be derived from.
     function calculateDonationFromValue(uint value) private view returns(uint256) {
         bool succeeded;
         uint256 donationTimesOneHundred;
@@ -242,19 +246,28 @@ contract Token is ERC721, Ownable {
     /// Allows a seller to indicate that a page they own is no longer for sale
     /// @param pageId ID of the page that the seller is taking off the market
     function pageNoLongerForSale(uint pageId)  public {
+        /// Only the owner of the page can take its corresponding offer off the market.
         require (
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
+
+        /// Null out the offer for the corresponding pageId now that it is no longer for sale.
         pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
-        emit PageNoLongerForSale(pageId);
+
+        /// TODO(teddywilson) events 
+        /// emit PageNoLongerForSale(pageId);
     }    
 
     /// Withdraw pending funds received from bids and buys
     function withdrawPendingFunds()  public {
+        /// Check how much is currently pending for the sender before clearing the balance.
         uint amount = pendingWithdrawals[msg.sender];
-        /// Remember to zero the pending refund before sending to prevent re-entrancy attacks
+
+        /// Clear balance to prevent re-entrancy attacks
         pendingWithdrawals[msg.sender] = 0;
+
+        /// Transfer pending amount back to the sender.
         msg.sender.transfer(amount);
     }
 
@@ -274,15 +287,20 @@ contract Token is ERC721, Ownable {
             "Bid must be greater than zero"
         );
 
+        /// Check if there is already an existing bid for this pageId.
+        /// If there is, the new bid should be greater in value.
         Bid memory existing = pageBids[pageId];
         require (
             msg.value > existing.value,
             "Bid value must be greater than outstanding bid value"
         );
+
         /// If all criteria is met, we can refund the outstanding bid.
         if (existing.value > 0) {
             pendingWithdrawals[existing.bidder] += existing.value;
         }
+
+        /// Replace bid for the pageId, or set it for the first time.
         pageBids[pageId] = Bid(true, pageId, msg.sender, msg.value);
         emit PageBidEntered(pageId, msg.value, msg.sender);
     }
@@ -334,16 +352,21 @@ contract Token is ERC721, Ownable {
             "Page cannot be owned by the sender"
         );
 
+        /// Ensure that the outstanding bid is owned by the sender.
         Bid memory _bid = pageBids[pageId];
         require (
             _bid.bidder == msg.sender,
             "Outstanding bid must be owned by sender"
         );
-        emit PageBidWithdrawn(pageId, _bid.value, msg.sender);
-        uint amount = _bid.value;
+        
+        /// Null out the bid corresponding to the pageId.
         pageBids[pageId] = Bid(false, pageId, address(0), 0);
+
         /// Refund the bid amount
-        msg.sender.transfer(amount);
+        msg.sender.transfer(_bid.value);
+
+        /// TODO(teddywilson) events 
+        /// emit PageBidWithdrawn(pageId, _bid.value, msg.sender);        
     }
 
 }
