@@ -160,8 +160,9 @@ describe("Token Contract", function () {
       );
     });
 
-    // TODO(teddywilson) implemet
-    it("Should fail on overflow", async function () {});
+    it("Should fail on overflow", async function () {
+      // TODO(teddywilson) implement
+    });
 
     it("Should successfully offer page and emit event", async function () {
       await hardhatToken.mintPage(1);
@@ -310,8 +311,22 @@ describe("Token Contract", function () {
       expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(80);
     });
   });
+
+  describe("acceptBidForPage()", function () {
+    it("Should fail if page doesn't belong to sender", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    it("Should fail if bid value is 0", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    // TODO(teddywilson) finish bidding
+  });
+
+  describe("withdrawBidForPage()", function () {
+    it("Funds should withdraw successfully", async function () {
+      // TODO(teddywilson) implement
+    });
+  });
 });
-
-describe("acceptBidForPage()", function () {});
-
-describe("withdrawBidForPage()", function () {});
