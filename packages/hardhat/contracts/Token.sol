@@ -10,10 +10,6 @@ import "hardhat/console.sol";
 
 /// @author The Wiki Token team
 /// @title Wiki Token ERC 721 contract
-/// TODO(teddywilson) (WIP) Figure out Wikipedia distribution mechanism
-/// TODO(teddywilson) Implement events
-/// TODO(teddywilson) Revisit use of public/private variables
-/// TODO(teddywilson) Add comments that indicate defense in depth mechanismm
 contract Token is ERC721, Ownable {
     /// The maximum price that a token can be offered for or bidded on.
     /// This is calculated by: ((2^256) - 1) / 100
@@ -38,7 +34,7 @@ contract Token is ERC721, Ownable {
 
     /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
     /// e.g., 4 => 4%
-    /// TODO(teddywilson) We could make this more granular (multiply by N), but maybe it's not worth dealing
+    /// TODO(bingbongle) We could make this more granular (multiply by N), but maybe it's not worth dealing
     /// gas inflated multiplication + overflow logic.
     uint public _donationPercentage;    
 
@@ -79,15 +75,15 @@ contract Token is ERC721, Ownable {
         uint value; 
     }
 
-    /// TODO(teddywilson) revisit and implement all of these
-    event Assign(address indexed to, uint pageId);
-    event Transfer(address indexed from, address indexed to, uint amount);
-    event Donate(address indexed from, address indexed to, uint amount);
-    event PageTransfer(address indexed from, address indexed to, uint pageId);
+    //////////////
+    /// Events ///
+    //////////////
+    
+    event Mint(address indexed to, uint pageId);
     event PageOffered(uint indexed pageId, uint minValue, uint requiredDonation);
     event PageBidEntered(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBidWithdrawn(uint indexed pageId, uint value, address indexed fromAddress);
-    event PageBought(uint indexed pageId, uint value, address indexed fromAddress, address indexed toAddress);
+    event PageBought(uint indexed pageId, uint value, uint donated, address indexed fromAddress, address indexed toAddress);
     event PageNoLongerForSale(uint indexed pageId);
 
     /// Wiki Token constructor
@@ -161,8 +157,7 @@ contract Token is ERC721, Ownable {
 
         pageIdToAddress[pageId] = msg.sender;
 
-        /// TODO(teddywilson) events
-        /// emit Assign(msg.sender, pageId);
+        emit Mint(msg.sender, pageId);
     }
 
     /// Purchases a page for the full offer price (or more)
@@ -187,8 +182,6 @@ contract Token is ERC721, Ownable {
         pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
         pendingWithdrawals[owner()] += offer.requiredDonation;
 
-        /// TODO(teddywilson) events 
-
         /// Check for the case where there is a bid from the new owner and refund it.
         /// Any other bid can stay in place.
         Bid memory bid = pageBids[pageId];
@@ -197,6 +190,14 @@ contract Token is ERC721, Ownable {
             pendingWithdrawals[msg.sender] += bid.value;
             pageBids[pageId] = Bid(false, pageId, address(0), 0);
         }
+
+        emit PageBought(
+            pageId,
+            msg.value - offer.requiredDonation,
+            offer.requiredDonation,
+            offer.seller,
+            msg.sender
+        );
     }
 
     /// Allows a seller to indicate that that a page they own is up for purchase
@@ -211,6 +212,7 @@ contract Token is ERC721, Ownable {
             minSalePriceInWei <= MAX_PRICE,
             "Min sale price exceeds MAX_PRICE"
         );
+
         uint256 requiredDonation = calculateDonationFromValue(minSalePriceInWei);
         pagesOfferedForSale[pageId] = Offer(
             true,
@@ -219,6 +221,7 @@ contract Token is ERC721, Ownable {
             minSalePriceInWei,
             requiredDonation
         );
+
         emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
     }
 
@@ -234,8 +237,7 @@ contract Token is ERC721, Ownable {
         /// Null out the offer for the corresponding pageId now that it is no longer for sale.
         pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
 
-        /// TODO(teddywilson) events 
-        /// emit PageNoLongerForSale(pageId);
+        emit PageNoLongerForSale(pageId);
     }    
 
     /// Withdraw pending funds received from bids and buys
@@ -285,6 +287,7 @@ contract Token is ERC721, Ownable {
 
         /// Replace bid for the pageId, or set it for the first time.
         pageBids[pageId] = Bid(true, pageId, msg.sender, msg.value);
+
         emit PageBidEntered(pageId, msg.value, msg.sender);
     }
 
@@ -304,21 +307,27 @@ contract Token is ERC721, Ownable {
             "Bid value must be greater than or equal to minimum price"
         );
 
-        // Transfer ownership of page offer to bidder and indicate that it is not currently for sale.
+        /// Transfer ownership of page offer to bidder and indicate that it is not currently for sale.
         pageIdToAddress[pageId] = _bid.bidder;        
         pagesOfferedForSale[pageId] = Offer(false, pageId, _bid.bidder, 0, 0);
 
-        // Null out the outstanding bid now that it has been accepted.
+        /// Null out the outstanding bid now that it has been accepted.
         pageBids[pageId] = Bid(false, pageId, address(0), 0);
 
         /// Calculate donated amount from bid.
         uint256 donation = calculateDonationFromValue(_bid.value);
 
-        // Transfer funds to owner and donation address (owner).
+        /// Transfer funds to owner and donation address (owner).
         pendingWithdrawals[msg.sender] += _bid.value - donation;
         pendingWithdrawals[owner()] += donation;
 
-        /// TODO(teddywilson) events 
+        emit PageBought(
+            pageId,
+            _bid.value - donation,
+            donation,
+            msg.sender,
+            _bid.bidder
+        );
     }
 
     /// Withdraws an outstanding bid made against a page
@@ -346,8 +355,7 @@ contract Token is ERC721, Ownable {
         /// Refund the bid amount
         msg.sender.transfer(_bid.value);
 
-        /// TODO(teddywilson) events 
-        /// emit PageBidWithdrawn(pageId, _bid.value, msg.sender);        
+        emit PageBidWithdrawn(pageId, _bid.value, msg.sender);        
     }
 
     /// Helper function to calculate a donation amount from a given value

@@ -1,4 +1,4 @@
-// TODO(teddywilson) validate events emitted
+// TODO(bingbongle) validate events emitted
 
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
@@ -93,7 +93,7 @@ describe("Token Contract", function () {
     });
   });
 
-  // TODO(teddywilson) add tests to tokensOf() and discover()
+  // TODO(bingbongle) add tests to tokensOf() and discover()
 
   describe("setDonationPercentage()", function () {
     it("Should set donation percentage", async function () {
@@ -330,7 +330,7 @@ describe("Token Contract", function () {
       expect(error.message).to.equal(EXCEPTION_PREFIX.concat(`Bid must be greater than zero`));
     });
 
-    // TODO(teddywilson) Test exceeds tx limit. Coverage in buyPage() should be sufficient,
+    // TODO(bingbongle) Test exceeds tx limit. Coverage in buyPage() should be sufficient,
     //                   but perhaps fix at later date.
     // it("Should fail if value exeeds max price", async function () {
     //   await hardhatToken.mintPage(/*pageId=*/ 1);
