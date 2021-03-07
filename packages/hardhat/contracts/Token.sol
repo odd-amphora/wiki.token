@@ -174,12 +174,12 @@ contract Token is ERC721, Ownable {
         Offer memory offer = pagesOfferedForSale[pageId];
         require (offer.isForSale, "Page is not for sale");
         require (
-            msg.value >= (offer.minValue + offer.requiredDonation),
-            "Not enough to cover minValue + requiredDonation"
+            msg.sender != pageIdToAddress[pageId],
+            "Buyer can't repurchase their own pages"
         );
         require (
-            msg.sender == pageIdToAddress[pageId],
-            "Buyer can't repurchase their own pages"
+            msg.value >= (offer.minValue + offer.requiredDonation),
+            "Not enough to cover minValue + requiredDonation"
         );
 
         /// Transfer ownership of the page and indicate that it is no longer for sale

@@ -106,27 +106,44 @@ describe("Token Contract", function () {
       await expect(hardhatToken.buyPage(2)).to.be.revertedWith(`Page is not for sale`);
     });
 
-    it("Should fail if value < minValue + requiredDonation", async function () {
+    it("Should fail if buyer attempts to repurchase a page they already own", async function () {
       await hardhatToken.mintPage(1);
       await hardhatToken.offerPageForSale(1, 100);
-      // Entire cost of tx should be 101, with 1% default donation
-      await expect(hardhatToken.connect(addr1).buyPage(1, { value: 100 })).to.be.revertedWith(
-        `Not enough to cover minValue + requiredDonation`,
-      );
-    });
-
-    it("Should fail if buyer attempts to repurchase a page they already own", async function () {
-      await expect(hardhatToken.buyPage(1, { value: 100 })).to.be.revertedWith(
+      await expect(hardhatToken.buyPage(1)).to.be.revertedWith(
         `Buyer can't repurchase their own pages`,
       );
     });
 
-    it(
-      ("Should succeed if buyer is able to purchase page",
-      async function () {
-        // TODO(teddywilson) implement
-      }),
-    );
+    it("Should fail if value < minValue + requiredDonation", async function () {
+      await hardhatToken.mintPage(1);
+      await hardhatToken.offerPageForSale(1, 100);
+      // Entire cost of tx should be 101, with 1% default donation
+      let error = null;
+      try {
+        await hardhatToken.connect(addr1).buyPage(1, { value: 100 });
+      } catch (err) {
+        error = err;
+      }
+      expect(error).to.be.an(`Error`);
+      expect(error.message).to.equal(
+        `VM Exception while processing transaction: revert Not enough to cover minValue + requiredDonation`,
+      );
+    });
+
+    it("Should succeed if buyer is able to purchase page", async function () {
+      await hardhatToken.mintPage(1);
+      expect(await hardhatToken.pageIdToAddress(1)).to.equal(owner.address);
+
+      await hardhatToken.offerPageForSale(1, 100);
+      // Expect no error to be thrown
+      await hardhatToken.connect(addr1).buyPage(1, { value: 101 });
+
+      expect(await hardhatToken.pageIdToAddress(1)).to.equal(addr1.address);
+    });
+
+    it("Should cover bid case", async function () {
+      // TODO(teddywilson) implement once bidding implemented
+    });
   });
 
   describe("offerPageForSale()", function () {
