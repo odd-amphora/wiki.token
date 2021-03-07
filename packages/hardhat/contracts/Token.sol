@@ -90,7 +90,7 @@ contract Token is ERC721, Ownable {
     /// Wiki Token constructor.
     /// @param baseURI Base URI that will be applied to all tokens.
     constructor (string memory baseURI, uint donationPercentage) public ERC721("WikiToken", "WIKI") {
-        _setBaseURI(baseURI);
+        setBaseURI(baseURI);
         setDonationPercentage(donationPercentage);
     }
 
