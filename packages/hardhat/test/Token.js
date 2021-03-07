@@ -314,6 +314,24 @@ describe("Token Contract", function () {
       expect(error.message).to.equal(EXCEPTION_PREFIX.concat(`Bid must be greater than zero`));
     });
 
+    // TODO(teddywilson) Test exceeds tx limit. Coverage in buyPage() should be sufficient,
+    //                   but perhaps fix at later date.
+    // it("Should fail if value exeeds max price", async function () {
+    //   await hardhatToken.mintPage(/*pageId=*/ 1);
+
+    //   let error = null;
+    //   try {
+    //     await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, {
+    //       value: `1157920892373161954235709850086879078532699846656405640394575840079131296399`,
+    //     });
+    //   } catch (err) {
+    //     error = err;
+    //   }
+
+    //   expect(error).to.be.an(`Error`);
+    //   expect(error.message).to.equal(EXCEPTION_PREFIX.concat(`Bid value exceeds MAX_PRICE`));
+    // });
+
     it("Should succeed if no previous bid has been made", async function () {
       await hardhatToken.mintPage(/*pageId=*/ 1);
       await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 10 });
