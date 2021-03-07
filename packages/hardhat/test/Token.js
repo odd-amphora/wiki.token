@@ -7,13 +7,20 @@ const TEST_BASE_URI = "https://bananabread.com/api/";
 const TEST_INITIAL_DONATION_PERCENTAGE = 1;
 
 function sanitizeOffer(offer) {
-  var minValue = BigNumber.from(offer.minValue).toNumber();
-  var requiredDonation = BigNumber.from(offer.requiredDonation).toNumber();
   return {
     isForSale: offer.isForSale,
     seller: offer.seller,
-    minValue: minValue,
-    requiredDonation: requiredDonation,
+    minValue: BigNumber.from(offer.minValue).toNumber(),
+    requiredDonation: BigNumber.from(offer.requiredDonation).toNumber(),
+  };
+}
+
+function sanitizeBid(bid) {
+  return {
+    hasBid: bid.hasBid,
+    pageId: BigNumber.from(bid.pageId).toNumber(),
+    bidder: bid.bidder,
+    value: BigNumber.from(bid.value).toNumber(),
   };
 }
 
@@ -216,8 +223,95 @@ describe("Token Contract", function () {
       });
     });
   });
+
+  describe("enterBidForPage()", function () {
+    it("Should fail if page has no owner", async function () {
+      await expect(hardhatToken.enterBidForPage(1)).to.be.revertedWith(`Page has no owner`);
+      await expect(hardhatToken.enterBidForPage(2)).to.be.revertedWith(`Page has no owner`);
+      await expect(hardhatToken.enterBidForPage(3)).to.be.revertedWith(`Page has no owner`);
+    });
+
+    it("Should fail if bidder already owns page", async function () {
+      await hardhatToken.mintPage(1);
+      await expect(hardhatToken.enterBidForPage(1)).to.be.revertedWith(
+        `Bidder already owns this page`,
+      );
+
+      await hardhatToken.connect(addr1).mintPage(2);
+      await expect(hardhatToken.connect(addr1).enterBidForPage(2)).to.be.revertedWith(
+        `Bidder already owns this page`,
+      );
+
+      await hardhatToken.connect(addr2).mintPage(3);
+      await expect(hardhatToken.connect(addr2).enterBidForPage(3)).to.be.revertedWith(
+        `Bidder already owns this page`,
+      );
+    });
+
+    it("Should fail if value is 0", async function () {
+      await hardhatToken.mintPage(1);
+
+      let error = null;
+      try {
+        await hardhatToken.connect(addr1).enterBidForPage(1, { value: 0 });
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error).to.be.an(`Error`);
+      expect(error.message).to.equal(
+        `VM Exception while processing transaction: revert Bid must be greater than zero`,
+      );
+    });
+
+    it("Should succeed if no previous bid has been made", async function () {
+      await hardhatToken.mintPage(1);
+      await hardhatToken.connect(addr1).enterBidForPage(1, { value: 10 });
+
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: true,
+        pageId: 1,
+        bidder: addr1.address,
+        value: 10,
+      });
+    });
+
+    it("Should succeed and override previous bid if amount is greater", async function () {
+      await hardhatToken.mintPage(1);
+      await hardhatToken.connect(addr1).enterBidForPage(1, { value: 10 });
+      await hardhatToken.connect(addr2).enterBidForPage(1, { value: 30 });
+
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: true,
+        pageId: 1,
+        bidder: addr2.address,
+        value: 30,
+      });
+
+      // The previous bidder (address 1) should be refunded for their original amount
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(10);
+
+      // Make another bid from address 1
+      expect(await hardhatToken.connect(addr1).enterBidForPage(1, { value: 70 }));
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: true,
+        pageId: 1,
+        bidder: addr1.address,
+        value: 70,
+      });
+
+      // Address 2 should be refunded
+      expect(await hardhatToken.pendingWithdrawals(addr2.address)).to.equal(30);
+
+      // Make another bid from address 2
+      expect(await hardhatToken.connect(addr2).enterBidForPage(1, { value: 700 }));
+
+      // Address 1s withdrawals should include both bids (10 + 70);
+      expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(80);
+    });
+  });
 });
 
-describe("enterBidForPage()", function () {});
-
 describe("acceptBidForPage()", function () {});
+
+describe("withdrawBidForPage()", function () {});
