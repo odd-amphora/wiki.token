@@ -16,9 +16,8 @@ contract Token is ERC721, Ownable {
     /// This is calculated by: ((2^256) - 1) / 100
     /// Since we need to multiply prices by a percentage to yield donation amount, and the
     /// max percentage is 100, we need padding for this operation otherwise it will overflow.
-    // uint constant MAX_PRICE = 1157920892373161954235709850086879078532699846656405640394575840079131296399;
+    uint constant MAX_PRICE = 1157920892373161954235709850086879078532699846656405640394575840079131296399;
 
-    uint constant MAX_PRICE = 115;
     /// Maps a page id to an address.
     mapping (uint => address) public pageIdToAddress;
 

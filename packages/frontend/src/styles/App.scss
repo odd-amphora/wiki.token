@@ -1,4 +1,4 @@
-@import './antd.css';
+@import "./antd.css";
 @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 #root {
@@ -10,23 +10,23 @@
 * {
   padding: 0;
   margin: 0;
-  font-family:"Lucida Console", "Courier New", monospace;
+  font-family: "Lucida Console", "Courier New", monospace;
 }
 
-html, 
-body {   
-  height: 100%; 
-} 
-body { 
-  display: flex;   
-  flex-direction: column; 
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
 }
 
-.content { 
-  flex: 1 0 auto; 
+.content {
+  flex: 1 0 auto;
 }
 
-.footer {   
+.footer {
   flex-shrink: 0;
   text-align: center;
 }
@@ -49,13 +49,13 @@ body {
 }
 
 .about-text-counter {
-  font-family: 'karla';
+  font-family: "karla";
   font-weight: bold;
 }
 
 .App {
   text-align: center;
-  flex: 1 0 auto; 
+  flex: 1 0 auto;
 }
 
 .account {
@@ -89,6 +89,10 @@ body {
   border-color: black;
   border-width: 1px;
   border-style: outset;
+  // cursor: pointer;
+}
+
+.token-button {
   cursor: pointer;
 }
 
@@ -110,5 +114,5 @@ body {
 
 .token-wrapper {
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
 }

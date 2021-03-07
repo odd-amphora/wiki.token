@@ -4,7 +4,7 @@ import { Token } from "../components";
 
 // TODO(teddywilson) perhaps abstract this view with MyTokens but it probably will need its
 // own sp
-export default function Discover({ tokens }) {
+export default function Discover({ address, tokens, contracts }) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>
@@ -17,6 +17,8 @@ export default function Discover({ tokens }) {
         {tokens.map(token => {
           return (
             <Token
+              address={address}
+              contracts={contracts}
               key={token.properties?.name?.description}
               imageUrl={token.properties?.image?.description}
               pageTitle={token.properties?.description?.description}

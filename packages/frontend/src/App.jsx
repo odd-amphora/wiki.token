@@ -209,10 +209,15 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <MyTokens tokens={myTokens} web3Modal={web3Modal} />
+              <MyTokens
+                address={address}
+                tokens={myTokens}
+                web3Modal={web3Modal}
+                contracts={contracts}
+              />
             </Route>
             <Route path="/discover">
-              <Discover tokens={discoveryTokens} />
+              <Discover address={address} tokens={discoveryTokens} contracts={contracts} />
             </Route>
           </Switch>
         </BrowserRouter>

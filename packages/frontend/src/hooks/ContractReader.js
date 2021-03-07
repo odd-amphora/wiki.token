@@ -53,9 +53,6 @@ export default function useContractReader(
             newValue = formatter(newValue);
           }
           if (newValue !== value) {
-            console.log("change! ", functionName);
-            console.log("old: ", value);
-            console.log("new: ", newValue);
             setValue(newValue);
           }
         } catch (e) {
