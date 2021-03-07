@@ -1,4 +1,6 @@
-// TODO(bingbongle) validate events emitted
+// TODO(bingbongle) P1: Circle back to mintPage() tests.
+// TODO(bingbongle) P1: Validate events emitted.
+// TODO(bingbongle) P2: Coverage for tokensOf(), discover(), pagination.
 
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
@@ -71,6 +73,8 @@ describe("Token Contract", function () {
       expect(await hardhatToken.tokenURI(/*pageId=*/ 12891648290)).to.equal(
         TEST_BASE_URI.concat(12891648290),
       );
+
+      // TODO(bingbongle) Cover new data structures that been added.
     });
   });
 
@@ -92,8 +96,6 @@ describe("Token Contract", function () {
       expect(await hardhatToken.isClaimed(/*pageId=*/ 8)).to.be.false;
     });
   });
-
-  // TODO(bingbongle) add tests to tokensOf() and discover()
 
   describe("setDonationPercentage()", function () {
     it("Should set donation percentage", async function () {
@@ -164,7 +166,7 @@ describe("Token Contract", function () {
       await hardhatToken.offerPageForSale(/*pageId=*/ 1, minSalePriceInWei);
 
       let buyPrice = minSalePriceInWei + donation;
-      await hardhatToken.connect(addr1).enterBidForPage(1, { value: buyPrice });
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: buyPrice });
       await hardhatToken.connect(addr1).buyPage(/*pageId=*/ 1, { value: buyPrice });
 
       expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(buyPrice);
@@ -179,9 +181,9 @@ describe("Token Contract", function () {
 
   describe("offerPageForSale()", function () {
     it("Should fail if owner does not own page", async function () {
-      await expect(hardhatToken.offerPageForSale(/*pageId=*/ 1, 100)).to.be.revertedWith(
-        `Page must be owned by sender`,
-      );
+      await expect(
+        hardhatToken.offerPageForSale(/*pageId=*/ 1, /*minSalePriceInWei=*/ 100),
+      ).to.be.revertedWith(`Page must be owned by sender`);
     });
 
     it("Should fail if max price exceeded", async function () {
@@ -265,7 +267,7 @@ describe("Token Contract", function () {
 
     it("Should successfully remove page from marketplace", async function () {
       await hardhatToken.mintPage(/*pageId=*/ 1);
-      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, /*minSalePriceInWei=*/ 100);
       await hardhatToken.pageNoLongerForSale(/*pageId=*/ 1);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(/*pageId=*/ 1))).to.deep.equals({
         isForSale: false,
@@ -275,7 +277,9 @@ describe("Token Contract", function () {
       });
 
       await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 2);
-      await hardhatToken.connect(addr1).offerPageForSale(/*pageId=*/ 2, 3829);
+      await hardhatToken
+        .connect(addr1)
+        .offerPageForSale(/*pageId=*/ 2, /*minSalePriceInWei=*/ 3829);
       await hardhatToken.connect(addr1).pageNoLongerForSale(/*pageId=*/ 2);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
         isForSale: false,
