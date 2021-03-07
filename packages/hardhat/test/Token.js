@@ -341,17 +341,35 @@ describe("Token Contract", function () {
       ).to.be.revertedWith(`Bid value must be greater than zero`);
     });
 
-    // TODO(teddywilson) finish bidding
+    it("Should fail if bid value is less than min price", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    it("Should succeed succeed if validation criteria is met", async function () {
+      // TODO(teddywilson) implement
+    });
   });
 
   describe("withdrawBidForPage()", function () {
-    it("TODO(teddywilson) implement", async function () {
+    it("Should fail if page is not currently owned", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    it("Should fail if page belongs to the sender", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    it("Should fail if outstanding bid is not owned by sender", async function () {
+      // TODO(teddywilson) implement
+    });
+
+    it("Should succeed succeed if validation criteria is met", async function () {
       // TODO(teddywilson) implement
     });
   });
 
   describe("withdrawPendingFunds()", function () {
-    it("TODO(teddywilson) implement", async function () {
+    it("Funds should be transfered and reset afterwards", async function () {
       // TODO(teddywilson) implement
     });
   });

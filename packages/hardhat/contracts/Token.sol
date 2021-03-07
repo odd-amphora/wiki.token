@@ -12,6 +12,7 @@ import "hardhat/console.sol";
 /// TODO(teddywilson) (WIP) Figure out Wikipedia distribution mechanism
 /// TODO(teddywilson) Implement events
 /// TODO(teddywilson) Revisit use of public/private variables
+/// TODO(teddywilson) Add comments that indicate defense in depth mechanismm
 contract Token is ERC721, Ownable {
     /// Minted page ids in order, used for pagination
     uint[] private _mintedPageIds;
