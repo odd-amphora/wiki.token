@@ -393,11 +393,15 @@ contract Token is ERC721, Ownable {
             cursor < array.length,
             "Cursor position out of bounds"
         );
+
+        /// Determine cursor position depending on length and
         uint cursor_ = cursor;
         uint length = Math.min(howMany, array.length - cursor);
         uint cursorInternal = ascending
             ? cursor
             : array.length - 1 - cursor;
+        
+        /// Allocate space for the resulting array and push paginated items.
         result = new uint[](length);
         for (uint i = 0; i < length; i++) {
             result[i] = array[cursorInternal];
@@ -408,6 +412,7 @@ contract Token is ERC721, Ownable {
             }
             cursor_++;
         }
+        
         return (result, cursor_, cursor == array.length);
     }    
 
