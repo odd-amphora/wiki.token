@@ -187,7 +187,7 @@ contract Token is ERC721, Ownable {
         /// Any other bid can stay in place.
         Bid memory bid = pageBids[pageId];
         if (bid.bidder == msg.sender) {
-            // Kill bid and refund value
+            // Kill bid and refund value.
             pendingWithdrawals[msg.sender] += bid.value;
             pageBids[pageId] = Bid(false, pageId, address(0), 0);
         }
