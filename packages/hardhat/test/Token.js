@@ -46,44 +46,46 @@ describe("Token Contract", function () {
 
   describe("mintPage()", function () {
     it("Should not mint pages that have already been claimed", async function () {
-      await hardhatToken.mintPage(1);
-      await expect(hardhatToken.mintPage(1)).to.be.reverted;
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(hardhatToken.mintPage(/*pageId=*/ 1)).to.be.reverted;
 
-      await hardhatToken.mintPage(2);
-      await expect(hardhatToken.mintPage(2)).to.be.reverted;
+      await hardhatToken.mintPage(/*pageId=*/ 2);
+      await expect(hardhatToken.mintPage(/*pageId=*/ 2)).to.be.reverted;
     });
 
     it("Should mint tokens with proper URI", async function () {
-      await hardhatToken.mintPage(1);
-      expect(await hardhatToken.tokenURI(1)).to.equal(TEST_BASE_URI.concat(1));
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      expect(await hardhatToken.tokenURI(/*pageId=*/ 1)).to.equal(TEST_BASE_URI.concat(1));
 
-      await hardhatToken.mintPage(9226);
-      expect(await hardhatToken.tokenURI(9226)).to.equal(TEST_BASE_URI.concat(9226));
+      await hardhatToken.mintPage(/*pageId=*/ 9226);
+      expect(await hardhatToken.tokenURI(/*pageId=*/ 9226)).to.equal(TEST_BASE_URI.concat(9226));
 
-      await hardhatToken.mintPage(29384);
-      expect(await hardhatToken.tokenURI(29384)).to.equal(TEST_BASE_URI.concat(29384));
+      await hardhatToken.mintPage(/*pageId=*/ 29384);
+      expect(await hardhatToken.tokenURI(/*pageId=*/ 29384)).to.equal(TEST_BASE_URI.concat(29384));
 
-      await hardhatToken.mintPage(12891648290);
-      expect(await hardhatToken.tokenURI(12891648290)).to.equal(TEST_BASE_URI.concat(12891648290));
+      await hardhatToken.mintPage(/*pageId=*/ 12891648290);
+      expect(await hardhatToken.tokenURI(/*pageId=*/ 12891648290)).to.equal(
+        TEST_BASE_URI.concat(12891648290),
+      );
     });
   });
 
   describe("isClaimed()", function () {
     it("Should return true if already claimed, false otherwise", async function () {
-      await hardhatToken.mintPage(1);
-      expect(await hardhatToken.isClaimed(1)).to.be.true;
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 1)).to.be.true;
 
-      await hardhatToken.mintPage(2);
-      expect(await hardhatToken.isClaimed(2)).to.be.true;
+      await hardhatToken.mintPage(/*pageId=*/ 2);
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 2)).to.be.true;
 
-      await hardhatToken.mintPage(3);
-      expect(await hardhatToken.isClaimed(3)).to.be.true;
+      await hardhatToken.mintPage(/*pageId=*/ 3);
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 3)).to.be.true;
 
-      expect(await hardhatToken.isClaimed(4)).to.be.false;
-      expect(await hardhatToken.isClaimed(5)).to.be.false;
-      expect(await hardhatToken.isClaimed(6)).to.be.false;
-      expect(await hardhatToken.isClaimed(7)).to.be.false;
-      expect(await hardhatToken.isClaimed(8)).to.be.false;
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 4)).to.be.false;
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 5)).to.be.false;
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 6)).to.be.false;
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 7)).to.be.false;
+      expect(await hardhatToken.isClaimed(/*pageId=*/ 8)).to.be.false;
     });
   });
 
@@ -106,28 +108,28 @@ describe("Token Contract", function () {
 
   describe("buyPage()", function () {
     it("Should fail if page is not for sale", async function () {
-      await hardhatToken.mintPage(1);
-      await expect(hardhatToken.buyPage(1)).to.be.revertedWith(`Page is not for sale`);
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(hardhatToken.buyPage(/*pageId=*/ 1)).to.be.revertedWith(`Page is not for sale`);
 
-      await hardhatToken.mintPage(2);
-      await expect(hardhatToken.buyPage(2)).to.be.revertedWith(`Page is not for sale`);
+      await hardhatToken.mintPage(/*pageId=*/ 2);
+      await expect(hardhatToken.buyPage(/*pageId=*/ 2)).to.be.revertedWith(`Page is not for sale`);
     });
 
     it("Should fail if buyer attempts to repurchase a page they already own", async function () {
-      await hardhatToken.mintPage(1);
-      await hardhatToken.offerPageForSale(1, 100);
-      await expect(hardhatToken.buyPage(1)).to.be.revertedWith(
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      await expect(hardhatToken.buyPage(/*pageId=*/ 1)).to.be.revertedWith(
         `Buyer can't repurchase their own pages`,
       );
     });
 
     it("Should fail if value < minValue + requiredDonation", async function () {
-      await hardhatToken.mintPage(1);
-      await hardhatToken.offerPageForSale(1, 100);
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
       // Entire cost of tx should be 101, with 1% default donation
       let error = null;
       try {
-        await hardhatToken.connect(addr1).buyPage(1, { value: 100 });
+        await hardhatToken.connect(addr1).buyPage(/*pageId=*/ 1, { value: 100 });
       } catch (err) {
         error = err;
       }
@@ -138,12 +140,12 @@ describe("Token Contract", function () {
     });
 
     it("Should succeed if buyer is able to purchase page", async function () {
-      await hardhatToken.mintPage(1);
+      await hardhatToken.mintPage(/*pageId=*/ 1);
       expect(await hardhatToken.pageIdToAddress(1)).to.equal(owner.address);
 
-      await hardhatToken.offerPageForSale(1, 100);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
       // Expect no error to be thrown
-      await hardhatToken.connect(addr1).buyPage(1, { value: 101 });
+      await hardhatToken.connect(addr1).buyPage(/*pageId=*/ 1, { value: 101 });
 
       expect(await hardhatToken.pageIdToAddress(1)).to.equal(addr1.address);
     });
@@ -155,7 +157,7 @@ describe("Token Contract", function () {
 
   describe("offerPageForSale()", function () {
     it("Should fail if owner does not own page", async function () {
-      await expect(hardhatToken.offerPageForSale(1, 100)).to.be.revertedWith(
+      await expect(hardhatToken.offerPageForSale(/*pageId=*/ 1, 100)).to.be.revertedWith(
         `Page must be owned by sender`,
       );
     });
@@ -165,17 +167,17 @@ describe("Token Contract", function () {
     });
 
     it("Should successfully offer page and emit event", async function () {
-      await hardhatToken.mintPage(1);
-      await hardhatToken.offerPageForSale(1, 100);
-      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(1))).to.deep.equals({
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(/*pageId=*/ 1))).to.deep.equals({
         isForSale: true,
         seller: owner.address,
         minValue: 100,
         requiredDonation: calculateRequiredDonation(100),
       });
 
-      await hardhatToken.connect(addr1).mintPage(2);
-      await hardhatToken.connect(addr1).offerPageForSale(2, 1000);
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 2);
+      await hardhatToken.connect(addr1).offerPageForSale(/*pageId=*/ 2, 1000);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
         isForSale: true,
         seller: addr1.address,
@@ -183,8 +185,8 @@ describe("Token Contract", function () {
         requiredDonation: calculateRequiredDonation(1000),
       });
 
-      await hardhatToken.connect(addr2).mintPage(3);
-      await hardhatToken.connect(addr2).offerPageForSale(3, 1270);
+      await hardhatToken.connect(addr2).mintPage(/*pageId=*/ 3);
+      await hardhatToken.connect(addr2).offerPageForSale(/*pageId=*/ 3, 1270);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(3))).to.deep.equals({
         isForSale: true,
         seller: addr2.address,
@@ -196,26 +198,26 @@ describe("Token Contract", function () {
 
   describe("pageNoLongerForSale()", function () {
     it("Should fail if page not owned by sender", async function () {
-      await expect(hardhatToken.pageNoLongerForSale(1)).to.be.reverted;
+      await expect(hardhatToken.pageNoLongerForSale(/*pageId=*/ 1)).to.be.reverted;
 
-      await hardhatToken.mintPage(1);
-      await expect(hardhatToken.connect(addr1).pageNoLongerForSale(1)).to.be.reverted;
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(hardhatToken.connect(addr1).pageNoLongerForSale(/*pageId=*/ 1)).to.be.reverted;
     });
 
     it("Should successfully remove page from marketplace", async function () {
-      await hardhatToken.mintPage(1);
-      await hardhatToken.offerPageForSale(1, 100);
-      await hardhatToken.pageNoLongerForSale(1);
-      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(1))).to.deep.equals({
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.offerPageForSale(/*pageId=*/ 1, 100);
+      await hardhatToken.pageNoLongerForSale(/*pageId=*/ 1);
+      expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(/*pageId=*/ 1))).to.deep.equals({
         isForSale: false,
         seller: owner.address,
         minValue: 0,
         requiredDonation: 0,
       });
 
-      await hardhatToken.connect(addr1).mintPage(2);
-      await hardhatToken.connect(addr1).offerPageForSale(2, 3829);
-      await hardhatToken.connect(addr1).pageNoLongerForSale(2);
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 2);
+      await hardhatToken.connect(addr1).offerPageForSale(/*pageId=*/ 2, 3829);
+      await hardhatToken.connect(addr1).pageNoLongerForSale(/*pageId=*/ 2);
       expect(sanitizeOffer(await hardhatToken.pagesOfferedForSale(2))).to.deep.equals({
         isForSale: false,
         seller: addr1.address,
@@ -227,34 +229,40 @@ describe("Token Contract", function () {
 
   describe("enterBidForPage()", function () {
     it("Should fail if page has no owner", async function () {
-      await expect(hardhatToken.enterBidForPage(1)).to.be.revertedWith(`Page has no owner`);
-      await expect(hardhatToken.enterBidForPage(2)).to.be.revertedWith(`Page has no owner`);
-      await expect(hardhatToken.enterBidForPage(3)).to.be.revertedWith(`Page has no owner`);
+      await expect(hardhatToken.enterBidForPage(/*pageId=*/ 1)).to.be.revertedWith(
+        `Page has no owner`,
+      );
+      await expect(hardhatToken.enterBidForPage(/*pageId=*/ 2)).to.be.revertedWith(
+        `Page has no owner`,
+      );
+      await expect(hardhatToken.enterBidForPage(/*pageId=*/ 3)).to.be.revertedWith(
+        `Page has no owner`,
+      );
     });
 
     it("Should fail if bidder already owns page", async function () {
       await hardhatToken.mintPage(1);
-      await expect(hardhatToken.enterBidForPage(1)).to.be.revertedWith(
+      await expect(hardhatToken.enterBidForPage(/*pageId=*/ 1)).to.be.revertedWith(
         `Bidder already owns this page`,
       );
 
       await hardhatToken.connect(addr1).mintPage(2);
-      await expect(hardhatToken.connect(addr1).enterBidForPage(2)).to.be.revertedWith(
+      await expect(hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 2)).to.be.revertedWith(
         `Bidder already owns this page`,
       );
 
       await hardhatToken.connect(addr2).mintPage(3);
-      await expect(hardhatToken.connect(addr2).enterBidForPage(3)).to.be.revertedWith(
+      await expect(hardhatToken.connect(addr2).enterBidForPage(/*pageId=*/ 3)).to.be.revertedWith(
         `Bidder already owns this page`,
       );
     });
 
     it("Should fail if value is 0", async function () {
-      await hardhatToken.mintPage(1);
+      await hardhatToken.mintPage(/*pageId=*/ 1);
 
       let error = null;
       try {
-        await hardhatToken.connect(addr1).enterBidForPage(1, { value: 0 });
+        await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 0 });
       } catch (err) {
         error = err;
       }
@@ -266,8 +274,8 @@ describe("Token Contract", function () {
     });
 
     it("Should succeed if no previous bid has been made", async function () {
-      await hardhatToken.mintPage(1);
-      await hardhatToken.connect(addr1).enterBidForPage(1, { value: 10 });
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 10 });
 
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: true,
@@ -279,8 +287,8 @@ describe("Token Contract", function () {
 
     it("Should succeed and override previous bid if amount is greater", async function () {
       await hardhatToken.mintPage(1);
-      await hardhatToken.connect(addr1).enterBidForPage(1, { value: 10 });
-      await hardhatToken.connect(addr2).enterBidForPage(1, { value: 30 });
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 10 });
+      await hardhatToken.connect(addr2).enterBidForPage(/*pageId=*/ 1, { value: 30 });
 
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: true,
@@ -293,7 +301,7 @@ describe("Token Contract", function () {
       expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(10);
 
       // Make another bid from address 1
-      expect(await hardhatToken.connect(addr1).enterBidForPage(1, { value: 70 }));
+      expect(await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 70 }));
       expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
         hasBid: true,
         pageId: 1,
@@ -305,7 +313,7 @@ describe("Token Contract", function () {
       expect(await hardhatToken.pendingWithdrawals(addr2.address)).to.equal(30);
 
       // Make another bid from address 2
-      expect(await hardhatToken.connect(addr2).enterBidForPage(1, { value: 700 }));
+      expect(await hardhatToken.connect(addr2).enterBidForPage(/*pageId=*/ 1, { value: 700 }));
 
       // Address 1s withdrawals should include both bids (10 + 70);
       expect(await hardhatToken.pendingWithdrawals(addr1.address)).to.equal(80);
@@ -314,7 +322,14 @@ describe("Token Contract", function () {
 
   describe("acceptBidForPage()", function () {
     it("Should fail if page doesn't belong to sender", async function () {
-      // TODO(teddywilson) implement
+      await expect(
+        hardhatToken.acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 10),
+      ).to.be.revertedWith(`Page must be owned by sender`);
+
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(
+        hardhatToken.connect(addr1).acceptBidForPage(/*pageId=*/ 1, /*minPrice=*/ 10),
+      ).to.be.revertedWith(`Page must be owned by sender`);
     });
 
     it("Should fail if bid value is 0", async function () {
@@ -325,7 +340,13 @@ describe("Token Contract", function () {
   });
 
   describe("withdrawBidForPage()", function () {
-    it("Funds should withdraw successfully", async function () {
+    it("TODO(teddywilson) implement", async function () {
+      // TODO(teddywilson) implement
+    });
+  });
+
+  describe("withdrawPendingFUnds()", function () {
+    it("TODO(teddywilson) implement", async function () {
       // TODO(teddywilson) implement
     });
   });
