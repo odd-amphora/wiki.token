@@ -172,15 +172,14 @@ contract Token is ERC721, Ownable {
     /// @param pageId ID of the page being purchased.
     function buyPage(uint pageId) public payable {
         Offer memory offer = pagesOfferedForSale[pageId];
-        /// TODO(teddywilson) is null validation needed?
         require (offer.isForSale, "Page is not for sale");
         require (
             msg.value >= (offer.minValue + offer.requiredDonation),
             "Not enough to cover minValue + requiredDonation"
         );
         require (
-            offer.seller == pageIdToAddress[pageId],
-            "Offer seller is incorrect"
+            msg.sender == pageIdToAddress[pageId],
+            "Buyer can't repurchase their own pages"
         );
 
         /// Transfer ownership of the page and indicate that it is no longer for sale

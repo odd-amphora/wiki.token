@@ -105,7 +105,28 @@ describe("Token Contract", function () {
       await hardhatToken.mintPage(2);
       await expect(hardhatToken.buyPage(2)).to.be.revertedWith(`Page is not for sale`);
     });
-    // TODO(teddywilson) many more
+
+    it("Should fail if value < minValue + requiredDonation", async function () {
+      await hardhatToken.mintPage(1);
+      await hardhatToken.offerPageForSale(1, 100);
+      // Entire cost of tx should be 101, with 1% default donation
+      await expect(hardhatToken.connect(addr1).buyPage(1, { value: 100 })).to.be.revertedWith(
+        `Not enough to cover minValue + requiredDonation`,
+      );
+    });
+
+    it("Should fail if buyer attempts to repurchase a page they already own", async function () {
+      await expect(hardhatToken.buyPage(1, { value: 100 })).to.be.revertedWith(
+        `Buyer can't repurchase their own pages`,
+      );
+    });
+
+    it(
+      ("Should succeed if buyer is able to purchase page",
+      async function () {
+        // TODO(teddywilson) implement
+      }),
+    );
   });
 
   describe("offerPageForSale()", function () {
@@ -179,8 +200,6 @@ describe("Token Contract", function () {
     });
   });
 });
-
-describe("withdrawPendingFunds()", function () {});
 
 describe("enterBidForPage()", function () {});
 
