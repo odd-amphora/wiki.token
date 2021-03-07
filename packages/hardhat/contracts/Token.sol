@@ -8,8 +8,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
 
-/// @author The Wiki Token team
-/// @title Wiki Token ERC 721 contract
+/// TODO(bingbongle) leave comment outlining project/mechanism.
+/// @author The Wiki Token team.
+/// @title Wiki Token ERC 721 contract.
 contract Token is ERC721, Ownable {
     /// The maximum price that a token can be offered for or bidded on.
     /// This is calculated by: ((2^256) - 1) / 100
@@ -17,22 +18,22 @@ contract Token is ERC721, Ownable {
     /// max percentage is 100, we need padding for this operation otherwise it will overflow.
     uint constant MAX_PRICE = 1157920892373161954235709850086879078532699846656405640394575840079131296399;
 
-    /// Maps a page id to an address
+    /// Maps a page id to an address.
     mapping (uint => address) public pageIdToAddress;
 
-    /// Maps a page id to its outstanding offer by the seller
+    /// Maps a page id to its outstanding offer by the seller.
     mapping (uint => Offer) public pagesOfferedForSale;
 
-    /// Maps a page id to the highest outstanding offer
+    /// Maps a page id to the highest outstanding offer.
     mapping (uint => Bid) public pageBids;
 
-    /// Pending funds to be withdrawn for each address
+    /// Pending funds to be withdrawn for each address.
     mapping (address => uint) public pendingWithdrawals;
 
-    /// Minted page ids in order, used for pagination
+    /// Minted page ids in order, used for pagination.
     uint[] private _mintedPageIds;
 
-    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page
+    /// Percentage of offer minValue, in additional to minValue itself, required to purchase a page.
     /// e.g., 4 => 4%
     /// TODO(bingbongle) We could make this more granular (multiply by N), but maybe it's not worth dealing
     /// gas inflated multiplication + overflow logic.
@@ -86,21 +87,21 @@ contract Token is ERC721, Ownable {
     event PageBought(uint indexed pageId, uint value, uint donated, address indexed fromAddress, address indexed toAddress);
     event PageNoLongerForSale(uint indexed pageId);
 
-    /// Wiki Token constructor
-    /// @param baseURI the base URI that will be applied to all tokens
+    /// Wiki Token constructor.
+    /// @param baseURI Base URI that will be applied to all tokens.
     constructor (string memory baseURI, uint donationPercentage) public ERC721("WikiToken", "WIKI") {
         _setBaseURI(baseURI);
         setDonationPercentage(donationPercentage);
     }
 
-    /// Sets base URI for tokens
-    /// @param baseURI base URI that will be set
+    /// Sets base URI for all tokens.
+    /// @param baseURI Base URI that will be set.
     function setBaseURI(string memory baseURI) public onlyOwner {
         _setBaseURI(baseURI);
     }
 
-    /// Sets the donation percentage that will be baked into every marketplace transaction
-    /// @param donationPercentage The donation percentage that will be set
+    /// Sets the donation percentage that will be baked into every marketplace transaction.
+    /// @param donationPercentage The donation percentage that will be set.
     function setDonationPercentage(uint donationPercentage) public onlyOwner {
         require (
             donationPercentage > 0 && donationPercentage <= 100,
@@ -114,16 +115,16 @@ contract Token is ERC721, Ownable {
         return _donationPercentage;
     }
 
-    /// Check if token for `pageId` is claimed
-    /// @param pageId unique id of token in question
-    /// @return true if claimed, false otherwise
+    /// Check if token for `pageId` is claimed.
+    /// @param pageId ID of token in question.
+    /// @return True if claimed, false otherwise.
     function isClaimed(uint pageId) public view returns (bool) {
         return _exists(pageId);
     }
 
-    /// Fetches tokens belonging to any address
-    /// @param cursor the index results should start at
-    /// @param howMany how many results should be returned
+    /// Fetches tokens belonging to any address.
+    /// @param cursor Index paginated results should start at.
+    /// @param howMany How many results should be returned.
     function discover(
         uint cursor,
         uint howMany,
@@ -132,11 +133,11 @@ contract Token is ERC721, Ownable {
         return _paginate(cursor, howMany, ascending, _mintedPageIds);
     }
 
-    /// Fetches tokens of an address
-    /// @param address_ address that tokens will be queried for
-    /// @param cursor the index results should start at
-    /// @param howMany how many results should be returned
-    /// @dev `cursor` and `howMany` allow us to paginate results
+    /// Fetches tokens belonging to an address.
+    /// @param address_ Address that tokens will be queried for.
+    /// @param cursor Index paginated results should start at.
+    /// @param howMany How many results should be returned.
+    /// @dev `cursor` and `howMany` allow us to paginate results.
     function tokensOf(
         address address_,
         uint cursor,
@@ -146,8 +147,8 @@ contract Token is ERC721, Ownable {
         return _paginate(cursor, howMany, ascending, _addressToPageIds[address_]);
     }
 
-    /// Mints a Wiki Token
-    /// @param pageId Wikipedia page (by id) that will be minted as a token
+    /// Mints a Wiki Token.
+    /// @param pageId Wikipedia page (by id) that will be minted as a token.
     function mintPage(uint pageId) public {
         _mint(msg.sender, pageId);
         _setTokenURI(pageId, Strings.toString(pageId));
@@ -160,7 +161,7 @@ contract Token is ERC721, Ownable {
         emit Mint(msg.sender, pageId);
     }
 
-    /// Purchases a page for the full offer price (or more)
+    /// Purchases a page for the full offer price (or more).
     /// @param pageId ID of the page being purchased.
     function buyPage(uint pageId) public payable {
         Offer memory offer = pagesOfferedForSale[pageId];
@@ -174,7 +175,7 @@ contract Token is ERC721, Ownable {
             "Not enough to cover minValue + requiredDonation"
         );
 
-        /// Transfer ownership of the page and indicate that it is no longer for sale
+        /// Transfer ownership of the page and indicate that it is no longer for sale.
         pageIdToAddress[pageId] = msg.sender;
         pageNoLongerForSale(pageId);
 
@@ -200,9 +201,9 @@ contract Token is ERC721, Ownable {
         );
     }
 
-    /// Allows a seller to indicate that that a page they own is up for purchase
-    /// @param pageId ID of they page that the seller is putting on the market
-    /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
+    /// Allows a seller to indicate that that a page they own is up for purchase.
+    /// @param pageId ID of they page that the seller is putting on the market.
+    /// @param minSalePriceInWei Minimum sale price the seller will accept for the page.
     function offerPageForSale(uint pageId, uint minSalePriceInWei)  public {
         require (
             pageIdToAddress[pageId] == msg.sender,
@@ -225,8 +226,8 @@ contract Token is ERC721, Ownable {
         emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
     }
 
-    /// Allows a seller to indicate that a page they own is no longer for sale
-    /// @param pageId ID of the page that the seller is taking off the market
+    /// Allows a seller to indicate that a page they own is no longer for sale.
+    /// @param pageId ID of the page that the seller is taking off the market.
     function pageNoLongerForSale(uint pageId)  public {
         /// Only the owner of the page can take its corresponding offer off the market.
         require (
@@ -240,20 +241,20 @@ contract Token is ERC721, Ownable {
         emit PageNoLongerForSale(pageId);
     }    
 
-    /// Withdraw pending funds received from bids and buys
+    /// Withdraws pending funds received from bids and purchases.
     function withdrawPendingFunds()  public {
         /// Check how much is currently pending for the sender before clearing the balance.
         uint amount = pendingWithdrawals[msg.sender];
 
-        /// Clear balance to prevent re-entrancy attacks
+        /// Clear balance to prevent re-entrancy attacks.
         pendingWithdrawals[msg.sender] = 0;
 
         /// Transfer pending amount back to the sender.
         msg.sender.transfer(amount);
     }
 
-    /// Places a purchasing bid on a page
-    /// @param pageId ID of the page will be placed on
+    /// Places a purchasing bid on a page.
+    /// @param pageId ID of the page will be placed on.
     function enterBidForPage(uint pageId) public payable  {
         require (
             pageIdToAddress[pageId] != address(0),
@@ -291,9 +292,9 @@ contract Token is ERC721, Ownable {
         emit PageBidEntered(pageId, msg.value, msg.sender);
     }
 
-    /// Accepts a bid for a page a seller owns
-    /// @param pageId ID of the page in question
-    /// @param minPrice minimum price the selleer will accept for the page
+    /// Accepts a bid for a page a seller owns.
+    /// @param pageId ID of the page in question.
+    /// @param minPrice Minimum price the selleer will accept for the page.
     function acceptBidForPage(uint pageId, uint minPrice)  public {
         require (
             pageIdToAddress[pageId] == msg.sender,
@@ -330,8 +331,8 @@ contract Token is ERC721, Ownable {
         );
     }
 
-    /// Withdraws an outstanding bid made against a page
-    /// @param pageId ID of the page the bid is placed against
+    /// Withdraws an outstanding bid made against a page.
+    /// @param pageId ID of the page the bid is placed against.
     function withdrawBidForPage(uint pageId)  public {
         require (
             pageIdToAddress[pageId] != address(0),
@@ -352,13 +353,13 @@ contract Token is ERC721, Ownable {
         /// Null out the bid corresponding to the pageId.
         pageBids[pageId] = Bid(false, pageId, address(0), 0);
 
-        /// Refund the bid amount
+        /// Refund the bid amount.
         msg.sender.transfer(_bid.value);
 
         emit PageBidWithdrawn(pageId, _bid.value, msg.sender);        
     }
 
-    /// Helper function to calculate a donation amount from a given value
+    /// Helper function to calculate a donation amount from a given value.
     /// @param value Value the donation amount will be derived from.
     function calculateDonationFromValue(uint value) private view returns(uint256) {
         bool succeeded;
@@ -376,12 +377,12 @@ contract Token is ERC721, Ownable {
         return donationTimesOneHundred / 100;
     }    
 
-    /// Paginates items in a uint array
-    /// @param cursor position to start at
-    /// @param howMany max number of items to return
-    /// @param ascending index array in ascending/descending order
-    /// @param array data that will be indexed
-    /// @dev uint array type could be templated once solidity supports this
+    /// Paginates items in a uint array.
+    /// @param cursor Position to start at.
+    /// @param howMany Max number of items to return.
+    /// @param ascending Index array in ascending/descending order.
+    /// @param array Data that will be indexed.
+    /// @dev uint Array type could be templated once solidity supports this.
     function _paginate(
         uint cursor,
         uint howMany,
