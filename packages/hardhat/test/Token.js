@@ -2,6 +2,12 @@
 
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
+const { hardhatArguments } = require("hardhat");
+
+var Web3 = require("web3");
+var TestRPC = require("ethereumjs-testrpc");
+// web3.setProvider(TestRPC.provider());
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 const TEST_BASE_URI = `https://bananabread.com/api/`;
 const TEST_INITIAL_DONATION_PERCENTAGE = 1;
@@ -412,19 +418,64 @@ describe("Token Contract", function () {
 
   describe("withdrawBidForPage()", function () {
     it("Should fail if page is not currently owned", async function () {
-      // TODO(teddywilson) implement
+      await expect(hardhatToken.withdrawBidForPage(/*pageId=*/ 2)).to.be.revertedWith(
+        `Page is not currently owned`,
+      );
+
+      await expect(
+        hardhatToken.connect(addr1).withdrawBidForPage(/*pageId=*/ 23),
+      ).to.be.revertedWith(`Page is not currently owned`);
     });
 
     it("Should fail if page belongs to the sender", async function () {
-      // TODO(teddywilson) implement
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await expect(hardhatToken.withdrawBidForPage(/*pageId=*/ 1)).to.be.revertedWith(
+        `Page cannot be owned by the sender`,
+      );
+
+      await hardhatToken.connect(addr1).mintPage(/*pageId=*/ 101);
+      await expect(
+        hardhatToken.connect(addr1).withdrawBidForPage(/*pageId=*/ 101),
+      ).to.be.revertedWith(`Page cannot be owned by the sender`);
     });
 
     it("Should fail if outstanding bid is not owned by sender", async function () {
-      // TODO(teddywilson) implement
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 404 });
+      await expect(
+        hardhatToken.connect(addr2).withdrawBidForPage(/*pageId=*/ 1),
+      ).to.be.revertedWith(`Outstanding bid must be owned by sender`);
+
+      await hardhatToken.connect(addr2).mintPage(/*pageId=*/ 77);
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 77, { value: 314 });
+      await expect(hardhatToken.withdrawBidForPage(/*pageId=*/ 77)).to.be.revertedWith(
+        `Outstanding bid must be owned by sender`,
+      );
     });
 
     it("Should succeed succeed if validation criteria is met", async function () {
-      // TODO(teddywilson) implement
+      await hardhatToken.mintPage(/*pageId=*/ 1);
+
+      let balanceBeforeBid = BigNumber.from(await addr1.getBalance());
+
+      await hardhatToken.connect(addr1).enterBidForPage(/*pageId=*/ 1, { value: 404, gasPrice: 0 });
+
+      let balanceAfterBid = await addr1.getBalance();
+      let bidValue = BigNumber.from(404);
+      expect(balanceAfterBid.eq(balanceBeforeBid.sub(bidValue))).to.be.true;
+
+      await hardhatToken.connect(addr1).withdrawBidForPage(/*pageId=*/ 1, { gasPrice: 0 });
+
+      let balanceAfterBidWithdrawal = BigNumber.from(await addr1.getBalance());
+      expect(balanceBeforeBid.eq(balanceAfterBidWithdrawal)).to.be.true;
+
+      // Bid for the page should be removed
+      expect(sanitizeBid(await hardhatToken.pageBids(1))).to.deep.equals({
+        hasBid: false,
+        pageId: 1,
+        bidder: "0x0000000000000000000000000000000000000000",
+        value: 0,
+      });
     });
   });
 
