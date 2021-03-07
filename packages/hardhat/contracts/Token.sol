@@ -47,9 +47,10 @@ contract Token is ERC721, Ownable {
         bool hasBid;
         uint pageId;
         address bidder;
-        uint value;
+        uint value; // in ether
     }
 
+    /// TODO(teddywilson) revisit and implement all of these
     event Assign(address indexed to, uint pageId);
     event Transfer(address indexed from, address indexed to, uint amount);
     event Donate(address indexed from, address indexed to, uint amount);
@@ -190,10 +191,7 @@ contract Token is ERC721, Ownable {
         pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
         pendingWithdrawals[owner()] += offer.requiredDonation;
 
-        /// TODO(teddywilson) rethink these events
-        // emit Transfer(bid.bidder, bid.bidder, bid.value - offer.requiredDonation);
-        // emit Donate(msg.sender, owner(), offer.requiredDonation);
-        // emit PageBought(pageId, msg.value, offer.seller, msg.sender);     
+        /// TODO(teddywilson) events 
 
         /// Check for the case where there is a bid from the new owner and refund it.
         /// Any other bid can stay in place.
@@ -205,6 +203,23 @@ contract Token is ERC721, Ownable {
         }
     }
 
+    /// TODO(teddywilson) docs
+    function calculateDonationFromValue(uint value) private view returns(uint256) {
+        bool succeeded;
+        uint256 donationTimesOneHundred;
+        (succeeded, donationTimesOneHundred) = SafeMath.tryMul(
+            _donationPercentage,
+            value
+        );
+        if (!succeeded) {
+            // TODO(teddywilson) this is a rare case and we can probably swallow it, but perhaps we 
+            // should log an event that this occurred. Overflow would mean an egregiously priced token
+            // which is quite unlikely. In these cases, we can donate nothing, or take a fixed value?
+            // The former is probably more "fair" but less fortunate.
+        }
+        return donationTimesOneHundred / 100;        
+    }
+
     /// Allows a seller to indicate that that a page they own is up for purchase
     /// @param pageId ID of they page that the seller is putting on the market
     /// @param minSalePriceInWei Minimum sale price the seller will accept for the page
@@ -213,16 +228,7 @@ contract Token is ERC721, Ownable {
             pageIdToAddress[pageId] == msg.sender,
             "Page must be owned by sender"
         );
-        /// Calculate required donation. If this operation overflows, the min sale price is too high.
-        /// TODO(teddywilson) perhaps pin a max sale price calculated from donationPercentage and 2^256-1
-        bool calculatedDonationSuccessfully;
-        uint256 requiredDonationTimesOneHundred;
-        (calculatedDonationSuccessfully, requiredDonationTimesOneHundred) = SafeMath.tryMul(
-            _donationPercentage,
-            minSalePriceInWei
-        );
-        require (calculatedDonationSuccessfully, "Could not calculate donation, min sale price too high");
-        uint requiredDonation = requiredDonationTimesOneHundred / 100;
+        uint256 requiredDonation = calculateDonationFromValue(minSalePriceInWei);
         pagesOfferedForSale[pageId] = Offer(
             true,
             pageId,
@@ -297,7 +303,6 @@ contract Token is ERC721, Ownable {
             _bid.value >= minPrice,
             "Bid value must be greater than or equal to minimum price"
         );
-        // TODO(teddywilson) validate amount can cover donation
 
         // Null out offer and bid
         pagesOfferedForSale[pageId] = Offer(false, pageId, address(0), 0, 0);
@@ -307,15 +312,14 @@ contract Token is ERC721, Ownable {
         pageIdToAddress[pageId] = _bid.bidder;
         pageNoLongerForSale(pageId);
 
-        /// Transfer funds to owner and donation address (owner).
-        // TODO(teddywilson) yup fix
-        // pendingWithdrawals[msg.sender] += _bid.value - offer.requiredDonation;
-        // pendingWithdrawals[owner()] += offer.requiredDonation;
+        /// Calculate donated amount from bid
+        uint256 donation = calculateDonationFromValue(_bid.value);
 
-        /// TODO(teddywilson) rethink these events
-        // emit Transfer(bid.bidder, bid.bidder, bid.value - offer.requiredDonation);
-        // emit Donate(msg.sender, owner(), offer.requiredDonation);
-        // emit PageBought(pageId, msg.value, offer.seller, msg.sender);        
+        // Transfer funds to owner and donation address (owner).
+        pendingWithdrawals[msg.sender] += _bid.value - donation;
+        pendingWithdrawals[owner()] += donation;
+
+        /// TODO(teddywilson) events 
     }
 
     /// Withdraws an outstanding bid made against a page
