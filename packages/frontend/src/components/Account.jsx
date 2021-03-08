@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "antd";
 import Balance from "./Balance";
 
+import { FormatAddress } from "../helpers";
+
 export default function Account({
   address,
   web3Modal,
@@ -10,16 +12,6 @@ export default function Account({
   price,
   provider,
 }) {
-  function formatAddress(address) {
-    // TODO(teddywilson) validate addresses properly?
-    if (address < 12) {
-      return address;
-    }
-    const beginning = address.substring(0, 6);
-    const end = address.substring(address.length - 6);
-    return beginning.concat(`...`).concat(end);
-  }
-
   return (
     <div className="account">
       <Balance address={address} provider={provider} price={price} />
@@ -30,7 +22,7 @@ export default function Account({
         onClick={onConnectWallet}
         className="connect-button"
       >
-        {web3Modal && web3Modal.cachedProvider && address ? formatAddress(address) : "Connect"}
+        {web3Modal && web3Modal.cachedProvider && address ? FormatAddress(address) : "Connect"}
       </Button>
       <Button
         ghost={true}

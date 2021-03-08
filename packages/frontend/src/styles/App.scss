@@ -91,7 +91,7 @@ body {
   border-color: black;
   border-width: 1px;
   border-style: outset;
-  // cursor: pointer;
+  cursor: pointer;
 }
 
 .token-button {
@@ -115,7 +115,7 @@ body {
 
 .token-text-box {
   border-color: black;
-  border-width: 0px 0px 1px 0px;
+  border-width: 1px 0px 1px 0px;
   border-style: solid;
 }
 
@@ -124,8 +124,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 8px;
-  margin-bottom: 8px;
 }
 
 .token-wrapper {

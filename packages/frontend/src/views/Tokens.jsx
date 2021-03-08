@@ -5,27 +5,21 @@ import { Divider } from "antd";
 import { Token } from "../components";
 
 export default function Tokens({
-  price,
   address,
   tokens,
   web3Modal,
   contracts,
   transactor,
   signer,
-  emptyStateHeader,
-  emptyStateSubtitle,
+  headerText,
+  walletNotConnectedText,
 }) {
   return (
     <div className="menu-view">
-      <div hidden={tokens && tokens.length > 0}>
-        {emptyStateHeader.concat(" ")}
-        <span role="img" aria-label="sad-face">
-          😔
-        </span>
-      </div>
+      <div>{headerText}</div>
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
-        {emptyStateSubtitle.concat(" ")}
+        {walletNotConnectedText.concat(" ")}
         <span role="img" aria-label="rocket">
           🚀
         </span>

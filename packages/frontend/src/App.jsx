@@ -217,8 +217,12 @@ function App() {
                 contracts={contracts}
                 transactor={transactor}
                 signer={userProvider.getSigner()}
-                emptyStateHeader="You haven't claimed any tokens yet"
-                emptyStateSubtitle="Connect a wallet to claim your first one"
+                headerText={
+                  myTokens && myTokens.length > 0
+                    ? `Right click on a token to accept a bid, or to list it for sale 📈`
+                    : `You haven't claimed any tokens... yet 😞`
+                }
+                walletNotConnectedText="Connect a wallet to claim your first one"
               />
             </Route>
             <Route path="/discover">
@@ -230,8 +234,12 @@ function App() {
                 contracts={contracts}
                 transactor={transactor}
                 signer={userProvider.getSigner()}
-                emptyStateHeader="No Wiki Tokens have been claimed yet"
-                emptyStateSubtitle="Connect a wallet to claim the first one"
+                headerText={
+                  discoveryTokens && discoveryTokens.length > 0
+                    ? `Right click on a token to purchase it for full price, or to place a bid 🏦`
+                    : `No tokens have been claimed... yet 😞`
+                }
+                walletNotConnectedText="Connect a wallet to claim the first one"
               />
             </Route>
           </Switch>
