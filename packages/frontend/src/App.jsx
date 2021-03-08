@@ -24,7 +24,7 @@ import {
 import { Layout } from "./components";
 import { NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { About, Claim, Discover, MyTokens } from "./views";
+import { About, Claim, Tokens } from "./views";
 import { BigNumber } from "@ethersproject/bignumber";
 
 const web3Modal = new Web3Modal({
@@ -209,22 +209,29 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <MyTokens
+              <Tokens
+                price={price}
                 address={address}
                 tokens={myTokens}
                 web3Modal={web3Modal}
                 contracts={contracts}
                 transactor={transactor}
                 signer={userProvider.getSigner()}
+                emptyStateHeader="You haven't claimed any tokens yet"
+                emptyStateSubtitle="Connect a wallet to claim your first one"
               />
             </Route>
             <Route path="/discover">
-              <Discover
+              <Tokens
+                price={price}
                 address={address}
                 tokens={discoveryTokens}
+                web3Modal={web3Modal}
                 contracts={contracts}
                 transactor={transactor}
                 signer={userProvider.getSigner()}
+                emptyStateHeader="No Wiki Tokens have been claimed yet"
+                emptyStateSubtitle="Connect a wallet to claim the first one"
               />
             </Route>
           </Switch>

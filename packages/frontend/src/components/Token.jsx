@@ -4,7 +4,7 @@ import { Image } from "antd";
 import { useContractReader } from "../hooks";
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { Alert, InputNumber, Modal } from "antd";
+import { Alert, InputNumber, Modal, Dropdown, Button, Menu, Item } from "antd";
 
 export default function Token({
   address,
@@ -59,6 +59,18 @@ export default function Token({
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
 
+  const handleMenuClick = e => {
+    console.log("click", e);
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">1st menu item</Menu.Item>
+      <Menu.Item key="2">2nd menu item</Menu.Item>
+      <Menu.Item key="3">3rd menu item</Menu.Item>
+    </Menu>
+  );
+
   return (
     <div className="token">
       <Alert
@@ -66,14 +78,16 @@ export default function Token({
         type={offer && offer.isForSale === true ? "success" : "warning"}
       />
       <div className="token-wrapper">
-        <Image
-          width={196}
-          src={imageUrl}
-          preview={false}
-          onClick={() => {
-            openWikipediaPage();
-          }}
-        />
+        <div className="token-image">
+          <Image
+            width={196}
+            src={imageUrl}
+            preview={false}
+            onClick={() => {
+              openWikipediaPage();
+            }}
+          />
+        </div>
         <div className="token-text-box">
           <div className="token-page-title">{`"${pageTitle}"`}</div>
           <div className="token-page-id">{pageId}</div>
@@ -104,7 +118,9 @@ export default function Token({
           Unlist
         </div>
       </div>
-      <div>{owner}</div>
+      <Dropdown.Button overlay={menu}></Dropdown.Button>
+
+      <div className="token-owner">{owner}</div>
       {/* TODO(bingbongle) Add price form */}
       <Modal
         title={`List "` + pageTitle + `" for sale`}

@@ -1,16 +1,33 @@
 import React from "react";
 
+import { Divider } from "antd";
+
 import { Token } from "../components";
 
-// TODO(teddywilson) perhaps abstract this view with MyTokens but it probably will need its
-// own sp
-export default function Discover({ address, tokens, contracts, transactor, signer }) {
+export default function Tokens({
+  price,
+  address,
+  tokens,
+  web3Modal,
+  contracts,
+  transactor,
+  signer,
+  emptyStateHeader,
+  emptyStateSubtitle,
+}) {
   return (
     <div className="menu-view">
       <div hidden={tokens && tokens.length > 0}>
-        No Wiki Tokens have been claimed yet{" "}
+        {emptyStateHeader.concat(" ")}
         <span role="img" aria-label="sad-face">
           😔
+        </span>
+      </div>
+      <div hidden={web3Modal && web3Modal.cachedProvider}>
+        <Divider />
+        {emptyStateSubtitle.concat(" ")}
+        <span role="img" aria-label="rocket">
+          🚀
         </span>
       </div>
       <div hidden={!tokens || tokens.length === 0}>

@@ -1,6 +1,8 @@
 @import "./antd.css";
 @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
+$primary-color: #25283d;
+
 #root {
   display: flex;
   flex-direction: column;
@@ -96,6 +98,11 @@ body {
   cursor: pointer;
 }
 
+.token-owner {
+  background-color: $primary-color;
+  color: white;
+}
+
 .token-page-id {
   font-size: 12px;
   font-family: "Karla";
@@ -108,8 +115,17 @@ body {
 
 .token-text-box {
   border-color: black;
-  border-width: 1px;
+  border-width: 0px 0px 1px 0px;
   border-style: solid;
+}
+
+.token-image {
+  // TODO experimenting here
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .token-wrapper {
