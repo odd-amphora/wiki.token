@@ -41,11 +41,10 @@ export default function Token({
     [pageId],
     10000,
     newOffer => {
-      console.log("teddytest, ", newOffer);
       return newOffer && newOffer.length >= 5
         ? {
             isForSale: newOffer[0],
-            price: web3.utils.fromWei(BigNumber.from(newOffer[1]).toHexString(), "ether"),
+            price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
             seller: newOffer[2],
           }
         : null;
@@ -104,7 +103,7 @@ export default function Token({
     await transactor(
       contracts["Token"]
         .connect(signer)
-        ["offerPageForSale"](pageId, BigNumber.from(1234567891).toHexString()),
+        ["offerPageForSale"](pageId, web3.utils.toWei("1", "ether")),
     );
   };
 
