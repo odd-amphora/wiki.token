@@ -6,6 +6,8 @@ import { Alert, Image, InputNumber, Modal, Menu, Dropdown } from "antd";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
+import web3 from "web3";
+
 const KEY_LIST_FOR_SALE = "1";
 const KEY_UNLIST_FROM_MARKETPLACE = "2";
 const KEY_PURCHASE_FULL_PRICE = "3";
@@ -39,9 +41,11 @@ export default function Token({
     [pageId],
     10000,
     newOffer => {
+      console.log("teddytest, ", newOffer);
       return newOffer && newOffer.length >= 5
         ? {
             isForSale: newOffer[0],
+            price: web3.utils.fromWei(BigNumber.from(newOffer[1]).toHexString(), "ether"),
             seller: newOffer[2],
           }
         : null;
@@ -98,7 +102,9 @@ export default function Token({
     // TODO(bingbongle) validation, loading spinner, etc.
     // TODO(bingbongle) list amount should be input by user.
     await transactor(
-      contracts["Token"].connect(signer)["offerPageForSale"](pageId, BigNumber.from(2)),
+      contracts["Token"]
+        .connect(signer)
+        ["offerPageForSale"](pageId, BigNumber.from(1234567891).toHexString()),
     );
   };
 
@@ -138,7 +144,9 @@ export default function Token({
     <Dropdown overlay={menu()} trigger={["contextMenu"]}>
       <div className="token">
         <Alert
-          message={offer && offer.isForSale === true ? "💸  For sale" : "🤷  Not listed"}
+          message={
+            offer && offer.isForSale === true ? "💸  " + offer.price + " ETH" : "🤷  Not listed"
+          }
           type={offer && offer.isForSale === true ? "success" : "warning"}
         />
         <div className="token-wrapper">
