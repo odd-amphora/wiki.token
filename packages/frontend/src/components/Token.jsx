@@ -60,13 +60,24 @@ export default function Token({
 
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
+  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
+  const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
 
-  const handleMenuClick = e => {
-    console.log("click", e);
-  };
+  function handleMenuClick(e) {
+    switch (e.key) {
+      case "1":
+        setListTokenModalVisible(true);
+        break;
+      case "2":
+        setUnlistTokenModalVisible(true);
+        break;
+      default:
+        console.log(`Event not handled!`, e);
+    }
+  }
 
   const menu = (
-    <Menu>
+    <Menu onClick={handleMenuClick}>
       <Menu.Item key="1">🎉 List for sale</Menu.Item>
       <Menu.Item key="2">🛌 Unlist from marketplace</Menu.Item>
       <Menu.Item key="3">👀 View/accept bids</Menu.Item>
@@ -95,31 +106,6 @@ export default function Token({
           <div className="token-text-box">
             <div className="token-page-title">{`"${pageTitle}"`}</div>
             <div className="token-page-id">{pageId}</div>
-          </div>
-        </div>
-        {/* Not owner actions */}
-        <div className="token-button" hidden={owner === address}>
-          Place bid
-        </div>
-        {/* Owner actions */}
-        <div hidden={true || offer === undefined || owner !== address}>
-          <div
-            className="token-button"
-            hidden={true || offer === undefined || offer.isForSale}
-            onClick={() => {
-              setListTokenModalVisible(true);
-            }}
-          >
-            List
-          </div>
-          <div
-            className="token-button"
-            hidden={true || offer === undefined || !offer.isForSale}
-            onClick={() => {
-              setUnlistTokenModalVisible(true);
-            }}
-          >
-            Unlist
           </div>
         </div>
         <div className="token-owner">{FormatAddress(owner)}</div>
