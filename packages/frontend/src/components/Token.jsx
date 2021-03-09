@@ -6,12 +6,12 @@ import { Alert, Image, InputNumber, Modal, Menu, Dropdown } from "antd";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
-const KEY_LIST_FOR_SALE = 1;
-const KEY_UNLIST_FROM_MARKETPLACE = 2;
-const KEY_PURCHASE_FULL_PRICE = 3;
-const KEY_PLACE_BID = 4;
-const KEY_VIEW_BIDS = 5;
-const KEY_VIEW_TX_HISTORY = 6;
+const KEY_LIST_FOR_SALE = "1";
+const KEY_UNLIST_FROM_MARKETPLACE = "2";
+const KEY_PURCHASE_FULL_PRICE = "3";
+const KEY_PLACE_BID = "4";
+const KEY_VIEW_BIDS = "5";
+const KEY_VIEW_TX_HISTORY = "6";
 
 export default function Token({
   address,
@@ -80,7 +80,7 @@ export default function Token({
     items.push(<Menu.Item key={KEY_PLACE_BID}>⚖️ View outstanding bids</Menu.Item>);
     // View page history
     items.push(<Menu.Item key={KEY_VIEW_TX_HISTORY}>🌐 View history</Menu.Item>);
-    return <Menu>{items}</Menu>;
+    return <Menu onClick={handleMenuClick}>{items}</Menu>;
   };
 
   /**
@@ -168,6 +168,10 @@ export default function Token({
           }}
           onCancel={() => setListTokenModalVisible(false)}
         >
+          <p>
+            By listing this page, buyers will be able to purchase it outright without placing a bid.
+          </p>
+          <p>You can unlist this page at any time.</p>
           <InputNumber
             style={{
               width: 200,
@@ -180,8 +184,7 @@ export default function Token({
             stringMode
           />{" "}
           ETH
-          {/* TODO add conversion */}
-          <div>~ $10,000 USD</div>
+          <br />
         </Modal>
         <Modal
           title={`Unlist "` + pageTitle + `" from marketplace`}
@@ -191,7 +194,13 @@ export default function Token({
             unlistToken();
           }}
           onCancel={() => setUnlistTokenModalVisible(false)}
-        ></Modal>
+        >
+          <p>
+            Buyers will still be able to place bids against the page. However, you will need to
+            accept them in order to complete the purchase.
+          </p>
+          <p>You can relist this page at any time.</p>
+        </Modal>
         {/* TODO(bingbongle) Add bid modal */}
       </div>
     </Dropdown>
