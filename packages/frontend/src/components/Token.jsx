@@ -165,7 +165,9 @@ export default function Token({
             <div className="token-page-id">{pageId}</div>
           </div>
         </div>
-        <div className="token-owner">{FormatAddress(owner)}</div>
+        <div className="token-owner">
+          {owner && address && owner === address ? `😎 You own this token` : FormatAddress(owner)}
+        </div>
         {/* TODO(bingbongle) Add price form */}
         <Modal
           title={`List "` + pageTitle + `" for sale`}
