@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { Image } from "antd";
+
+import { BigNumber } from "@ethersproject/bignumber";
+import { Alert, Image, InputNumber, Modal, Menu, Dropdown } from "antd";
 
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
-import { BigNumber } from "@ethersproject/bignumber";
-
-import { Alert, InputNumber, Modal, Menu, Popover, Dropdown } from "antd";
+const KEY_LIST_FOR_SALE = 1;
+const KEY_UNLIST_FROM_MARKETPLACE = 2;
+const KEY_PURCHASE_FULL_PRICE = 3;
+const KEY_PLACE_BID = 4;
+const KEY_VIEW_BIDS = 5;
+const KEY_VIEW_TX_HISTORY = 6;
 
 export default function Token({
   address,
@@ -17,28 +22,16 @@ export default function Token({
   transactor,
   signer,
 }) {
-  function openWikipediaPage() {
-    window.open(`https://en.wikipedia.org/?curid=${pageId}`);
-  }
+  // Modal state
+  const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
+  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
+  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
+  const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
 
-  const listToken = async () => {
-    // TODO(bingbongle) validation, loading spinner, etc.
-    // TODO(bingbongle) list amount should be input by user.
-    await transactor(
-      contracts["Token"].connect(signer)["offerPageForSale"](pageId, BigNumber.from(2)),
-    );
-  };
+  // Poll the owner of this token.
+  const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
 
-  const unlistToken = async () => {
-    // TODO(bingbongle) validation, loading spinner, etc.
-    await transactor(contracts["Token"].connect(signer)["pageNoLongerForSale"](pageId));
-  };
-
-  function placeBid() {
-    // TODO(bingbongle) Implement.
-  }
-
-  // Poll offer corresponding to the page ID.
+  // Poll offer belonging to this token.
   const offer = useContractReader(
     contracts,
     "Token",
@@ -55,38 +48,94 @@ export default function Token({
     },
   );
 
-  // Poll the owner of the page ID.
-  const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
+  // Builds the right-click menu with user options to interact with token. Varies depending on user
+  // and token state.
+  const menu = () => {
+    if (!offer || !owner || !address) {
+      return <Menu />;
+    }
+    let items = [];
+    if (owner === address) {
+      // List page for sale
+      if (!offer.isForSale) {
+        items.push(<Menu.Item key={KEY_LIST_FOR_SALE}>🎉 List for sale</Menu.Item>);
+      }
+      // Take page off market
+      if (offer.isForSale) {
+        items.push(
+          <Menu.Item key={KEY_UNLIST_FROM_MARKETPLACE}>🛌 Unlist from marketplace</Menu.Item>,
+        );
+      }
+    } else {
+      // Purchase page for full price
+      if (offer.isForSale) {
+        items.push(<Menu.Item key={KEY_PURCHASE_FULL_PRICE}>🔥 Purchase for full price</Menu.Item>);
+      }
+      // Place bid on item
+      if (offer.isForSale) {
+        items.push(<Menu.Item key={KEY_PLACE_BID}>🤠 Bid on page</Menu.Item>);
+      }
+    }
+    // View bids
+    items.push(<Menu.Item key={KEY_PLACE_BID}>⚖️ View outstanding bids</Menu.Item>);
+    // View page history
+    items.push(<Menu.Item key={KEY_VIEW_TX_HISTORY}>🌐 View history</Menu.Item>);
+    return <Menu>{items}</Menu>;
+  };
 
-  const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
-  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
-  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
-  const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
+  /**
+   * Opens the tokens corresponding Wikipedia. Inteded to be triggered when the
+   * image is (left) clicked.
+   */
+  const openWikipediaPage = () => {
+    window.open(`https://en.wikipedia.org/?curid=${pageId}`);
+  };
 
-  function handleMenuClick(e) {
-    switch (e.key) {
-      case "1":
+  /**
+   * Lists the token for sale on the marketplace.
+   */
+  const listToken = async () => {
+    // TODO(bingbongle) validation, loading spinner, etc.
+    // TODO(bingbongle) list amount should be input by user.
+    await transactor(
+      contracts["Token"].connect(signer)["offerPageForSale"](pageId, BigNumber.from(2)),
+    );
+  };
+
+  /**
+   * Unlists token from marketplace.
+   */
+  const unlistToken = async () => {
+    // TODO(bingbongle) validation, loading spinner, etc.
+    await transactor(contracts["Token"].connect(signer)["pageNoLongerForSale"](pageId));
+  };
+
+  /**
+   * Places a bid against the token.
+   */
+  const placeBid = async () => {
+    // TODO(bingbongle) Implement.
+  };
+
+  /**
+   * Triggered when a right-click menu item is selected.
+   * @param {*} event On click event.
+   */
+  function handleMenuClick(event) {
+    switch (event.key) {
+      case KEY_LIST_FOR_SALE:
         setListTokenModalVisible(true);
         break;
-      case "2":
+      case KEY_UNLIST_FROM_MARKETPLACE:
         setUnlistTokenModalVisible(true);
         break;
       default:
-        console.log(`Event not handled!`, e);
+        console.log(`Event not handled!`, event);
     }
   }
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">🎉 List for sale</Menu.Item>
-      <Menu.Item key="2">🛌 Unlist from marketplace</Menu.Item>
-      <Menu.Item key="3">👀 View/accept bids</Menu.Item>
-      <Menu.Item key="4">🌐 View tx history</Menu.Item>
-    </Menu>
-  );
-
   return (
-    <Dropdown overlay={menu} trigger={["contextMenu"]}>
+    <Dropdown overlay={menu()} trigger={["contextMenu"]}>
       <div className="token">
         <Alert
           message={offer && offer.isForSale === true ? "💸  For sale" : "🤷  Not listed"}
