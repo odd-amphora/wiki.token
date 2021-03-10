@@ -30,6 +30,9 @@ export default function Token({
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
 
+  // Form state
+  const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
+
   // Poll the owner of this token.
   const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
 
@@ -103,7 +106,7 @@ export default function Token({
     await transactor(
       contracts["Token"]
         .connect(signer)
-        ["offerPageForSale"](pageId, web3.utils.toWei("1", "ether")),
+        ["offerPageForSale"](pageId, web3.utils.toWei(listTokenPriceInEth, "ether")),
     );
   };
 
@@ -188,9 +191,14 @@ export default function Token({
             size="large"
             defaultValue="1"
             formatter={value => `$ ${value}`.replace(/[^0-9.]/g, "")}
+            parser={value => `$ ${value}`.replace(/[^0-9.]/g, "")}
             min="0"
             step="0.0000001"
             stringMode
+            preserve={false}
+            onChange={e => {
+              setListTokenPriceInEth(e.toString());
+            }}
           />{" "}
           ETH
           <br />
