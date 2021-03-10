@@ -47,7 +47,7 @@ export default function Token({
     [pageId],
     10000,
     newOffer => {
-      return newOffer && newOffer.length >= 5
+      return newOffer && newOffer.length >= 4
         ? {
             isForSale: newOffer[0],
             price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
@@ -61,6 +61,8 @@ export default function Token({
   const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
     web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
   ]);
+
+  // TODO(teddywilson) effect for price + donation
 
   // Builds the right-click menu with user options to interact with token. Varies depending on user
   // and token state.
@@ -128,9 +130,13 @@ export default function Token({
    */
   const purchaseForFullPrice = async () => {
     await transactor(
-      contracts["Token"]
-        .connect(signer)
-        ["buyPage"](pageId, { value: web3.utils.toWei(offer.price, "ether") }),
+      contracts["Token"].connect(signer)["buyPage"](pageId, {
+        // TODO(bingbongle): this doesn't work
+        value: web3.utils
+          .toBN(web3.utils.toWei(offer.price, "ether"))
+          .add(web3.utils.toBN(donationAmount.toString()))
+          .toString(),
+      }),
     );
   };
 
@@ -254,7 +260,21 @@ export default function Token({
               (donationAmount ? web3.utils.fromWei(donationAmount.toString(), "ether") : 0) +
               ` ETH is required in order to purchase this page.`}
           </p>
-          <p>Thus your total comes to foo + bar = foobar</p>
+          <p>
+            {offer && donationAmount
+              ? `Thus, your total comes to ` +
+                offer.price +
+                ` + ` +
+                web3.utils.fromWei(donationAmount.toString(), "ether") +
+                ` = ` +
+                web3.utils.fromWei(
+                  web3.utils
+                    .toBN(web3.utils.toWei(offer.price, "ether"))
+                    .add(web3.utils.toBN(donationAmount.toString())),
+                  "ether",
+                )
+              : `Error`}
+          </p>
         </Modal>
         {/* TODO(bingbongle) Add bid modal */}
       </div>

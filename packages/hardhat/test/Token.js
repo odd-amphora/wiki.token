@@ -1,6 +1,7 @@
 // TODO(bingbongle) P1: Circle back to mintPage() tests.
 // TODO(bingbongle) P1: Validate events emitted.
 // TODO(bingbongle) P2: Coverage for tokensOf(), discover(), pagination.
+// TODO(bingbongle) P1: Update tests now that donation model changed.
 
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");

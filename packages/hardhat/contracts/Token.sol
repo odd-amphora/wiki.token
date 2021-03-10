@@ -55,10 +55,6 @@ contract Token is ERC721, Ownable {
 
         /// The minimum value (in Ether) the seller will accept for the page.
         uint minValue;
-
-        /// Required donation (in Ether), in addition to the minValue, a buy is required to pay in
-        /// order to execute the offer.
-        uint requiredDonation;
     }
 
     /// Represents a bid that a buys has made against a page another seller owns.
@@ -81,7 +77,7 @@ contract Token is ERC721, Ownable {
     //////////////
     
     event Mint(address indexed to, uint pageId);
-    event PageOffered(uint indexed pageId, uint minValue, uint requiredDonation);
+    event PageOffered(uint indexed pageId, uint minValue);
     event PageBidEntered(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBidWithdrawn(uint indexed pageId, uint value, address indexed fromAddress);
     event PageBought(uint indexed pageId, uint value, uint donated, address indexed fromAddress, address indexed toAddress);
@@ -170,9 +166,10 @@ contract Token is ERC721, Ownable {
             msg.sender != pageIdToAddress[pageId],
             "Buyer can't repurchase their own pages"
         );
+        uint donation = calculateDonationFromValue(offer.minValue);
         require (
-            msg.value >= (offer.minValue + offer.requiredDonation),
-            "Not enough to cover minValue + requiredDonation"
+            msg.value >= (offer.minValue + donation),
+            "Not enough to cover minValue + donation"
         );
 
         /// Transfer ownership of the page and indicate that it is no longer for sale.
@@ -180,8 +177,8 @@ contract Token is ERC721, Ownable {
         pageNoLongerForSale(pageId);
 
         /// Transfer funds to seller and donation address (owner).
-        pendingWithdrawals[offer.seller] += msg.value - offer.requiredDonation;
-        pendingWithdrawals[owner()] += offer.requiredDonation;
+        pendingWithdrawals[offer.seller] += msg.value - donation;
+        pendingWithdrawals[owner()] += donation;
 
         /// Check for the case where there is a bid from the new owner and refund it.
         /// Any other bid can stay in place.
@@ -194,8 +191,8 @@ contract Token is ERC721, Ownable {
 
         emit PageBought(
             pageId,
-            msg.value - offer.requiredDonation,
-            offer.requiredDonation,
+            msg.value - donation,
+            donation,
             offer.seller,
             msg.sender
         );
@@ -214,16 +211,14 @@ contract Token is ERC721, Ownable {
             "Min sale price exceeds MAX_PRICE"
         );
 
-        uint256 requiredDonation = calculateDonationFromValue(minSalePriceInWei);
         pagesOfferedForSale[pageId] = Offer(
             true,
             pageId,
             msg.sender,
-            minSalePriceInWei,
-            requiredDonation
+            minSalePriceInWei
         );
 
-        emit PageOffered(pageId, minSalePriceInWei, requiredDonation);
+        emit PageOffered(pageId, minSalePriceInWei);
     }
 
     /// Allows a seller to indicate that a page they own is no longer for sale.
@@ -236,7 +231,7 @@ contract Token is ERC721, Ownable {
         );
 
         /// Null out the offer for the corresponding pageId now that it is no longer for sale.
-        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0, 0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, msg.sender, 0);
 
         emit PageNoLongerForSale(pageId);
     }    
@@ -310,7 +305,7 @@ contract Token is ERC721, Ownable {
 
         /// Transfer ownership of page offer to bidder and indicate that it is not currently for sale.
         pageIdToAddress[pageId] = _bid.bidder;        
-        pagesOfferedForSale[pageId] = Offer(false, pageId, _bid.bidder, 0, 0);
+        pagesOfferedForSale[pageId] = Offer(false, pageId, _bid.bidder, 0);
 
         /// Null out the outstanding bid now that it has been accepted.
         pageBids[pageId] = Bid(false, pageId, address(0), 0);
