@@ -15,6 +15,8 @@ const KEY_PLACE_BID = "4";
 const KEY_VIEW_BIDS = "5";
 const KEY_VIEW_TX_HISTORY = "6";
 
+// TODO(bingbongle) validation, loading spinner, etc.s
+// TODO(bingbongle) donation amount
 export default function Token({
   address,
   contracts,
@@ -27,6 +29,7 @@ export default function Token({
   // Modal state
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
+  const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
 
@@ -83,7 +86,7 @@ export default function Token({
       }
     }
     // View bids
-    items.push(<Menu.Item key={KEY_PLACE_BID}>⚖️ View outstanding bids</Menu.Item>);
+    items.push(<Menu.Item key={KEY_VIEW_BIDS}>⚖️ View outstanding bids</Menu.Item>);
     // View page history
     items.push(<Menu.Item key={KEY_VIEW_TX_HISTORY}>🌐 View history</Menu.Item>);
     return <Menu onClick={handleMenuClick}>{items}</Menu>;
@@ -101,8 +104,6 @@ export default function Token({
    * Lists the token for sale on the marketplace.
    */
   const listToken = async () => {
-    // TODO(bingbongle) validation, loading spinner, etc.
-    // TODO(bingbongle) list amount should be input by user.
     await transactor(
       contracts["Token"]
         .connect(signer)
@@ -114,8 +115,18 @@ export default function Token({
    * Unlists token from marketplace.
    */
   const unlistToken = async () => {
-    // TODO(bingbongle) validation, loading spinner, etc.
     await transactor(contracts["Token"].connect(signer)["pageNoLongerForSale"](pageId));
+  };
+
+  /**
+   * Purchase token for full price.
+   */
+  const purchaseForFullPrice = async () => {
+    await transactor(
+      contracts["Token"]
+        .connect(signer)
+        ["buyPage"](pageId, { value: web3.utils.toWei(offer.price, "ether") }),
+    );
   };
 
   /**
@@ -136,6 +147,9 @@ export default function Token({
         break;
       case KEY_UNLIST_FROM_MARKETPLACE:
         setUnlistTokenModalVisible(true);
+        break;
+      case KEY_PURCHASE_FULL_PRICE:
+        setPurchaseFullPriceModalVisible(true);
         break;
       default:
         console.log(`Event not handled!`, event);
@@ -170,7 +184,6 @@ export default function Token({
         <div className="token-owner">
           {owner && address && owner === address ? `😎 You own this token` : FormatAddress(owner)}
         </div>
-        {/* TODO(bingbongle) Add price form */}
         <Modal
           title={`List "` + pageTitle + `" for sale`}
           visible={listTokenModalVisible}
@@ -217,6 +230,22 @@ export default function Token({
             accept them in order to complete the purchase.
           </p>
           <p>You can relist this page at any time.</p>
+        </Modal>
+        <Modal
+          title={
+            offer && offer.isForSale
+              ? `Purchase "` + pageTitle + `" for ` + offer.price + ` ETH`
+              : `Error`
+          }
+          visible={purchaseFullPriceModalVisible}
+          onOk={() => {
+            setPurchaseFullPriceModalVisible(false);
+            purchaseForFullPrice();
+          }}
+          onCancel={() => setPurchaseFullPriceModalVisible(false)}
+        >
+          <p>TODO(bingbongle): Add donation bit</p>
+          <p>TODO(bingbongle): Add donation bit</p>
         </Modal>
         {/* TODO(bingbongle) Add bid modal */}
       </div>
