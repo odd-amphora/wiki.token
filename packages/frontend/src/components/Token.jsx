@@ -57,6 +57,11 @@ export default function Token({
     },
   );
 
+  // Poll donation amount required for this token
+  const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
+    web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
+  ]);
+
   // Builds the right-click menu with user options to interact with token. Varies depending on user
   // and token state.
   const menu = () => {
@@ -244,8 +249,12 @@ export default function Token({
           }}
           onCancel={() => setPurchaseFullPriceModalVisible(false)}
         >
-          <p>TODO(bingbongle): Add donation bit</p>
-          <p>TODO(bingbongle): Add donation bit</p>
+          <p>
+            {`A donation of ` +
+              (donationAmount ? web3.utils.fromWei(donationAmount.toString(), "ether") : 0) +
+              ` ETH is required in order to purchase this page.`}
+          </p>
+          <p>Thus your total comes to foo + bar = foobar</p>
         </Modal>
         {/* TODO(bingbongle) Add bid modal */}
       </div>

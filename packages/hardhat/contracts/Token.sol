@@ -361,7 +361,8 @@ contract Token is ERC721, Ownable {
 
     /// Helper function to calculate a donation amount from a given value.
     /// @param value Value the donation amount will be derived from.
-    function calculateDonationFromValue(uint value) private view returns(uint256) {
+    /// TODO(bingbongle): Now that this is public it should have a test.
+    function calculateDonationFromValue(uint value) public view returns(uint256) {
         bool succeeded;
         uint256 donationTimesOneHundred;
         /// Using `tryMul` as opposed to `mul` is a defense in depth mechanism to safeguard against
