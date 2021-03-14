@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import { BigNumber } from "@ethersproject/bignumber";
-import { Alert, Image, InputNumber, Modal, Menu, Dropdown } from "antd";
+import { Alert, Image, Menu, Dropdown } from "antd";
 
+import { ListTokenModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
@@ -47,13 +47,11 @@ export default function Token({
     [pageId],
     10000,
     newOffer => {
-      return newOffer && newOffer.length >= 4
-        ? {
-            isForSale: newOffer[0],
-            price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
-            seller: newOffer[2],
-          }
-        : null;
+      return {
+        isForSale: newOffer[0],
+        price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
+        seller: newOffer[2],
+      };
     },
   );
 
@@ -61,8 +59,6 @@ export default function Token({
   const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
     web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
   ]);
-
-  // TODO(teddywilson) effect for price + donation
 
   // Builds the right-click menu with user options to interact with token. Varies depending on user
   // and token state.
@@ -195,87 +191,49 @@ export default function Token({
         <div className="token-owner">
           {owner && address && owner === address ? `😎 You own this token` : FormatAddress(owner)}
         </div>
-        <Modal
-          title={`List "` + pageTitle + `" for sale`}
-          visible={listTokenModalVisible}
-          onOk={() => {
-            setListTokenModalVisible(false);
-            listToken();
-          }}
-          onCancel={() => setListTokenModalVisible(false)}
-        >
-          <p>
-            By listing this page, buyers will be able to purchase it outright without placing a bid.
-          </p>
-          <p>You can unlist this page at any time.</p>
-          <InputNumber
-            style={{
-              width: 200,
-            }}
-            size="large"
-            defaultValue="1"
-            formatter={value => `$ ${value}`.replace(/[^0-9.]/g, "")}
-            parser={value => `$ ${value}`.replace(/[^0-9.]/g, "")}
-            min="0"
-            step="0.0000001"
-            stringMode
-            preserve={false}
-            onChange={e => {
-              setListTokenPriceInEth(e.toString());
-            }}
-          />{" "}
-          ETH
-          <br />
-        </Modal>
-        <Modal
-          title={`Unlist "` + pageTitle + `" from marketplace`}
-          visible={unlistTokenModalVisible}
-          onOk={() => {
-            setUnlistTokenModalVisible(false);
-            unlistToken();
-          }}
-          onCancel={() => setUnlistTokenModalVisible(false)}
-        >
-          <p>
-            Buyers will still be able to place bids against the page. However, you will need to
-            accept them in order to complete the purchase.
-          </p>
-          <p>You can relist this page at any time.</p>
-        </Modal>
-        <Modal
-          title={
-            offer && offer.isForSale
-              ? `Purchase "` + pageTitle + `" for ` + offer.price + ` ETH`
-              : `Error`
-          }
-          visible={purchaseFullPriceModalVisible}
-          onOk={() => {
-            setPurchaseFullPriceModalVisible(false);
-            purchaseForFullPrice();
-          }}
-          onCancel={() => setPurchaseFullPriceModalVisible(false)}
-        >
-          <p>
-            {`A donation of ` +
-              (donationAmount ? web3.utils.fromWei(donationAmount.toString(), "ether") : 0) +
-              ` ETH is required in order to purchase this page.`}
-          </p>
-          <p>
-            {offer && donationAmount
-              ? `Thus, your total comes to ` +
-                offer.price +
-                ` + ` +
-                web3.utils.fromWei(donationAmount.toString(), "ether") +
-                ` = ` +
-                web3.utils.fromWei(
-                  web3.utils
-                    .toBN(web3.utils.toWei(offer.price, "ether"))
-                    .add(web3.utils.toBN(donationAmount.toString())),
-                  "ether",
-                )
-              : `Error`}
-          </p>
-        </Modal>
+        {/* Token action modals */}
+        {donationAmount && offer && (
+          <div>
+            <ListTokenModal
+              pageTitle={pageTitle}
+              visible={listTokenModalVisible}
+              onOk={() => {
+                setListTokenModalVisible(false);
+                listToken();
+              }}
+              onCancel={() => {
+                setListTokenModalVisible(false);
+              }}
+              onListPriceChange={e => {
+                setListTokenPriceInEth(e.toString());
+              }}
+            />
+            <UnlistTokenModal
+              pageTitle={pageTitle}
+              visible={unlistTokenModalVisible}
+              onOk={() => {
+                setUnlistTokenModalVisible(false);
+                unlistToken();
+              }}
+              onCancel={() => {
+                setListTokenModalVisible(false);
+              }}
+            />
+            <PurchaseTokenModal
+              pageTitle={pageTitle}
+              offer={offer}
+              donationAmount={donationAmount}
+              visible={purchaseFullPriceModalVisible}
+              onOk={() => {
+                setPurchaseFullPriceModalVisible(false);
+                purchaseForFullPrice();
+              }}
+              onCancel={() => {
+                setPurchaseFullPriceModalVisible(false);
+              }}
+            />
+          </div>
+        )}
         {/* TODO(bingbongle) Add bid modal */}
       </div>
     </Dropdown>
