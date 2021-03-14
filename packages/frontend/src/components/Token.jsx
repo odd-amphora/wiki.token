@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
 
-import { ListTokenModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
+import { ListTokenModal, PlaceBidModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
@@ -30,6 +30,9 @@ export default function Token({
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
+  const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
+
+  // TODO(bingbongle)
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
 
@@ -54,6 +57,15 @@ export default function Token({
       };
     },
   );
+
+  // Poll bid belonging to this token.
+  const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
+    return {
+      bidder: newBid.bidder,
+      hasBid: newBid.hasBid,
+      value: web3.utils.fromWei(newBid.value.toString(), "ether"),
+    };
+  });
 
   // Poll donation amount required for this token
   const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
@@ -158,6 +170,9 @@ export default function Token({
       case KEY_PURCHASE_FULL_PRICE:
         setPurchaseFullPriceModalVisible(true);
         break;
+      case KEY_PLACE_BID:
+        setPlaceBidModalVisible(true);
+        break;
       default:
         console.log(`Event not handled!`, event);
     }
@@ -232,9 +247,21 @@ export default function Token({
                 setPurchaseFullPriceModalVisible(false);
               }}
             />
+            <PlaceBidModal
+              pageTitle={pageTitle}
+              donationAmount={donationAmount}
+              visible={placeBidModalVisible}
+              bid={bid}
+              onOk={() => {
+                placeBid();
+                setPlaceBidModalVisible(false);
+              }}
+              onCancel={() => {
+                setPlaceBidModalVisible(false);
+              }}
+            />
           </div>
         )}
-        {/* TODO(bingbongle) Add bid modal */}
       </div>
     </Dropdown>
   );
