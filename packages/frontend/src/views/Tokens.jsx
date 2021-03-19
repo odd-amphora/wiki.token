@@ -4,18 +4,22 @@ import { Divider } from "antd";
 
 import { Token } from "../components";
 
-export default function Tokens({ tokens, web3Modal }) {
+export default function Tokens({
+  address,
+  tokens,
+  web3Modal,
+  contracts,
+  transactor,
+  signer,
+  headerText,
+  walletNotConnectedText,
+}) {
   return (
     <div className="menu-view">
-      <div hidden={tokens && tokens.length > 0}>
-        You haven't claimed any tokens yet{" "}
-        <span role="img" aria-label="sad-face">
-          😔
-        </span>
-      </div>
+      <div>{headerText}</div>
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
-        Connect a wallet to claim your first one{" "}
+        {walletNotConnectedText.concat(" ")}
         <span role="img" aria-label="rocket">
           🚀
         </span>
@@ -24,6 +28,10 @@ export default function Tokens({ tokens, web3Modal }) {
         {tokens.map(token => {
           return (
             <Token
+              transactor={transactor}
+              signer={signer}
+              address={address}
+              contracts={contracts}
               key={token.properties?.name?.description}
               imageUrl={token.properties?.image?.description}
               pageTitle={token.properties?.description?.description}

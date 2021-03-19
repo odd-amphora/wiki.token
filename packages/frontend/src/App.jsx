@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import { Menu } from "antd";
+import { Alert, Menu } from "antd";
 import {
   GlobalOutlined,
   QuestionCircleOutlined,
@@ -24,7 +24,7 @@ import {
 import { Layout } from "./components";
 import { NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { About, Claim, Discover, MyTokens } from "./views";
+import { About, Claim, Tokens } from "./views";
 import { BigNumber } from "@ethersproject/bignumber";
 
 const web3Modal = new Web3Modal({
@@ -146,6 +146,10 @@ function App() {
 
   return (
     <div className="App">
+      <Alert
+        message="Wiki Token is still in development and is not yet deployed. Follow us on Twitter for updates 🔜"
+        type="warning"
+      />
       <Layout
         address={address}
         web3Modal={web3Modal}
@@ -209,10 +213,38 @@ function App() {
               />
             </Route>
             <Route path="/tokens">
-              <MyTokens tokens={myTokens} web3Modal={web3Modal} />
+              <Tokens
+                price={price}
+                address={address}
+                tokens={myTokens}
+                web3Modal={web3Modal}
+                contracts={contracts}
+                transactor={transactor}
+                signer={userProvider.getSigner()}
+                headerText={
+                  myTokens && myTokens.length > 0
+                    ? `Right click on a token to accept a bid, or to list it for sale 📈`
+                    : `You haven't claimed any tokens... yet 😞`
+                }
+                walletNotConnectedText="Connect a wallet to claim your first one"
+              />
             </Route>
             <Route path="/discover">
-              <Discover tokens={discoveryTokens} />
+              <Tokens
+                price={price}
+                address={address}
+                tokens={discoveryTokens}
+                web3Modal={web3Modal}
+                contracts={contracts}
+                transactor={transactor}
+                signer={userProvider.getSigner()}
+                headerText={
+                  discoveryTokens && discoveryTokens.length > 0
+                    ? `Right click on a token to purchase it for full price, or to place a bid 🏦`
+                    : `No tokens have been claimed... yet 😞`
+                }
+                walletNotConnectedText="Connect a wallet to claim the first one"
+              />
             </Route>
           </Switch>
         </BrowserRouter>

@@ -1,5 +1,7 @@
-@import './antd.css';
+@import "./antd.css";
 @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+$primary-color: #25283d;
 
 #root {
   display: flex;
@@ -10,23 +12,23 @@
 * {
   padding: 0;
   margin: 0;
-  font-family:"Lucida Console", "Courier New", monospace;
+  font-family: "Lucida Console", "Courier New", monospace;
 }
 
-html, 
-body {   
-  height: 100%; 
-} 
-body { 
-  display: flex;   
-  flex-direction: column; 
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
 }
 
-.content { 
-  flex: 1 0 auto; 
+.content {
+  flex: 1 0 auto;
 }
 
-.footer {   
+.footer {
   flex-shrink: 0;
   text-align: center;
 }
@@ -49,13 +51,13 @@ body {
 }
 
 .about-text-counter {
-  font-family: 'karla';
+  font-family: "karla";
   font-weight: bold;
 }
 
 .App {
   text-align: center;
-  flex: 1 0 auto; 
+  flex: 1 0 auto;
 }
 
 .account {
@@ -92,6 +94,15 @@ body {
   cursor: pointer;
 }
 
+.token-button {
+  cursor: pointer;
+}
+
+.token-owner {
+  background-color: $primary-color;
+  color: white;
+}
+
 .token-page-id {
   font-size: 12px;
   font-family: "Karla";
@@ -104,11 +115,18 @@ body {
 
 .token-text-box {
   border-color: black;
-  border-width: 1px;
+  border-width: 1px 0px 1px 0px;
   border-style: solid;
+}
+
+.token-image {
+  // TODO experimenting here
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .token-wrapper {
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
 }
