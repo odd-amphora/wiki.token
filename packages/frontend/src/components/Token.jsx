@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
 
-import { ListTokenModal, PlaceBidModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
+import { ListTokenModal, /*PlaceBidModal,*/ PurchaseTokenModal, UnlistTokenModal } from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 
@@ -30,7 +30,7 @@ export default function Token({
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
-  const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
+  // const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
 
   // Form state
   const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
@@ -55,13 +55,13 @@ export default function Token({
   );
 
   // Poll bid belonging to this token.
-  const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
-    return {
-      bidder: newBid.bidder,
-      hasBid: newBid.hasBid,
-      value: web3.utils.fromWei(newBid.value.toString(), "ether"),
-    };
-  });
+  // const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
+  //   return {
+  //     bidder: newBid.bidder,
+  //     hasBid: newBid.hasBid,
+  //     value: web3.utils.fromWei(newBid.value.toString(), "ether"),
+  //   };
+  // });
 
   // Poll donation amount required for this token
   const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
@@ -123,7 +123,14 @@ export default function Token({
       }
     }
     // View bids
-    items.push(<Menu.Item key={KEY_VIEW_BIDS}>⚖️ View outstanding bids</Menu.Item>);
+    items.push(
+      <Menu.Item key={KEY_VIEW_BIDS}>
+        <span role="img" aria-label="scale">
+          ⚖️
+        </span>{" "}
+        View outstanding bids
+      </Menu.Item>,
+    );
     // View page history
     items.push(
       <Menu.Item key={KEY_VIEW_TX_HISTORY}>
@@ -180,9 +187,9 @@ export default function Token({
   /**
    * Places a bid against the token.
    */
-  const placeBid = async () => {
-    // TODO(bingbongle) Implement.
-  };
+  // const placeBid = async () => {
+  //   // TODO(bingbongle) Implement.
+  // };
 
   /**
    * Triggered when a right-click menu item is selected.
