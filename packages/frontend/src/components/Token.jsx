@@ -32,10 +32,6 @@ export default function Token({
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
   const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
 
-  // TODO(bingbongle)
-  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
-  const [viewTxHistoryModalVisible, setViewTxHistoryModalVisible] = useState(false);
-
   // Form state
   const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
 
@@ -82,28 +78,61 @@ export default function Token({
     if (owner === address) {
       // List page for sale
       if (!offer.isForSale) {
-        items.push(<Menu.Item key={KEY_LIST_FOR_SALE}>🎉 List for sale</Menu.Item>);
+        items.push(
+          <Menu.Item key={KEY_LIST_FOR_SALE}>
+            <span role="img" aria-label="party">
+              🎉
+            </span>{" "}
+            List for sale
+          </Menu.Item>,
+        );
       }
       // Take page off market
       if (offer.isForSale) {
         items.push(
-          <Menu.Item key={KEY_UNLIST_FROM_MARKETPLACE}>🛌 Unlist from marketplace</Menu.Item>,
+          <Menu.Item key={KEY_UNLIST_FROM_MARKETPLACE}>
+            <span role="img" aria-label="bed">
+              🛌{" "}
+            </span>{" "}
+            Unlist from marketplace
+          </Menu.Item>,
         );
       }
     } else {
       // Purchase page for full price
       if (offer.isForSale) {
-        items.push(<Menu.Item key={KEY_PURCHASE_FULL_PRICE}>🔥 Purchase for full price</Menu.Item>);
+        items.push(
+          <Menu.Item key={KEY_PURCHASE_FULL_PRICE}>
+            <span role="img" aria-label="fire">
+              🔥
+            </span>{" "}
+            Purchase for full price
+          </Menu.Item>,
+        );
       }
       // Place bid on item
       if (offer.isForSale) {
-        items.push(<Menu.Item key={KEY_PLACE_BID}>🤠 Bid on page</Menu.Item>);
+        items.push(
+          <Menu.Item key={KEY_PLACE_BID}>
+            <span role="img" aria-label="cowboy">
+              🤠
+            </span>{" "}
+            Bid on page
+          </Menu.Item>,
+        );
       }
     }
     // View bids
     items.push(<Menu.Item key={KEY_VIEW_BIDS}>⚖️ View outstanding bids</Menu.Item>);
     // View page history
-    items.push(<Menu.Item key={KEY_VIEW_TX_HISTORY}>🌐 View history</Menu.Item>);
+    items.push(
+      <Menu.Item key={KEY_VIEW_TX_HISTORY}>
+        <span role="img" aria-label="globe">
+          🌐
+        </span>{" "}
+        View history
+      </Menu.Item>,
+    );
     return <Menu onClick={handleMenuClick}>{items}</Menu>;
   };
 
