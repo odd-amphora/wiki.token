@@ -207,7 +207,7 @@ export default function Token({
         setPurchaseFullPriceModalVisible(true);
         break;
       case KEY_PLACE_BID:
-        setPlaceBidModalVisible(true);
+        //setPlaceBidModalVisible(true);
         break;
       default:
         console.log(`Event not handled!`, event);
@@ -283,7 +283,7 @@ export default function Token({
                 setPurchaseFullPriceModalVisible(false);
               }}
             />
-            <PlaceBidModal
+            {/* <PlaceBidModal
               pageTitle={pageTitle}
               donationAmount={donationAmount}
               visible={placeBidModalVisible}
@@ -295,7 +295,7 @@ export default function Token({
               onCancel={() => {
                 setPlaceBidModalVisible(false);
               }}
-            />
+            /> */}
           </div>
         )}
       </div>
