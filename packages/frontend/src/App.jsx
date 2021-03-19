@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import { Menu } from "antd";
+import { Alert, Menu } from "antd";
 import {
   GlobalOutlined,
   QuestionCircleOutlined,
@@ -146,6 +146,10 @@ function App() {
 
   return (
     <div className="App">
+      <Alert
+        message="Wiki Token is still in development and is not yet deployed. Follow us on Twitter for updates 🔜"
+        type="warning"
+      />
       <Layout
         address={address}
         web3Modal={web3Modal}
