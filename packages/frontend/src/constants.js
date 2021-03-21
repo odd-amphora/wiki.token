@@ -310,3 +310,5 @@ export const NETWORKS = {
     blockExplorer: "https://etherscan.io/",
   },
 };
+
+export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";

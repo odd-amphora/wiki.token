@@ -2,9 +2,10 @@ import React, { useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
 
-import { ListTokenModal, /*PlaceBidModal,*/ PurchaseTokenModal, UnlistTokenModal } from "./modals";
+import { ListTokenModal, PlaceBidModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
+import { NULL_ADDRESS } from "../constants";
 
 import web3 from "web3";
 
@@ -30,10 +31,11 @@ export default function Token({
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
-  // const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
+  const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
 
   // Form state
   const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
+  const [bidPriceInEth, setBidPriceInEth] = useState("1");
 
   // Poll the owner of this token.
   const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
@@ -54,19 +56,33 @@ export default function Token({
     },
   );
 
-  // Poll bid belonging to this token.
-  // const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
-  //   return {
-  //     bidder: newBid.bidder,
-  //     hasBid: newBid.hasBid,
-  //     value: web3.utils.fromWei(newBid.value.toString(), "ether"),
-  //   };
-  // });
+  // Poll outstanding bid belonging to this token.
+  const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
+    return newBid
+      ? {
+          bidder: newBid.bidder,
+          hasBid: newBid.hasBid,
+          value: web3.utils.fromWei(newBid.value.toString(), "ether"),
+        }
+      : undefined;
+  });
 
   // Poll donation amount required for this token
   const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
     web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
   ]);
+
+  // Creates a Menu.Item for token action menu.
+  const menuItem = (key, emoji, emojiText, label) => {
+    return (
+      <Menu.Item key={key}>
+        <span role="img" aria-label={emojiText}>
+          {emoji}
+        </span>{" "}
+        {label}
+      </Menu.Item>
+    );
+  };
 
   // Builds the right-click menu with user options to interact with token. Varies depending on user
   // and token state.
@@ -76,70 +92,21 @@ export default function Token({
     }
     let items = [];
     if (owner === address) {
-      // List page for sale
-      if (!offer.isForSale) {
-        items.push(
-          <Menu.Item key={KEY_LIST_FOR_SALE}>
-            <span role="img" aria-label="party">
-              🎉
-            </span>{" "}
-            List for sale
-          </Menu.Item>,
-        );
-      }
-      // Take page off market
       if (offer.isForSale) {
-        items.push(
-          <Menu.Item key={KEY_UNLIST_FROM_MARKETPLACE}>
-            <span role="img" aria-label="bed">
-              🛌{" "}
-            </span>{" "}
-            Unlist from marketplace
-          </Menu.Item>,
-        );
+        items.push(menuItem(KEY_UNLIST_FROM_MARKETPLACE, "🛌", "bed", "Unlist from marketplace"));
+      } else {
+        items.push(menuItem(KEY_LIST_FOR_SALE, "🎉", "party", "List for sale"));
       }
     } else {
-      // Purchase page for full price
       if (offer.isForSale) {
-        items.push(
-          <Menu.Item key={KEY_PURCHASE_FULL_PRICE}>
-            <span role="img" aria-label="fire">
-              🔥
-            </span>{" "}
-            Purchase for full price
-          </Menu.Item>,
-        );
+        items.push(menuItem(KEY_PURCHASE_FULL_PRICE, "🔥", "fire", "Purchase for full price"));
       }
-      // Place bid on item
-      if (offer.isForSale) {
-        items.push(
-          <Menu.Item key={KEY_PLACE_BID}>
-            <span role="img" aria-label="cowboy">
-              🤠
-            </span>{" "}
-            Bid on page
-          </Menu.Item>,
-        );
+      if (owner !== NULL_ADDRESS) {
+        items.push(menuItem(KEY_PLACE_BID, "🤠", "cowboy", "Bid on page"));
       }
     }
-    // View bids
-    items.push(
-      <Menu.Item key={KEY_VIEW_BIDS}>
-        <span role="img" aria-label="scale">
-          ⚖️
-        </span>{" "}
-        View outstanding bids
-      </Menu.Item>,
-    );
-    // View page history
-    items.push(
-      <Menu.Item key={KEY_VIEW_TX_HISTORY}>
-        <span role="img" aria-label="globe">
-          🌐
-        </span>{" "}
-        View history
-      </Menu.Item>,
-    );
+    items.push(menuItem(KEY_VIEW_BIDS, "⚖️", "scale", "View outstanding bids"));
+    items.push(menuItem(KEY_VIEW_TX_HISTORY, "🌐", "globe", "View history"));
     return <Menu onClick={handleMenuClick}>{items}</Menu>;
   };
 
@@ -187,9 +154,13 @@ export default function Token({
   /**
    * Places a bid against the token.
    */
-  // const placeBid = async () => {
-  //   // TODO(bingbongle) Implement.
-  // };
+  const placeBid = async () => {
+    await transactor(
+      contracts["Token"].connect(signer)["enterBidForPage"](pageId, {
+        value: web3.utils.toBN(web3.utils.toWei(bidPriceInEth, "ether")).toString(),
+      }),
+    );
+  };
 
   /**
    * Triggered when a right-click menu item is selected.
@@ -207,7 +178,7 @@ export default function Token({
         setPurchaseFullPriceModalVisible(true);
         break;
       case KEY_PLACE_BID:
-        //setPlaceBidModalVisible(true);
+        setPlaceBidModalVisible(true);
         break;
       default:
         console.log(`Event not handled!`, event);
@@ -239,9 +210,11 @@ export default function Token({
             <div className="token-page-id">{pageId}</div>
           </div>
         </div>
-        <div className="token-owner">
-          {owner && address && owner === address ? `😎 You own this token` : FormatAddress(owner)}
-        </div>
+        {owner && address && owner !== NULL_ADDRESS && (
+          <div className="token-owner">
+            {owner === address ? `😎 You own this token` : FormatAddress(owner)}
+          </div>
+        )}
         {/* Token action modals */}
         {donationAmount && offer && (
           <div>
@@ -283,19 +256,24 @@ export default function Token({
                 setPurchaseFullPriceModalVisible(false);
               }}
             />
-            {/* <PlaceBidModal
-              pageTitle={pageTitle}
-              donationAmount={donationAmount}
-              visible={placeBidModalVisible}
-              bid={bid}
-              onOk={() => {
-                placeBid();
-                setPlaceBidModalVisible(false);
-              }}
-              onCancel={() => {
-                setPlaceBidModalVisible(false);
-              }}
-            /> */}
+            {bid && (
+              <PlaceBidModal
+                pageTitle={pageTitle}
+                donationAmount={donationAmount}
+                visible={placeBidModalVisible}
+                bid={bid}
+                onOk={() => {
+                  placeBid();
+                  setPlaceBidModalVisible(false);
+                }}
+                onCancel={() => {
+                  setPlaceBidModalVisible(false);
+                }}
+                onBidAmountChanged={e => {
+                  setBidPriceInEth(e.toString());
+                }}
+              />
+            )}
           </div>
         )}
       </div>

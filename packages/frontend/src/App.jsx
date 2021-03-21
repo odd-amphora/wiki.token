@@ -206,6 +206,7 @@ function App() {
             </Route>
             <Route exact path="/claim">
               <Claim
+                address={address}
                 contracts={contracts}
                 signer={userProvider.getSigner()}
                 transactor={transactor}

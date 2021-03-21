@@ -14,7 +14,7 @@ const VALIDATE_STATUS_SUCCESS = "success";
 const VALIDATE_STATUS_VALIDATING = "validating";
 const VALIDATE_STATUS_ERROR = "error";
 
-export default function Claim({ contracts, signer, transactor, web3Modal }) {
+export default function Claim({ address, contracts, signer, transactor, web3Modal }) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
@@ -71,7 +71,6 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
             placeholder="Earth"
             disabled={!web3Modal || !web3Modal.cachedProvider || isClaiming}
             onChange={e => {
-              // TODO(teddywilson) fix damn autocomplete latency..
               setValidateStatus(VALIDATE_STATUS_VALIDATING);
               fetchArticleMetadata(e.target.value);
             }}
@@ -84,6 +83,11 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
       </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         <Token
+          transactor={transactor}
+          signer={signer}
+          address={address}
+          contracts={contracts}
+          key={articleQueryResponse?.pageId}
           imageUrl={articleQueryResponse?.imageUrl}
           pageId={articleQueryResponse?.pageId}
           pageTitle={articleQueryResponse?.pageTitle}
@@ -98,12 +102,6 @@ export default function Claim({ contracts, signer, transactor, web3Modal }) {
             Claim
           </Button>
         </div>
-        {/* <div
-          dangerouslySetInnerHTML={{ __html: articleQueryResponse?.extract }}
-          style={{
-            textAlign: "left",
-          }}
-        /> */}
       </div>
     </div>
   );
