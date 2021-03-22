@@ -110,6 +110,7 @@ function App() {
   };
 
   // Fetch my tokens
+  // TODO(bingbongle) If bid is accepted, tokens still show up here.
   const myTokensResult = useContractReader(
     contracts,
     "Token",
