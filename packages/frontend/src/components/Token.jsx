@@ -188,12 +188,12 @@ export default function Token({
   return (
     <Dropdown overlay={menu()} trigger={["contextMenu"]}>
       <div className="token">
-        <Alert
-          message={
-            offer && offer.isForSale === true ? "💸  " + offer.price + " ETH" : "🤷  Not listed"
-          }
-          type={offer && offer.isForSale === true ? "success" : "warning"}
-        />
+        {offer && offer.isForSale && (
+          <Alert message={"💸  " + offer.price + " ETH"} type={"success"} />
+        )}
+        {bid && bid.hasBid && (
+          <Alert message={"Open bid for " + bid.value + " ETH"} type="success" />
+        )}
         <div className="token-wrapper">
           <div className="token-image">
             <Image
