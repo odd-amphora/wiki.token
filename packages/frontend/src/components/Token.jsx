@@ -8,6 +8,7 @@ import {
   PlaceBidModal,
   PurchaseTokenModal,
   UnlistTokenModal,
+  WithdrawBidModal,
 } from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
@@ -21,6 +22,7 @@ const KEY_PURCHASE_FULL_PRICE = "3";
 const KEY_PLACE_BID = "4";
 const KEY_VIEW_TX_HISTORY = "5";
 const KEY_ACCEPT_BID = "6";
+const KEY_WITHDRAW_BID = "7";
 
 // TODO(bingbongle) validation, loading spinner, etc.s
 // TODO(bingbongle) donation amount
@@ -34,11 +36,13 @@ export default function Token({
   signer,
 }) {
   // Modal state
+  // TODO(bingbongle) maybe this could be a single variable with an ID, at this point.
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
   const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
+  const [withdrawBidModalVisible, setWithdrawBidModalVisible] = useState(false);
 
   // Form state
   const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
@@ -116,7 +120,11 @@ export default function Token({
         items.push(menuItem(KEY_PURCHASE_FULL_PRICE, "🔥", "fire", "Purchase for full price"));
       }
       if (owner !== NULL_ADDRESS) {
-        items.push(menuItem(KEY_PLACE_BID, "🤠", "cowboy", "Bid on page"));
+        if (bid.hasBid && bid.bidder === address) {
+          items.push(menuItem(KEY_WITHDRAW_BID, "🥺", "pleading-face", "Withdraw bid"));
+        } else {
+          items.push(menuItem(KEY_PLACE_BID, "🤠", "cowboy", "Bid on page"));
+        }
       }
     }
     items.push(menuItem(KEY_VIEW_TX_HISTORY, "🌐", "globe", "View history"));
@@ -187,6 +195,14 @@ export default function Token({
   };
 
   /**
+   * Withdraws the current address's bid against this token, assuming the open bid
+   * belongs to them.
+   */
+  const withdrawBid = async () => {
+    await transactor(contracts["Token"].connect(signer)["withdrawBidForPage"](pageId));
+  };
+
+  /**
    * Triggered when a right-click menu item is selected.
    * @param {*} event On click event.
    */
@@ -206,6 +222,9 @@ export default function Token({
         break;
       case KEY_PLACE_BID:
         setPlaceBidModalVisible(true);
+        break;
+      case KEY_WITHDRAW_BID:
+        setWithdrawBidModalVisible(true);
         break;
       default:
         console.log(`Event not handled!`, event);
@@ -311,6 +330,17 @@ export default function Token({
               }}
               onBidAmountChanged={e => {
                 setBidPriceInEth(e.toString());
+              }}
+            />
+            <WithdrawBidModal
+              pageTitle={pageTitle}
+              visible={withdrawBidModalVisible}
+              onOk={() => {
+                setWithdrawBidModalVisible(false);
+                withdrawBid();
+              }}
+              onCancel={() => {
+                setWithdrawBidModalVisible(false);
               }}
             />
           </div>

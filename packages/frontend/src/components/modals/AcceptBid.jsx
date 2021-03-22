@@ -3,7 +3,7 @@ import React from "react";
 import { Modal } from "antd";
 import web3 from "web3";
 
-export default function PlaceBid(props) {
+export default function AcceptBid(props) {
   return (
     <Modal
       title={`Accept bid for "` + props.pageTitle + `"?`}
