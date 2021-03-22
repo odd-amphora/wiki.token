@@ -2,7 +2,13 @@ import React, { useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
 
-import { ListTokenModal, PlaceBidModal, PurchaseTokenModal, UnlistTokenModal } from "./modals";
+import {
+  AcceptBidModal,
+  ListTokenModal,
+  PlaceBidModal,
+  PurchaseTokenModal,
+  UnlistTokenModal,
+} from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader } from "../hooks";
 import { NULL_ADDRESS } from "../constants";
@@ -14,6 +20,7 @@ const KEY_UNLIST_FROM_MARKETPLACE = "2";
 const KEY_PURCHASE_FULL_PRICE = "3";
 const KEY_PLACE_BID = "4";
 const KEY_VIEW_TX_HISTORY = "5";
+const KEY_ACCEPT_BID = "6";
 
 // TODO(bingbongle) validation, loading spinner, etc.s
 // TODO(bingbongle) donation amount
@@ -27,6 +34,7 @@ export default function Token({
   signer,
 }) {
   // Modal state
+  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
   const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
@@ -67,8 +75,12 @@ export default function Token({
   });
 
   // Poll donation amount required for this token
-  const donationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
+  const offerDonationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
     web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
+  ]);
+
+  const bidDonationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
+    web3.utils.toWei(bid && bid.value ? bid.value.toString() : "0", "ether"),
   ]);
 
   // Creates a Menu.Item for token action menu.
@@ -86,7 +98,7 @@ export default function Token({
   // Builds the right-click menu with user options to interact with token. Varies depending on user
   // and token state.
   const menu = () => {
-    if (!offer || !owner || !address) {
+    if (!offer || !owner || !address || !bid) {
       return <Menu />;
     }
     let items = [];
@@ -95,6 +107,9 @@ export default function Token({
         items.push(menuItem(KEY_UNLIST_FROM_MARKETPLACE, "🛌", "bed", "Unlist from marketplace"));
       } else {
         items.push(menuItem(KEY_LIST_FOR_SALE, "🎉", "party", "List for sale"));
+      }
+      if (bid.hasBid) {
+        items.push(menuItem(KEY_ACCEPT_BID, "❤️", "love", "Accept bid"));
       }
     } else {
       if (offer.isForSale) {
@@ -114,6 +129,17 @@ export default function Token({
    */
   const openWikipediaPage = () => {
     window.open(`https://en.wikipedia.org/?curid=${pageId}`);
+  };
+
+  /**
+   * Acceps the outstanding token bid.
+   */
+  const acceptBid = async () => {
+    await transactor(
+      contracts["Token"]
+        .connect(signer)
+        ["acceptBidForPage"](pageId, web3.utils.toWei(bid.value, "ether")),
+    );
   };
 
   /**
@@ -143,7 +169,7 @@ export default function Token({
         // TODO(bingbongle): this doesn't work
         value: web3.utils
           .toBN(web3.utils.toWei(offer.price, "ether"))
-          .add(web3.utils.toBN(donationAmount.toString()))
+          .add(web3.utils.toBN(offerDonationAmount.toString()))
           .toString(),
       }),
     );
@@ -166,6 +192,9 @@ export default function Token({
    */
   function handleMenuClick(event) {
     switch (event.key) {
+      case KEY_ACCEPT_BID:
+        setAcceptBidModalVisible(true);
+        break;
       case KEY_LIST_FOR_SALE:
         setListTokenModalVisible(true);
         break;
@@ -214,8 +243,22 @@ export default function Token({
           </div>
         )}
         {/* Token action modals */}
-        {donationAmount && offer && (
+        {/* This should be wrapped in some isModalReady property, probably */}
+        {bid && bidDonationAmount && offerDonationAmount && offer && (
           <div>
+            <AcceptBidModal
+              value={bid.value}
+              donationAmount={bidDonationAmount}
+              pageTitle={pageTitle}
+              visible={acceptBidModalVisible}
+              onOk={() => {
+                setAcceptBidModalVisible(false);
+                acceptBid();
+              }}
+              onCancel={() => {
+                setAcceptBidModalVisible(false);
+              }}
+            />
             <ListTokenModal
               pageTitle={pageTitle}
               visible={listTokenModalVisible}
@@ -244,7 +287,7 @@ export default function Token({
             <PurchaseTokenModal
               pageTitle={pageTitle}
               offer={offer}
-              donationAmount={donationAmount}
+              donationAmount={offerDonationAmount}
               visible={purchaseFullPriceModalVisible}
               onOk={() => {
                 setPurchaseFullPriceModalVisible(false);
@@ -254,24 +297,22 @@ export default function Token({
                 setPurchaseFullPriceModalVisible(false);
               }}
             />
-            {bid && (
-              <PlaceBidModal
-                pageTitle={pageTitle}
-                donationAmount={donationAmount}
-                visible={placeBidModalVisible}
-                bid={bid}
-                onOk={() => {
-                  placeBid();
-                  setPlaceBidModalVisible(false);
-                }}
-                onCancel={() => {
-                  setPlaceBidModalVisible(false);
-                }}
-                onBidAmountChanged={e => {
-                  setBidPriceInEth(e.toString());
-                }}
-              />
-            )}
+            <PlaceBidModal
+              pageTitle={pageTitle}
+              donationAmount={offerDonationAmount}
+              visible={placeBidModalVisible}
+              bid={bid}
+              onOk={() => {
+                placeBid();
+                setPlaceBidModalVisible(false);
+              }}
+              onCancel={() => {
+                setPlaceBidModalVisible(false);
+              }}
+              onBidAmountChanged={e => {
+                setBidPriceInEth(e.toString());
+              }}
+            />
           </div>
         )}
       </div>
