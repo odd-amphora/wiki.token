@@ -13,7 +13,10 @@ export default function PlaceBid(props) {
       {!props.bid.hasBid ? (
         <p>No open bids! Be the first to place one.</p>
       ) : (
-        <p>Open bid for TODO</p>
+        <div>
+          <div>{`Open bid for ` + props.bid.value + " ETH"}</div>
+          <div>{`Bidder: ` + props.bid.bidder}</div>
+        </div>
       )}
       <p>
         If you are outbid, your funds will be returned to your address. You can withdraw your bid at
