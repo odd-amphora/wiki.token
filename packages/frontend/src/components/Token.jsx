@@ -79,7 +79,7 @@ export default function Token({
     web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
   ]);
 
-  const bidDonationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
+  const bidDonationAmountWei = useContractReader(contracts, "Token", "calculateDonationFromValue", [
     web3.utils.toWei(bid && bid.value ? bid.value.toString() : "0", "ether"),
   ]);
 
@@ -244,11 +244,11 @@ export default function Token({
         )}
         {/* Token action modals */}
         {/* This should be wrapped in some isModalReady property, probably */}
-        {bid && bidDonationAmount && offerDonationAmount && offer && (
+        {bid && bidDonationAmountWei && offerDonationAmount && offer && (
           <div>
             <AcceptBidModal
               value={bid.value}
-              donationAmount={bidDonationAmount}
+              donationAmountWei={bidDonationAmountWei}
               pageTitle={pageTitle}
               visible={acceptBidModalVisible}
               onOk={() => {
