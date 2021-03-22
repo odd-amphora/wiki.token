@@ -13,8 +13,7 @@ const KEY_LIST_FOR_SALE = "1";
 const KEY_UNLIST_FROM_MARKETPLACE = "2";
 const KEY_PURCHASE_FULL_PRICE = "3";
 const KEY_PLACE_BID = "4";
-const KEY_VIEW_BIDS = "5";
-const KEY_VIEW_TX_HISTORY = "6";
+const KEY_VIEW_TX_HISTORY = "5";
 
 // TODO(bingbongle) validation, loading spinner, etc.s
 // TODO(bingbongle) donation amount
@@ -105,7 +104,6 @@ export default function Token({
         items.push(menuItem(KEY_PLACE_BID, "🤠", "cowboy", "Bid on page"));
       }
     }
-    items.push(menuItem(KEY_VIEW_BIDS, "⚖️", "scale", "View outstanding bids"));
     items.push(menuItem(KEY_VIEW_TX_HISTORY, "🌐", "globe", "View history"));
     return <Menu onClick={handleMenuClick}>{items}</Menu>;
   };
