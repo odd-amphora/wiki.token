@@ -141,7 +141,7 @@ export default function Token({
   /**
    * Fetches and sorts transaction history (by block number and transaction hash) for this page.
    */
-  const fetchAndOrderEvents = async () => {
+  const fetchAndSortTxHistoryEvents = async () => {
     const mintEvents = await contracts["Token"].queryFilter(
       contracts["Token"].filters.Mint(address),
     );
