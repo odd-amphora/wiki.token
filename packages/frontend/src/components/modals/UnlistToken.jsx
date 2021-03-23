@@ -5,7 +5,7 @@ import { Modal } from "antd";
 export default function UnlistToken(props) {
   return (
     <Modal
-      title={`Unlist "` + props.pageTitle + `" from marketplace`}
+      title={props.pageTitle + `" history`}
       visible={props.visible}
       onOk={props.onOk}
       onCancel={props.onCancel}

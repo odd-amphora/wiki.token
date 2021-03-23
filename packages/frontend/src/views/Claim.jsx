@@ -14,7 +14,14 @@ const VALIDATE_STATUS_SUCCESS = "success";
 const VALIDATE_STATUS_VALIDATING = "validating";
 const VALIDATE_STATUS_ERROR = "error";
 
-export default function Claim({ address, contracts, signer, transactor, web3Modal }) {
+export default function Claim({
+  address,
+  contracts,
+  localProvider,
+  signer,
+  transactor,
+  web3Modal,
+}) {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
@@ -91,6 +98,7 @@ export default function Claim({ address, contracts, signer, transactor, web3Moda
           imageUrl={articleQueryResponse?.imageUrl}
           pageId={articleQueryResponse?.pageId}
           pageTitle={articleQueryResponse?.pageTitle}
+          localProvider={localProvider}
         />
         <div hidden={isClaimed}>
           <Button

@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import {
   AcceptBidModal,
   ListTokenModal,
   PlaceBidModal,
   PurchaseTokenModal,
+  TxHistoryModal,
   UnlistTokenModal,
   WithdrawBidModal,
 } from "./modals";
 import { FormatAddress } from "../helpers";
-import { useContractReader } from "../hooks";
+import { useContractReader, useEventListener } from "../hooks";
 import { NULL_ADDRESS } from "../constants";
 
 import web3 from "web3";
@@ -30,23 +32,28 @@ export default function Token({
   address,
   contracts,
   imageUrl,
+  localProvider,
   pageId,
   pageTitle,
-  transactor,
   signer,
+  transactor,
 }) {
   // Modal state
   // TODO(bingbongle) maybe this could be a single variable with an ID, at this point.
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
   const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
-  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
   const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
+  const [txHistoryModalVisible, setTxHistoryModalVisible] = useState(false);
+  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
   const [withdrawBidModalVisible, setWithdrawBidModalVisible] = useState(false);
 
   // Form state
   const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
   const [bidPriceInEth, setBidPriceInEth] = useState("1");
+
+  // Tx History events
+  const [txHistoryEvents, setTxHistoryEvents] = useState([]);
 
   // Poll the owner of this token.
   const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
@@ -132,6 +139,28 @@ export default function Token({
   };
 
   /**
+   * Fetches and sorts transaction history (by block number and transaction hash) for this page.
+   */
+  const fetchAndOrderEvents = async () => {
+    const mintEvents = await contracts["Token"].queryFilter(
+      contracts["Token"].filters.Mint(address),
+    );
+    const pageOfferedEvents = await contracts["Token"].queryFilter(
+      contracts["Token"].filters.PageOffered(BigNumber.from(pageId)),
+    );
+
+    // TODO(bingbongle) add remaining events
+    const results = mintEvents.concat(pageOfferedEvents);
+    results.sort((a, b) => {
+      return a.blockNumber === b.blockNumber
+        ? a.transactionIndex - b.transactionIndex
+        : a.blockNumber - b.blockNumber;
+    });
+
+    setTxHistoryEvents(results);
+  };
+
+  /**
    * Opens the tokens corresponding Wikipedia. Inteded to be triggered when the
    * image is (left) clicked.
    */
@@ -214,14 +243,17 @@ export default function Token({
       case KEY_LIST_FOR_SALE:
         setListTokenModalVisible(true);
         break;
-      case KEY_UNLIST_FROM_MARKETPLACE:
-        setUnlistTokenModalVisible(true);
-        break;
       case KEY_PURCHASE_FULL_PRICE:
         setPurchaseFullPriceModalVisible(true);
         break;
       case KEY_PLACE_BID:
         setPlaceBidModalVisible(true);
+        break;
+      case KEY_VIEW_TX_HISTORY:
+        setTxHistoryModalVisible(true);
+        break;
+      case KEY_UNLIST_FROM_MARKETPLACE:
+        setUnlistTokenModalVisible(true);
         break;
       case KEY_WITHDRAW_BID:
         setWithdrawBidModalVisible(true);
@@ -230,6 +262,9 @@ export default function Token({
         console.log(`Event not handled!`, event);
     }
   }
+
+  // Asynchronously fetch and sort transaction history associated with this token.
+  fetchAndSortTxHistoryEvents();
 
   return (
     <Dropdown overlay={menu()} trigger={["contextMenu"]}>
@@ -292,17 +327,6 @@ export default function Token({
                 setListTokenPriceInEth(e.toString());
               }}
             />
-            <UnlistTokenModal
-              pageTitle={pageTitle}
-              visible={unlistTokenModalVisible}
-              onOk={() => {
-                setUnlistTokenModalVisible(false);
-                unlistToken();
-              }}
-              onCancel={() => {
-                setListTokenModalVisible(false);
-              }}
-            />
             <PurchaseTokenModal
               pageTitle={pageTitle}
               offer={offer}
@@ -330,6 +354,28 @@ export default function Token({
               }}
               onBidAmountChanged={e => {
                 setBidPriceInEth(e.toString());
+              }}
+            />
+            <TxHistoryModal
+              pageTitle={pageTitle}
+              visible={txHistoryModalVisible}
+              events={txHistoryEvents}
+              onOk={() => {
+                setTxHistoryModalVisible(false);
+              }}
+              onCancel={() => {
+                setTxHistoryModalVisible(false);
+              }}
+            />
+            <UnlistTokenModal
+              pageTitle={pageTitle}
+              visible={unlistTokenModalVisible}
+              onOk={() => {
+                setUnlistTokenModalVisible(false);
+                unlistToken();
+              }}
+              onCancel={() => {
+                setListTokenModalVisible(false);
               }}
             />
             <WithdrawBidModal

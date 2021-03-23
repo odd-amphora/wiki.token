@@ -209,6 +209,7 @@ function App() {
               <Claim
                 address={address}
                 contracts={contracts}
+                localProvider={localProvider}
                 signer={userProvider.getSigner()}
                 transactor={transactor}
                 web3Modal={web3Modal}
@@ -229,6 +230,7 @@ function App() {
                     : `You haven't claimed any tokens... yet 😞`
                 }
                 walletNotConnectedText="Connect a wallet to claim your first one"
+                localProvider={localProvider}
               />
             </Route>
             <Route path="/discover">
@@ -246,6 +248,7 @@ function App() {
                     : `No tokens have been claimed... yet 😞`
                 }
                 walletNotConnectedText="Connect a wallet to claim the first one"
+                localProvider={localProvider}
               />
             </Route>
           </Switch>

@@ -6,13 +6,14 @@ import { Token } from "../components";
 
 export default function Tokens({
   address,
-  tokens,
-  web3Modal,
   contracts,
-  transactor,
-  signer,
   headerText,
+  localProvider,
+  signer,
+  tokens,
+  transactor,
   walletNotConnectedText,
+  web3Modal,
 }) {
   return (
     <div className="menu-view">
@@ -36,6 +37,7 @@ export default function Tokens({
               imageUrl={token.properties?.image?.description}
               pageTitle={token.properties?.description?.description}
               pageId={token.properties?.name?.description}
+              localProvider={localProvider}
             />
           );
         })}
