@@ -22,7 +22,7 @@ export default function useExchangePrice(targetNetwork, mainnetProvider, pollTim
     }
     getPrice();
   };
-  usePoller(pollPrice, pollTime || 9777);
+  usePoller(pollPrice, pollTime || 30000);
 
   return price;
 }
