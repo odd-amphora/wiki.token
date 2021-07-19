@@ -59,9 +59,9 @@ export default function Token({
   // Poll the owner of this token.
   const [owner, setOwner] = useState({});
   const [offer, setOffer] = useState({});
-  const [offerDonationAmount, setOfferDonationAmount] = useState("");
+  const [offerDonationAmount, setOfferDonationAmount] = useState();
   const [bid, setBid] = useState({});
-  const [bidDonationAmountWei, setBidDonationAmount] = useState("");
+  const [bidDonationAmountWei, setBidDonationAmount] = useState();
 
   useEffect(() => {
     wikiTokenContract.pageIdToAddress(pageId).then(res => setOwner(res));
@@ -297,7 +297,7 @@ export default function Token({
         )}
         {/* Token action modals */}
         {/* This should be wrapped in some isModalReady property, probably */}
-        {/* {bid && bidDonationAmountWei && offerDonationAmount && offer && (
+        {bid && bidDonationAmountWei && offerDonationAmount && offer && (
           <div>
             <AcceptBidModal
               value={bid.value}
@@ -387,8 +387,9 @@ export default function Token({
               onCancel={() => {
                 setWithdrawBidModalVisible(false);
               }}
-            /> 
-          </div>*/}
+            />
+          </div>
+        )}
       </div>
     </Dropdown>
   );
