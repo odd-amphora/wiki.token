@@ -1,5 +1,5 @@
 export default function FormatAddress(address) {
-  if (!address) {
+  if (!address || (typeof address !== "string" && !(address instanceof String))) {
     return;
   }
   // TODO(teddywilson) validate addresses properly?

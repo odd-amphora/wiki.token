@@ -292,7 +292,7 @@ export default function Token({
         </div>
         {owner && address && owner !== NULL_ADDRESS && (
           <div className="token-owner">
-            {owner === address ? `😎 You own this token` : /*FormatAddress(owner)*/ "todo"}
+            {owner === address ? `😎 You own this token` : FormatAddress(owner)}
           </div>
         )}
         {/* Token action modals */}
