@@ -28,15 +28,7 @@ const KEY_WITHDRAW_BID = "7";
 
 // TODO(bingbongle) validation, loading spinner, etc.s
 // TODO(bingbongle) donation amount
-export default function Token({
-  address,
-  contracts,
-  imageUrl,
-  pageId,
-  pageTitle,
-  signer,
-  transactor,
-}) {
+export default function Token({ address, imageUrl, pageId, pageTitle, signer, transactor }) {
   const wikiTokenContract = useWikiTokenContract();
 
   // Modal state
@@ -171,55 +163,47 @@ export default function Token({
    * Acceps the outstanding token bid.
    */
   const acceptBid = async () => {
-    await transactor(
-      contracts["Token"]
-        .connect(signer)
-        ["acceptBidForPage"](pageId, web3.utils.toWei(bid.value, "ether")),
-    );
+    await wikiTokenContract
+      .connect(signer)
+      .acceptBidForPage(pageId, web3.utils.toWei(listTokenPriceInEth, "ether"));
   };
 
   /**
    * Lists the token for sale on the marketplace.
    */
   const listToken = async () => {
-    await transactor(
-      contracts["Token"]
-        .connect(signer)
-        ["offerPageForSale"](pageId, web3.utils.toWei(listTokenPriceInEth, "ether")),
-    );
+    await wikiTokenContract
+      .connect(signer)
+      .offerPageForSale(pageId, web3.utils.toWei(listTokenPriceInEth, "ether"));
   };
 
   /**
    * Unlists token from marketplace.
    */
   const unlistToken = async () => {
-    await transactor(contracts["Token"].connect(signer)["pageNoLongerForSale"](pageId));
+    await wikiTokenContract.connect(signer).pageNoLongerForSale(pageId);
   };
 
   /**
    * Purchase token for full price.
    */
   const purchaseForFullPrice = async () => {
-    await transactor(
-      contracts["Token"].connect(signer)["buyPage"](pageId, {
-        // TODO(bingbongle): this doesn't work
-        value: web3.utils
-          .toBN(web3.utils.toWei(offer.price, "ether"))
-          .add(web3.utils.toBN(offerDonationAmount.toString()))
-          .toString(),
-      }),
-    );
+    await wikiTokenContract.connect(signer).buyPage(pageId, {
+      // TODO(bingbongle): this doesn't work
+      value: web3.utils
+        .toBN(web3.utils.toWei(offer.price, "ether"))
+        .add(web3.utils.toBN(offerDonationAmount.toString()))
+        .toString(),
+    });
   };
 
   /**
    * Places a bid against the token.
    */
   const placeBid = async () => {
-    await transactor(
-      contracts["Token"].connect(signer)["enterBidForPage"](pageId, {
-        value: web3.utils.toBN(web3.utils.toWei(bidPriceInEth, "ether")).toString(),
-      }),
-    );
+    await wikiTokenContract.connect(signer).enterBidForPage(pageId, {
+      value: web3.utils.toBN(web3.utils.toWei(bidPriceInEth, "ether")).toString(),
+    });
   };
 
   /**
@@ -227,7 +211,7 @@ export default function Token({
    * belongs to them.
    */
   const withdrawBid = async () => {
-    await transactor(contracts["Token"].connect(signer)["withdrawBidForPage"](pageId));
+    await wikiTokenContract.connect(signer).withdrawBidForPage(pageId);
   };
 
   /**
