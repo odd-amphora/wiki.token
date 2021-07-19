@@ -14,7 +14,10 @@ export default function TokensOfAddress({ address, signer, transactor, web3Modal
   useEffect(() => {
     wikiTokenContract
       .tokensOf(address, 0, TOKENS_OF_ADDRESS_PAGE_SIZE, true)
-      .then(res => setTokensOfResult(res));
+      .then(res => setTokensOfResult(res))
+      .catch(err => {
+        console.log("Error fetching tokens for address: ", err);
+      });
   }, []);
 
   return (

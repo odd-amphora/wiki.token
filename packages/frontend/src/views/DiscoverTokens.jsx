@@ -12,9 +12,14 @@ export default function DiscoverTokens({ address, signer, transactor, web3Modal 
   const discoverTokens = useTokensProvider(discoverTokensResult);
 
   useEffect(() => {
-    wikiTokenContract.discover(0, DISCOVER_TOKENS_PAGE_SIZE, true).then(res => {
-      setDiscoverTokensResult(res);
-    });
+    wikiTokenContract
+      .discover(0, DISCOVER_TOKENS_PAGE_SIZE, true)
+      .then(res => {
+        setDiscoverTokensResult(res);
+      })
+      .catch(err => {
+        console.log("Error fetching tokens for address: ", err);
+      });
   }, []);
 
   return (

@@ -10,7 +10,7 @@ export default function Tokens({ address, headerText, signer, tokens, transactor
       <div>{headerText}</div>
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
-        Connect a wallet to claim the first one
+        Connect a wallet to get started{" "}
         <span role="img" aria-label="rocket">
           🚀
         </span>
