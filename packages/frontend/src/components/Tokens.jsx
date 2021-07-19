@@ -2,25 +2,15 @@ import React from "react";
 
 import { Divider } from "antd";
 
-import { Token } from "../components";
+import { Token } from ".";
 
-export default function Tokens({
-  address,
-  contracts,
-  headerText,
-  localProvider,
-  signer,
-  tokens,
-  transactor,
-  walletNotConnectedText,
-  web3Modal,
-}) {
+export default function Tokens({ address, headerText, signer, tokens, transactor, web3Modal }) {
   return (
     <div className="menu-view">
       <div>{headerText}</div>
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
-        {walletNotConnectedText.concat(" ")}
+        Connect a wallet to claim the first one
         <span role="img" aria-label="rocket">
           🚀
         </span>
@@ -32,12 +22,10 @@ export default function Tokens({
               transactor={transactor}
               signer={signer}
               address={address}
-              contracts={contracts}
               key={token.properties?.name?.description}
               imageUrl={token.properties?.image?.description}
               pageTitle={token.properties?.description?.description}
               pageId={token.properties?.name?.description}
-              localProvider={localProvider}
             />
           );
         })}

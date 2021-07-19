@@ -1,9 +1,21 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { Divider } from "antd";
+import { BigNumber } from "@ethersproject/bignumber";
 
-export default function About({ totalSupply }) {
+import { useWikiTokenContract } from "../hooks";
+
+export default function About() {
+  const wikiTokenContract = useWikiTokenContract();
+
+  const [totalSupply, setTotalSupply] = useState(0);
+
+  useEffect(() => {
+    wikiTokenContract
+      .totalSupply()
+      .then(res => setTotalSupply(res ? BigNumber.from(res).toNumber() : 0));
+  });
+
   return (
     <div className="menu-view">
       <div className="about-text-block" id="heading">

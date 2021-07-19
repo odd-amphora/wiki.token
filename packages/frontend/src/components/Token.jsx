@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Alert, Image, Menu, Dropdown } from "antd";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -13,7 +13,7 @@ import {
   WithdrawBidModal,
 } from "./modals";
 import { FormatAddress } from "../helpers";
-import { useContractReader, useEventListener } from "../hooks";
+import { useWikiTokenContract } from "../hooks";
 import { NULL_ADDRESS } from "../constants";
 
 import web3 from "web3";
@@ -32,12 +32,13 @@ export default function Token({
   address,
   contracts,
   imageUrl,
-  localProvider,
   pageId,
   pageTitle,
   signer,
   transactor,
 }) {
+  const wikiTokenContract = useWikiTokenContract();
+
   // Modal state
   // TODO(bingbongle) maybe this could be a single variable with an ID, at this point.
   const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
@@ -56,43 +57,43 @@ export default function Token({
   const [txHistoryEvents, setTxHistoryEvents] = useState([]);
 
   // Poll the owner of this token.
-  const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
+  const [owner, setOwner] = useState({});
+  const [offer, setOffer] = useState({});
+  const [offerDonationAmount, setOfferDonationAmount] = useState("");
+  const [bid, setBid] = useState({});
+  const [bidDonationAmountWei, setBidDonationAmount] = useState("");
 
-  // Poll offer belonging to this token.
-  const offer = useContractReader(
-    contracts,
-    "Token",
-    "pagesOfferedForSale",
-    [pageId],
-    10000,
-    newOffer => {
-      return {
-        isForSale: newOffer[0],
-        price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
-        seller: newOffer[2],
-      };
-    },
-  );
-
-  // Poll outstanding bid belonging to this token.
-  const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
-    return newBid
-      ? {
-          bidder: newBid.bidder,
-          hasBid: newBid.hasBid,
-          value: web3.utils.fromWei(newBid.value.toString(), "ether"),
-        }
-      : undefined;
-  });
-
-  // Poll donation amount required for this token
-  const offerDonationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
-    web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
-  ]);
-
-  const bidDonationAmountWei = useContractReader(contracts, "Token", "calculateDonationFromValue", [
-    web3.utils.toWei(bid && bid.value ? bid.value.toString() : "0", "ether"),
-  ]);
+  useEffect(() => {
+    wikiTokenContract.pageIdToAddress(pageId).then(res => setOwner(res));
+    wikiTokenContract.pagesOfferedForSale(pageId).then(res => {
+      setOffer({
+        isForSale: res[0],
+        price: web3.utils.fromWei(res.minValue.toString(), "ether"),
+        seller: res[2],
+      });
+    });
+    wikiTokenContract.pageBids(pageId).then(res => {
+      setBid(
+        res
+          ? {
+              bidder: res.bidder,
+              hasBid: res.hasBid,
+              value: web3.utils.fromWei(res.value.toString(), "ether"),
+            }
+          : undefined,
+      );
+    });
+    wikiTokenContract
+      .calculateDonationFromValue(
+        web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
+      )
+      .then(res => setOfferDonationAmount(res));
+    wikiTokenContract
+      .calculateDonationFromValue(
+        web3.utils.toWei(bid && bid.value ? bid.value.toString() : "0", "ether"),
+      )
+      .then(res => setBidDonationAmount(res));
+  }, [pageId]);
 
   // Creates a Menu.Item for token action menu.
   const menuItem = (key, emoji, emojiText, label) => {
@@ -142,22 +143,20 @@ export default function Token({
    * Fetches and sorts transaction history (by block number and transaction hash) for this page.
    */
   const fetchAndSortTxHistoryEvents = async () => {
-    const mintEvents = await contracts["Token"].queryFilter(
-      contracts["Token"].filters.Mint(address),
-    );
-    const pageOfferedEvents = await contracts["Token"].queryFilter(
-      contracts["Token"].filters.PageOffered(BigNumber.from(pageId)),
-    );
-
-    // TODO(bingbongle) add remaining events
-    const results = mintEvents.concat(pageOfferedEvents);
-    results.sort((a, b) => {
-      return a.blockNumber === b.blockNumber
-        ? a.transactionIndex - b.transactionIndex
-        : a.blockNumber - b.blockNumber;
-    });
-
-    setTxHistoryEvents(results);
+    // const mintEvents = await contracts["Token"].queryFilter(
+    //   contracts["Token"].filters.Mint(address),
+    // );
+    // const pageOfferedEvents = await contracts["Token"].queryFilter(
+    //   contracts["Token"].filters.PageOffered(BigNumber.from(pageId)),
+    // );
+    // // TODO(bingbongle) add remaining events
+    // const results = mintEvents.concat(pageOfferedEvents);
+    // results.sort((a, b) => {
+    //   return a.blockNumber === b.blockNumber
+    //     ? a.transactionIndex - b.transactionIndex
+    //     : a.blockNumber - b.blockNumber;
+    // });
+    // setTxHistoryEvents(results);
   };
 
   /**
@@ -293,12 +292,12 @@ export default function Token({
         </div>
         {owner && address && owner !== NULL_ADDRESS && (
           <div className="token-owner">
-            {owner === address ? `😎 You own this token` : FormatAddress(owner)}
+            {owner === address ? `😎 You own this token` : /*FormatAddress(owner)*/ "todo"}
           </div>
         )}
         {/* Token action modals */}
         {/* This should be wrapped in some isModalReady property, probably */}
-        {bid && bidDonationAmountWei && offerDonationAmount && offer && (
+        {/* {bid && bidDonationAmountWei && offerDonationAmount && offer && (
           <div>
             <AcceptBidModal
               value={bid.value}
@@ -388,9 +387,8 @@ export default function Token({
               onCancel={() => {
                 setWithdrawBidModalVisible(false);
               }}
-            />
-          </div>
-        )}
+            /> 
+          </div>*/}
       </div>
     </Dropdown>
   );

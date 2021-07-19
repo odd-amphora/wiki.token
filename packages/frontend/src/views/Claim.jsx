@@ -7,6 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import { Token } from "../components";
 import { useContractReader } from "../hooks";
+import { useWikiTokenContract } from "../hooks";
 
 // Form validation status
 const VALIDATE_STATUS_IDLE = "idle";
@@ -26,15 +27,17 @@ export default function Claim({
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
   const [isClaiming, setIsClaiming] = useState(false);
-  const isClaimed = useContractReader(contracts, "Token", "isClaimed", [currentPageId]);
+  const [isClaimed, setIsClaimed] = useState(false);
+  const wikiTokenContract = useWikiTokenContract();
+
   let cancelRequest;
 
   useEffect(() => {
-    setCurrentPageId(
-      BigNumber.from(
-        articleQueryResponse && articleQueryResponse.pageId ? articleQueryResponse.pageId : 0,
-      ),
+    let currentPageId = BigNumber.from(
+      articleQueryResponse && articleQueryResponse.pageId ? articleQueryResponse.pageId : 0,
     );
+    setCurrentPageId(currentPageId);
+    wikiTokenContract.isClaimed(currentPageId).then(res => setIsClaimed(res));
   }, [articleQueryResponse]);
 
   const fetchArticleMetadata = async article => {
@@ -89,17 +92,19 @@ export default function Claim({
         <Alert message="You must connect a wallet in order to claim tokens 😢" type="error" />
       </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
-        <Token
-          transactor={transactor}
-          signer={signer}
-          address={address}
-          contracts={contracts}
-          key={articleQueryResponse?.pageId}
-          imageUrl={articleQueryResponse?.imageUrl}
-          pageId={articleQueryResponse?.pageId}
-          pageTitle={articleQueryResponse?.pageTitle}
-          localProvider={localProvider}
-        />
+        {articleQueryResponse?.pageId && (
+          <Token
+            transactor={transactor}
+            signer={signer}
+            address={address}
+            contracts={contracts}
+            key={articleQueryResponse?.pageId}
+            imageUrl={articleQueryResponse?.imageUrl}
+            pageId={articleQueryResponse?.pageId}
+            pageTitle={articleQueryResponse?.pageTitle}
+            localProvider={localProvider}
+          />
+        )}
         <div hidden={isClaimed}>
           <Button
             loading={isClaiming}
