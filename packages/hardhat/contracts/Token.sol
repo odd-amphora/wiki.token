@@ -161,7 +161,7 @@ contract Token is ERC721, Ownable {
         owner = currentProposal.newOwner;
     }   
 
-    function voteOnTransferProposal(uint proposalIndex, bool voteYes) {
+    function voteOnTransferOfOwnershipProposal(uint proposalIndex, bool voteYes) {
         uint numProposals = _transferOfOwnershipProposals.length;
         require(numProposals > 0, "No proposals have been made");
         require(proposalIndex === numProposals - 1, "You can only vote on the most recent proposal");
