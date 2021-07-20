@@ -135,7 +135,7 @@ contract Token is ERC721, Ownable {
 
         TransferOfOwnershipProposal proposal = TransferOfOwnershipProposal(
             newOwner,
-            deadlineInDays,
+            now + (deadlineInDays * 1 days),
             [], // Do these need to be initialized?
             [],
             []
