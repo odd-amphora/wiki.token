@@ -86,7 +86,7 @@ contract Token is ERC721, Ownable {
         // Number of votes no to this proposal.
         uint votesNo;
 
-        // Mapping of address to a boolean indicated whether they have voted or not.
+        // Mapping of address to a boolean to flag whether an address has voted.
         mapping(address => bool) voters;
     }
 
