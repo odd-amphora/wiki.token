@@ -133,14 +133,14 @@ contract Token is ERC721, Ownable {
             }
         }
 
-        TransferOfOwnershipProposal proposedTransfer = ProposedTransfer(
+        TransferOfOwnershipProposal proposal = TransferOfOwnershipProposal(
             newOwner,
             deadlineInDays,
             [], // Do these need to be initialized?
             [],
             []
         );
-        _transferOfOwnershipProposals.push(proposedTransfer);
+        _transferOfOwnershipProposals.push(proposal);
     }
 
     function executeTransferOfOwnership() public onlyOwner {
