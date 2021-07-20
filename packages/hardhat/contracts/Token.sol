@@ -72,7 +72,8 @@ contract Token is ERC721, Ownable {
         uint value; 
     }
 
-    struct ProposedTransfer {
+    /// Represents a proposal to transfer ownership of this contract.
+    struct TransferOfOwnershipProposal {
         // The new address that funds would be transfered to.
         address newOwner;
 
@@ -85,11 +86,11 @@ contract Token is ERC721, Ownable {
         // Number of votes no to this proposal.
         uint votesNo;
 
-        // Mapping of address to voting result.
-        mapping(address => bool) addressToVote;
+        // Mapping of address to a boolean indicated whether they have voted or not.
+        mapping(address => bool) voters;
     }
 
-    ProposedTransfer[] private _proposedTransfers;
+    ProposedTransfer[] private _transferOfOwnershipProposals;
 
     //////////////
     /// Events ///
@@ -119,57 +120,63 @@ contract Token is ERC721, Ownable {
     /// Governance ////
     ///////////////////
 
-    /// Allows the owner of the contract to propose an ownership transfer.
-    /// @param newOwner Address of the new owner the contract would be transferred to.
-    /// @param deadlineInDays Number of days from now when the proposal will expire.
-    function proposeTransfer(address newOwner, uint deadlineInDays) public onlyOwner {
-        uint numProposedTransfers = _proposedTransfers.length;
-        require(numProposedTransfers > 0, "There are currently no proposed transfers");
-
-        ProposedTransfer memory mostRecentProposedTransfer = _proposedTransfers[numProposedTransfers - 1];
-        require(now > mostRecentProposedTransfer.deadline, "Current transfer proposal deadline has not passed");
-        if (mostRecentProposedTransfer.votesYes > mostRecentProposedTransfer.votesNo) {
-            require(
-                owner == mostRecentProposedTransfer.newOwner,
-                "Ownership from successful most recent proposal has not yet been transferred"
-            );
+    function proposeTransferOfOwnership(address newOwner, uint deadlineInDays) public onlyOwner {
+        uint numProposals = _transferOfOwnershipProposals.length;
+        if (numProposals > 0) {
+            TransferOfOwnershipProposal memory currentProposal = _transferOfOwnershipProposals[numProposals - 1];
+            require(now > currentProposal.deadline, "Current transfer proposal deadline has not passed");
+            if (currentProposal.votesYes > currentProposal.votesNo) {
+                require(
+                    owner == currentProposal.newOwner,
+                    "Ownership from successful most recent proposal has not yet been transferred"
+                );
+            }
         }
 
-        ProposedTransfer proposedTransfer = ProposedTransfer(
+        TransferOfOwnershipProposal proposedTransfer = ProposedTransfer(
             newOwner,
             deadlineInDays,
-            [].
+            [], // Do these need to be initialized?
+            [],
             []
         );
-        _proposedTransfers.push(proposedTransfer);
+        _transferOfOwnershipProposals.push(proposedTransfer);
     }
 
     function executeTransferOfOwnership() public onlyOwner {
-        uint numProposedTransfers = _proposedTransfers.length;
-        require(numProposedTransfers > 0, "There are currently no proposed transfers");
+        uint numProposals = _proposedTransfers.length;
+        require(numProposals > 0, "No proposals have been made");
 
-        ProposedTransfer memory mostRecentProposedTransfer = _proposedTransfers[numProposedTransfers - 1];
-        require(now > mostRecentProposedTransfer.deadline, "Current transfer proposal deadline has not passed");    
+        TransferOfOwnershipProposal memory currentProposal = _transferOfOwnershipProposals[numProposals - 1];
+        require(now > currentProposal.deadline, "Current proposal deadline has not passed");    
         require(
-            mostRecentProposedTransfer.votesYes > mostRecentProposedTransfer.votesNo,
+            currentProposal.votesYes > currentProposal.votesNo,
             "Most recent proposal has been rejected"
         );
         require(
-            mostRecentProposedTransfer.newOwner != owner,
+            currentProposal.newOwner != owner,
             "Ownership has already been transferred"
         );
         
-        owner = mostRecentProposedTransfer.newOwner;
+        owner = currentProposal.newOwner;
     }   
 
     function voteOnTransferProposal(uint proposalIndex, bool voteYes) {
-        uint numProposedTransfers = _proposedTransfers.length;
-        require(numProposedTransfers > 0, "There are currently no proposed transfers");
-        require(proposalIndex === numProposedTransfers - 1, "You can only vote on the most recent proposal");
-        require(now < mostRecentProposedTransfer.deadline, "You can only vote on the most recent proposal if it is still open");
-        // Check if votesYes or votesNo contains this address
-        // Make sure address owns wiki token
-        // create vote
+        uint numProposals = _transferOfOwnershipProposals.length;
+        require(numProposals > 0, "There are currently no proposed transfers");
+        require(proposalIndex === numProposals - 1, "You can only vote on the most recent proposal");
+        
+        TransferOfOwnershipProposal memory currentProposal = _transferOfOwnershipProposals[proposalIndex];  
+        require(now < mostRecentProposedTransfer.deadline, "You can only vote on this proposal if it is still open");
+        require(!mostRecentProposedTransfer.voters[msg.sender], "You can only vote once on this proposal");
+        require(_addressToPageIds[msg.sender].length > 0, "You must own at least one token to vote on this proposal");
+
+        mostRecentProposedTransfer.voters[msg.sender] = true;
+        if (voteYes) {
+            mostRecentProposdTransfer.votesYes++;
+        } else {
+            mostRecentProposdTransfer.votesNo++;      
+        }
     } 
 
     /// TODO: establish concrete sections, or break out into several contracts.
