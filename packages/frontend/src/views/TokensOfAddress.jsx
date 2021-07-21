@@ -12,13 +12,17 @@ export default function TokensOfAddress({ address, signer, transactor, web3Modal
   const tokens = useTokensProvider(tokensOfResult);
 
   useEffect(() => {
+    console.log("hello?: ", address);
     wikiTokenContract
-      .tokensOf(address, 0, TOKENS_OF_ADDRESS_PAGE_SIZE, true)
-      .then(res => setTokensOfResult(res))
+      .tokensOfOwner(address)
+      .then(res => {
+        console.log("TokensOfAddress result: ", res);
+        setTokensOfResult(res)
+      })
       .catch(err => {
         console.log("Error fetching tokens for address: ", err);
       });
-  }, []);
+  }, [address]);
 
   return (
     <Tokens
@@ -27,11 +31,7 @@ export default function TokensOfAddress({ address, signer, transactor, web3Modal
       transactor={transactor}
       web3Modal={web3Modal}
       tokens={tokens}
-      headerText={
-        tokens && tokens.length > 0
-          ? `Right click on a token to accept a bid, or to list it for sale 📈`
-          : `You haven't claimed any tokens... yet 😞`
-      }
+      noTokensHeader={`You haven't claimed any tokens... yet 😞`}
     />
   );
 }

@@ -16,17 +16,35 @@ contract Token is Ownable, ERC721Enumerable {
     /// Minted page ids in order, used for pagination and getting all of the tokens belonging to an address.
     uint[] private _mintedWikipediaPageIds;
  
+    string public baseURI;
+
     /// Wiki Token constructor.
-    /// @param baseURI Base URI that will be applied to all tokens.
-    constructor (string memory baseURI) public ERC721("WikiToken", "WIKI") {
-        setBaseURI(baseURI);
+    /// @param _baseURI Base URI that will be applied to all tokens.
+    constructor (string memory _baseURI) public ERC721("WikiToken", "WIKI") {
+        baseURI = _baseURI;
     }
 
     /// Sets base URI for all tokens.
-    /// @param baseURI Base URI that will be set.
-    function setBaseURI(string memory baseURI) public onlyOwner {
-        setBaseURI(baseURI);
+    /// @param _baseURI Base URI that will be set.
+    function setBaseURI(string memory _baseURI) public onlyOwner {
+        baseURI = _baseURI;
     }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory){
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+        return
+            bytes(baseURI).length > 0
+                ? string(
+                    abi.encodePacked(
+                        baseURI,
+                        tokenId
+                    ) // Convert address to string before encoding
+                )
+                : "";
+    }    
 
     /// Mints a Wiki Token.
     /// @param wikipediaPageId Wikipedia page that will be minted as a token.

@@ -161,7 +161,7 @@ function App() {
                 />
               )}
             </Route>
-            {/* <Route path="/tokens">
+            <Route path="/tokens">
               <TokensOfAddress
                 price={price}
                 address={address}
@@ -170,7 +170,7 @@ function App() {
                 signer={userProvider.getSigner()}
               />
             </Route>
-            <Route path="/discover">
+            {/* <Route path="/discover">
               <DiscoverTokens
                 price={price}
                 address={address}

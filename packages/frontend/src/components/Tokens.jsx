@@ -4,10 +4,10 @@ import { Divider } from "antd";
 
 import { Token } from ".";
 
-export default function Tokens({ address, headerText, signer, tokens, transactor, web3Modal }) {
+export default function Tokens({ address, noTokensHeader, signer, tokens, transactor, web3Modal }) {
   return (
     <div className="menu-view">
-      <div>{headerText}</div>
+      {!tokens || tokens.length === 0 && <div>{noTokensHeader}</div>}
       <div hidden={web3Modal && web3Modal.cachedProvider}>
         <Divider />
         Connect a wallet to get started{" "}

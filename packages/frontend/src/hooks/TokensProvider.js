@@ -7,11 +7,8 @@ function useTokensProvider(tokensResult) {
   const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
-    if (!tokensResult || tokensResult.length !== 3) {
-      return;
-    }
     Promise.all(
-      tokensResult[0].map(token => {
+      tokensResult.map(token => {
         return axios
           .get(
             `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/token/${BigNumber.from(

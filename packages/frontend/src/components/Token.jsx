@@ -12,10 +12,12 @@ export default function Token({ address, imageUrl, pageId, pageTitle}) {
   const wikiTokenContract = useWikiTokenContract();
 
   // Poll the owner of this token.
-  const [owner, setOwner] = useState({});
+  const [owner, setOwner] = useState('');
 
   useEffect(() => {
-    wikiTokenContract.pageIdToAddress(pageId).then(res => setOwner(res));
+    wikiTokenContract.ownerOf(pageId).then(res => setOwner(res)).catch(err => {
+      console.log('Error: ', err);
+    });
   }, [pageId]);
 
   /**

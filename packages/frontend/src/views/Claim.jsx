@@ -37,7 +37,7 @@ export default function Claim({
       articleQueryResponse && articleQueryResponse.pageId ? articleQueryResponse.pageId : 0,
     );
     setCurrentPageId(currentPageId);
-    wikiTokenContract.isClaimed(currentPageId).then(res => setIsClaimed(res));
+    wikiTokenContract.isWikipediaPageClaimed(currentPageId).then(res => setIsClaimed(res));
   }, [articleQueryResponse]);
 
   const fetchArticleMetadata = async article => {
@@ -68,7 +68,7 @@ export default function Claim({
 
   const claim = async () => {
     setIsClaiming(true);
-    await transactor(contracts["Token"].connect(signer)["mintPage"](currentPageId));
+    await transactor(wikiTokenContract.connect(signer).mintWikipediaPage(currentPageId));
     setIsClaiming(false);
   };
 
