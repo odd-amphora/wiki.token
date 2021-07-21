@@ -3,15 +3,6 @@ import React, { useState } from "react";
 import { Alert, Image, Menu, Dropdown } from "antd";
 import { BigNumber } from "@ethersproject/bignumber";
 
-import {
-  AcceptBidModal,
-  ListTokenModal,
-  PlaceBidModal,
-  PurchaseTokenModal,
-  TxHistoryModal,
-  UnlistTokenModal,
-  WithdrawBidModal,
-} from "./modals";
 import { FormatAddress } from "../helpers";
 import { useContractReader, useEventListener } from "../hooks";
 import { NULL_ADDRESS } from "../constants";
@@ -38,127 +29,8 @@ export default function Token({
   signer,
   transactor,
 }) {
-  // Modal state
-  // TODO(bingbongle) maybe this could be a single variable with an ID, at this point.
-  const [acceptBidModalVisible, setAcceptBidModalVisible] = useState(false);
-  const [listTokenModalVisible, setListTokenModalVisible] = useState(false);
-  const [purchaseFullPriceModalVisible, setPurchaseFullPriceModalVisible] = useState(false);
-  const [placeBidModalVisible, setPlaceBidModalVisible] = useState(false);
-  const [txHistoryModalVisible, setTxHistoryModalVisible] = useState(false);
-  const [unlistTokenModalVisible, setUnlistTokenModalVisible] = useState(false);
-  const [withdrawBidModalVisible, setWithdrawBidModalVisible] = useState(false);
-
-  // Form state
-  const [listTokenPriceInEth, setListTokenPriceInEth] = useState("1");
-  const [bidPriceInEth, setBidPriceInEth] = useState("1");
-
-  // Tx History events
-  const [txHistoryEvents, setTxHistoryEvents] = useState([]);
-
   // Poll the owner of this token.
   const owner = useContractReader(contracts, "Token", "pageIdToAddress", [pageId]);
-
-  // Poll offer belonging to this token.
-  const offer = useContractReader(
-    contracts,
-    "Token",
-    "pagesOfferedForSale",
-    [pageId],
-    10000,
-    newOffer => {
-      return {
-        isForSale: newOffer[0],
-        price: web3.utils.fromWei(newOffer.minValue.toString(), "ether"),
-        seller: newOffer[2],
-      };
-    },
-  );
-
-  // Poll outstanding bid belonging to this token.
-  const bid = useContractReader(contracts, "Token", "pageBids", [pageId], 10000, newBid => {
-    return newBid
-      ? {
-          bidder: newBid.bidder,
-          hasBid: newBid.hasBid,
-          value: web3.utils.fromWei(newBid.value.toString(), "ether"),
-        }
-      : undefined;
-  });
-
-  // Poll donation amount required for this token
-  const offerDonationAmount = useContractReader(contracts, "Token", "calculateDonationFromValue", [
-    web3.utils.toWei(offer && offer.price ? offer.price.toString() : "0", "ether"),
-  ]);
-
-  const bidDonationAmountWei = useContractReader(contracts, "Token", "calculateDonationFromValue", [
-    web3.utils.toWei(bid && bid.value ? bid.value.toString() : "0", "ether"),
-  ]);
-
-  // Creates a Menu.Item for token action menu.
-  const menuItem = (key, emoji, emojiText, label) => {
-    return (
-      <Menu.Item key={key}>
-        <span role="img" aria-label={emojiText}>
-          {emoji}
-        </span>{" "}
-        {label}
-      </Menu.Item>
-    );
-  };
-
-  // Builds the right-click menu with user options to interact with token. Varies depending on user
-  // and token state.
-  const menu = () => {
-    if (!offer || !owner || !address || !bid) {
-      return <Menu />;
-    }
-    let items = [];
-    if (owner === address) {
-      if (offer.isForSale) {
-        items.push(menuItem(KEY_UNLIST_FROM_MARKETPLACE, "🛌", "bed", "Unlist from marketplace"));
-      } else {
-        items.push(menuItem(KEY_LIST_FOR_SALE, "🎉", "party", "List for sale"));
-      }
-      if (bid.hasBid) {
-        items.push(menuItem(KEY_ACCEPT_BID, "❤️", "love", "Accept bid"));
-      }
-    } else {
-      if (offer.isForSale) {
-        items.push(menuItem(KEY_PURCHASE_FULL_PRICE, "🔥", "fire", "Purchase for full price"));
-      }
-      if (owner !== NULL_ADDRESS) {
-        if (bid.hasBid && bid.bidder === address) {
-          items.push(menuItem(KEY_WITHDRAW_BID, "🥺", "pleading-face", "Withdraw bid"));
-        } else {
-          items.push(menuItem(KEY_PLACE_BID, "🤠", "cowboy", "Bid on page"));
-        }
-      }
-    }
-    items.push(menuItem(KEY_VIEW_TX_HISTORY, "🌐", "globe", "View history"));
-    return <Menu onClick={handleMenuClick}>{items}</Menu>;
-  };
-
-  /**
-   * Fetches and sorts transaction history (by block number and transaction hash) for this page.
-   */
-  const fetchAndSortTxHistoryEvents = async () => {
-    const mintEvents = await contracts["Token"].queryFilter(
-      contracts["Token"].filters.Mint(address),
-    );
-    const pageOfferedEvents = await contracts["Token"].queryFilter(
-      contracts["Token"].filters.PageOffered(BigNumber.from(pageId)),
-    );
-
-    // TODO(bingbongle) add remaining events
-    const results = mintEvents.concat(pageOfferedEvents);
-    results.sort((a, b) => {
-      return a.blockNumber === b.blockNumber
-        ? a.transactionIndex - b.transactionIndex
-        : a.blockNumber - b.blockNumber;
-    });
-
-    setTxHistoryEvents(results);
-  };
 
   /**
    * Opens the tokens corresponding Wikipedia. Inteded to be triggered when the
