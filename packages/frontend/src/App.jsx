@@ -13,19 +13,11 @@ import "./styles/App.scss";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import {
-  useContractReader,
-  useExchangePrice,
-  useGasPrice,
-  useUserProvider,
-  useContractLoader,
-  useTokensProvider,
-} from "./hooks";
+import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader } from "./hooks";
 import { Layout } from "./components";
 import { NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
-import { About, Claim, Tokens } from "./views";
-import { BigNumber } from "@ethersproject/bignumber";
+import { About, Claim, DiscoverTokens, TokensOfAddress } from "./views";
 
 const web3Modal = new Web3Modal({
   // network: "mainnet", // optional
@@ -73,11 +65,14 @@ function App() {
   const gasPrice = useGasPrice(targetNetwork, "fast");
 
   const userProvider = useUserProvider(injectedProvider, localProvider);
+
   const address = useUserAddress(userProvider);
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
-    setInjectedProvider(new Web3Provider(provider));
+    let web3Provider = new Web3Provider(provider);
+    web3Provider.pollingInterval = 10000000;
+    setInjectedProvider(web3Provider);
   }, [setInjectedProvider]);
 
   useEffect(() => {
@@ -93,57 +88,6 @@ function App() {
   useEffect(() => {
     setRoute(window.location.pathname);
   }, [setRoute]);
-
-  // TODO(teddywilson) mess begins
-
-  // Shared function to format token result
-  const formatTokensResult = result => {
-    if (!result || result.length !== 3) {
-      return [];
-    }
-    // Ridiculous hack for array equality
-    return JSON.stringify(
-      result[0].map(token => {
-        return BigNumber.from(token).toNumber();
-      }),
-    );
-  };
-
-  // Fetch my tokens
-  // TODO(bingbongle) If bid is accepted, tokens still show up here.
-  const myTokensResult = useContractReader(
-    contracts,
-    "Token",
-    "tokensOf",
-    [address, 0, 100000, true],
-    2000,
-    formatTokensResult,
-  );
-  const myTokens = useTokensProvider(myTokensResult);
-
-  // Fetch discovery tokens
-  const discoveryTokensResult = useContractReader(
-    contracts,
-    "Token",
-    "discover",
-    [0, 10000, true],
-    2000,
-    formatTokensResult,
-  );
-  const discoveryTokens = useTokensProvider(discoveryTokensResult);
-
-  const totalSupply = useContractReader(
-    contracts,
-    "Token",
-    "totalSupply",
-    [],
-    10000,
-    newTotalSupply => {
-      return newTotalSupply ? BigNumber.from(newTotalSupply).toNumber() : 0;
-    },
-  );
-
-  // TODO(teddywilson) mess ends
 
   return (
     <div className="App">
@@ -203,54 +147,38 @@ function App() {
           </Menu>
           <Switch>
             <Route exact path={["/about", "/"]}>
-              <About totalSupply={totalSupply} />
+              <About />
             </Route>
             <Route exact path="/claim">
-              <Claim
-                address={address}
-                contracts={contracts}
-                localProvider={localProvider}
-                signer={userProvider.getSigner()}
-                transactor={transactor}
-                web3Modal={web3Modal}
-              />
+              {contracts && (
+                <Claim
+                  address={address}
+                  contracts={contracts}
+                  localProvider={localProvider}
+                  signer={userProvider.getSigner()}
+                  transactor={transactor}
+                  web3Modal={web3Modal}
+                />
+              )}
             </Route>
-            <Route path="/tokens">
-              <Tokens
+            {/* <Route path="/tokens">
+              <TokensOfAddress
                 price={price}
                 address={address}
-                tokens={myTokens}
                 web3Modal={web3Modal}
-                contracts={contracts}
-                transactor={transactor}
+                tansactor={transactor}
                 signer={userProvider.getSigner()}
-                headerText={
-                  myTokens && myTokens.length > 0
-                    ? `Right click on a token to accept a bid, or to list it for sale 📈`
-                    : `You haven't claimed any tokens... yet 😞`
-                }
-                walletNotConnectedText="Connect a wallet to claim your first one"
-                localProvider={localProvider}
               />
             </Route>
             <Route path="/discover">
-              <Tokens
+              <DiscoverTokens
                 price={price}
                 address={address}
-                tokens={discoveryTokens}
                 web3Modal={web3Modal}
-                contracts={contracts}
-                transactor={transactor}
+                tansactor={transactor}
                 signer={userProvider.getSigner()}
-                headerText={
-                  discoveryTokens && discoveryTokens.length > 0
-                    ? `Right click on a token to purchase it for full price, or to place a bid 🏦`
-                    : `No tokens have been claimed... yet 😞`
-                }
-                walletNotConnectedText="Connect a wallet to claim the first one"
-                localProvider={localProvider}
               />
-            </Route>
+            </Route> */}
           </Switch>
         </BrowserRouter>
       </Layout>

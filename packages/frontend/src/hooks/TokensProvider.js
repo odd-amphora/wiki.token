@@ -3,16 +3,15 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { BigNumber } from "@ethersproject/bignumber";
 
-function useTokensProvider(tokensResultJson) {
+function useTokensProvider(tokensResult) {
   const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
-    if (!tokensResultJson) {
+    if (!tokensResult || tokensResult.length !== 3) {
       return;
     }
-    let tokensResultArr = JSON.parse(tokensResultJson);
     Promise.all(
-      tokensResultArr.map(token => {
+      tokensResult[0].map(token => {
         return axios
           .get(
             `${process.env.REACT_APP_METADATA_API_BASE_URL}/api/token/${BigNumber.from(
@@ -24,7 +23,7 @@ function useTokensProvider(tokensResultJson) {
     ).then(tokens => {
       setTokens(tokens);
     });
-  }, [tokensResultJson]);
+  }, [tokensResult]);
 
   return tokens;
 }
