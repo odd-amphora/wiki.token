@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.7.0;
+pragma solidity 0.8.6;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/Math.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
 
@@ -13,7 +12,7 @@ import "hardhat/console.sol";
 ///
 /// @author The Wiki Token team.
 /// @title Wiki Token ERC 721 contract.
-contract Token is Ownable, ERC721, ERC721Enumerable {
+contract Token is Ownable, ERC721Enumerable {
     /// Minted page ids in order, used for pagination and getting all of the tokens belonging to an address.
     uint[] private _mintedWikipediaPageIds;
  
@@ -26,15 +25,13 @@ contract Token is Ownable, ERC721, ERC721Enumerable {
     /// Sets base URI for all tokens.
     /// @param baseURI Base URI that will be set.
     function setBaseURI(string memory baseURI) public onlyOwner {
-        _setBaseURI(baseURI);
+        setBaseURI(baseURI);
     }
 
     /// Mints a Wiki Token.
     /// @param wikipediaPageId Wikipedia page that will be minted as a token.
     function mintWikipediaPage(uint wikipediaPageId) public {
         _mint(msg.sender, wikipediaPageId);
-        _setTokenURI(wikipediaPageId, Strings.toString(wikipediaPageId));
-
         _mintedWikipediaPageIds.push(wikipediaPageId);
     }      
 
@@ -72,7 +69,7 @@ contract Token is Ownable, ERC721, ERC721Enumerable {
         uint howMany,
         bool ascending
     ) public view returns (uint[] memory result, uint newCursor, bool reachedEnd) {
-        return _paginate(cursor, howMany, ascending, _mintedPageIds);
+        return _paginate(cursor, howMany, ascending, _mintedWikipediaPageIds);
     }
 
     /// Paginates items in a uint array.
