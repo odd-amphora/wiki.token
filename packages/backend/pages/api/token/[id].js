@@ -14,22 +14,9 @@ export default (req, res) => {
       return;
     }
     res.status(200).send({
-      title: "Asset Metadata",
-      type: "object",
-      properties: {
-        name: {
-          type: "string",
-          description: response.pageId,
-        },
-        description: {
-          type: "string",
-          description: response.pageTitle,
-        },
-        image: {
-          type: "string",
-          description: response.imageUrl,
-        },
-      },
+      name: response.pageId,
+      image: response.imageUrl,
+      description: response.pageTitle,
     });
   });
 };
