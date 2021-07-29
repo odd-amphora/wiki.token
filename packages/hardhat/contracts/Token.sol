@@ -58,7 +58,8 @@ contract Token is ERC721Enumerable, JuiceboxProject {
   function tokenURI(uint256 tokenId) public view override returns (string memory) {
     require(_exists(tokenId), "Token does not exist");
 
-    return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId)) : "";
+    return
+      bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(tokenId))) : "";
   }
 
   /// Mints a Wiki Token.
