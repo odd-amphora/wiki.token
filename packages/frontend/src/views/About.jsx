@@ -96,7 +96,7 @@ export default function About() {
               text="wikitoken.eth"
             />
             . wikitoken.eth is a multisig wallet shared by the creators of WikiToken, as well as
-            other projects in the crypto space; some of these include
+            other projects in the crypto space; some of these include{" "}
             <AboutLink link="https://juice.money" text="Juice" />,{" "}
             <AboutLink link="https://tokentax.co" text="TokenTax" />, and more.
           </p>
