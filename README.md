@@ -13,8 +13,6 @@ NOTE: WikiToken is in no way affiliated with Wikimedia. We hope that one day we 
     ```
 1.  Create `.env` files in `./packes/frontend` and `./packages/hardhat` which mirror the `.sample.env` files in the same directories.
 
-    - TODO(odd-amphora): add required keys
-
 1.  Install dependencies:
 
     ```
