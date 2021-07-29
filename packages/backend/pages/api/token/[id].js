@@ -9,7 +9,7 @@ export default (req, res) => {
   }
   fetchPageById(req.query.id).then(response => {
     if (!response) {
-      // TODO(odd-amphora) handle not found case?
+      // TODO(odd-amphora): handle not found case?
       res.status(404).send(`{error: Page not found}`);
       return;
     }
