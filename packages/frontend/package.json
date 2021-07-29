@@ -1,0 +1,58 @@
+{
+  "name": "@wiki.token/frontend",
+  "license": "MIT",
+  "version": "1.0.0",
+  "homepage": ".",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.34",
+    "@fortawesome/free-brands-svg-icons": "^5.15.2",
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@ramp-network/ramp-instant-sdk": "^2.2.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.8",
+    "@usedapp/core": "^0.3.24",
+    "@walletconnect/web3-provider": "^1.3.1",
+    "antd": "^4.12.2",
+    "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
+    "ethers": "^5.4.2",
+    "less": "^4.1.1",
+    "react": "^16.14.0",
+    "react-blockies": "^1.4.1",
+    "react-dom": "^16.14.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^3.4.3",
+    "sass": "^1.32.7"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^6.12.2",
+    "@types/react": "^16.9.19",
+    "chalk": "^4.1.0",
+    "ipfs-http-client": "^45.0.0",
+    "prettier": "^2.0.5",
+    "surge": "^0.21.5"
+  },
+  "scripts": {
+    "compile-antd-overrides": "lessc ./src/styles/antd.less ./src/styles/antd.css --js",
+    "build": "yarn compile-antd-overrides && react-scripts build",
+    "eject": "yarn compile-antd-overrides && react-scripts eject",
+    "start": "yarn compile-antd-overrides && react-scripts start",
+    "test": "yarn compile-antd-overrides && react-scripts test",
+    "ship": "yarn surge"
+  }
+}

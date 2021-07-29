@@ -1,0 +1,266 @@
+@import "./antd.css";
+
+$primary-color: #25283d;
+$wiki-card-blue: rgb(248, 249, 250);
+$wiki-link-blue: rgb(18, 78, 177);
+$wiki-link-sky: rgb(16, 78, 177);
+$wiki-yellow: rgb(255, 228, 150);
+$wiki-dark-gray: rgb(233, 233, 234);
+
+$animation-duration: 0.75s;
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: Georgia, Times, Times New Roman, serif;
+}
+
+a {
+  color: $wiki-link-blue;
+  text-decoration: none;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  text-align: center;
+  flex: 1 0 auto;
+}
+
+.about-text-block {
+  margin-bottom: 16px;
+  text-align: left;
+  font-size: 15px;
+  font-family: sans-serif;
+}
+
+.about-text-block > a:hover {
+  text-decoration: underline;
+}
+
+.about-text-counter {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.about-text-quote {
+  font-family: sans-serif;
+  font-style: oblique;
+  padding-left: 64px;
+  padding-right: 64px;
+  margin-bottom: 16px;
+}
+
+.about-text-title {
+  font-size: 20px;
+  text-align: left;
+  margin-bottom: -24px;
+  margin-top: 24px;
+  font-weight: 500;
+}
+
+.account {
+  display: flex;
+  font-weight: bold;
+}
+
+.account-address {
+  font-family: sans-serif;
+  margin-right: 16px;
+  margin-top: 8px;
+  float: left;
+}
+
+.balance {
+  vertical-align: middle;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+}
+
+.connect-button {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
+.footer {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.footer-inner-container {
+  background-color: $wiki-card-blue;
+}
+
+.footer-trademark {
+  font-weight: bold;
+}
+
+.footer-icon {
+  margin: 8px;
+  cursor: pointer;
+}
+
+.link-span {
+  color: $wiki-link-blue;
+}
+
+.link-span:hover {
+  text-decoration: underline;
+}
+
+.menu-link {
+  color: blue;
+}
+
+.menu-view {
+  margin: 24px;
+}
+
+.pagination-button {
+  cursor: pointer;
+  display: inline-block;
+  margin: 16px;
+  animation: fadeIn $animation-duration;
+  -webkit-animation: fadeIn $animation-duration;
+  -moz-animation: fadeIn $animation-duration;
+  -o-animation: fadeIn $animation-duration;
+  -ms-animation: fadeIn $animation-duration;
+}
+
+.token {
+  display: inline-block;
+  margin: 24px;
+  border-color: black;
+  border-width: 1px;
+  border-style: outset;
+  cursor: pointer;
+}
+
+.token-button {
+  cursor: pointer;
+}
+
+.token-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $wiki-card-blue;
+}
+
+.token-image-src {
+  width: 256;
+  height: 256;
+  object-fit: cover;
+}
+
+.token-owner {
+  background-color: $wiki-card-blue;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+
+.token-owner > a {
+  font-family: sans-serif;
+}
+
+.token-owner > a:hover {
+  text-decoration: underline;
+}
+
+.token-page-id {
+  font-size: 12px;
+  font-family: sans-serif;
+}
+
+.token-page-title {
+  font-size: 14px;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: $wiki-link-blue;
+}
+
+.token-page-title:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.token-text-box {
+  background-color: $wiki-card-blue;
+}
+
+.token-wrapper {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn $animation-duration;
+  -webkit-animation: fadeIn $animation-duration;
+  -moz-animation: fadeIn $animation-duration;
+  -o-animation: fadeIn $animation-duration;
+  -ms-animation: fadeIn $animation-duration;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

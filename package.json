@@ -1,0 +1,64 @@
+{
+  "name": "@wiki.token/monorepo",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": [
+    "ethereum",
+    "react",
+    "uniswap",
+    "wikipedia",
+    "wikidata",
+    "workspaces",
+    "yarn"
+  ],
+  "private": true,
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-babel": "^5.3.1",
+    "eslint-plugin-prettier": "^3.1.4"
+  },
+  "scripts": {
+    "frontend:build": "yarn workspace @wiki.token/frontend build --max-old-space-size=12288",
+    "frontend:eject": "yarn workspace @wiki.token/frontend eject",
+    "frontend:start": "yarn workspace @wiki.token/frontend start",
+    "frontend:test": "yarn workspace @wiki.token/frontend test",
+    "build": "yarn workspace @wiki.token/frontend build --max-old-space-size=12288",
+    "chain": "yarn workspace @wiki.token/hardhat chain",
+    "fork": "yarn workspace @wiki.token/hardhat fork",
+    "node": "yarn workspace @wiki.token/hardhat chain",
+    "test": "yarn workspace @wiki.token/hardhat test",
+    "backend:dev": "yarn workspace @wiki.token/backend dev",
+    "backend:build": "yarn workspace @wiki.token/backend build",
+    "backend:start": "yarn workspace @wiki.token/backend start",
+    "compile": "yarn workspace @wiki.token/hardhat compile",
+    "deploy-local": "yarn workspace @wiki.token/hardhat deploy-local",
+    "deploy-kovan": "yarn workspace @wiki.token/hardhat deploy-kovan",
+    "deploy-rinkeby": "yarn workspace @wiki.token/hardhat deploy-rinkeby",    
+    "deploy-mainnet": "yarn workspace @wiki.token/hardhat deploy-mainnet",
+    "watch": "yarn workspace @wiki.token/hardhat watch",
+    "accounts": "yarn workspace @wiki.token/hardhat accounts",
+    "balance": "yarn workspace @wiki.token/hardhat balance",
+    "send": "yarn workspace @wiki.token/hardhat send",
+    "ipfs": "yarn workspace @wiki.token/frontend ipfs",
+    "surge": "yarn workspace @wiki.token/frontend surge",
+    "s3": "yarn workspace @wiki.token/frontend s3",
+    "ship": "yarn workspace @wiki.token/frontend ship",
+    "generate": "yarn workspace @wiki.token/hardhat generate",
+    "account": "yarn workspace @wiki.token/hardhat account",
+    "mine": "cd packages/hardhat && npx hardhat mine",
+    "wallet": "cd packages/hardhat && npx hardhat wallet",
+    "fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
+    "flatten": "cd packages/hardhat && npx hardhat flatten"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/@graphprotocol/graph-ts",
+      "**/@graphprotocol/graph-ts/**"
+    ]
+  },
+  "dependencies": {}
+}
