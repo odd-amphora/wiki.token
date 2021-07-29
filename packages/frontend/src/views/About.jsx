@@ -46,18 +46,12 @@ export default function About() {
           in no way associated with Wikimedia, but we hope, over time, we can transfer this project
           over to them.
         </div>
-        {/* <div className="about-text-quote">
-          "The mission of the Wikimedia Foundation is to empower and engage people around the world
-          to collect and develop educational content under a free license or in the public domain,
-          and to disseminate it effectively and globally."
-        </div> */}
         <div className="about-text-block">
           Wikimedia provides, unarguably, one of the most important education platforms on the
-          internet. Since the organization is non-proft, they rely on the commmunity at large to
-          keep the site running and the team paid. With the rise of new Cryptocurrencies and NFTs,
-          there is an substantial liquidity that can be routed to help organizations like Wikimedia
-          in need. What's unique about WikiToken is that value is provided both to Wikimedia and to
-          WikiToken holders. Read more on how the mechanism works below.
+          internet. Since they are non-proft, they rely on the commmunity at large to keep the
+          organization running. Particularly in the cryptocurrency space, there is an substantial
+          liquidity that can be routed to help organizations like Wikimedia in need. By owning a
+          WikiToken, you are contributing to Wikimedia's vision and sustainability.
         </div>
       </>
       <>
@@ -74,9 +68,7 @@ export default function About() {
             />{" "}
             via{" "}
             <AboutLink link="https://www.mediawiki.org/wiki/API:Main_page" text="Wikimedia's API" />
-            . The Page ID is what is ultimately used to ensure that each token is unique. If you
-            prefer to interact with the WikiToken contract directly, you will need to use the Page
-            ID.
+            . The Page ID is what is ultimately used to ensure that each token is unique.
           </p>
           <p>
             Each WikiToken costs a flat rate of {MINT_FEE} to mint, and always will. This fee is
@@ -95,12 +87,18 @@ export default function About() {
             As a WikiToken holder, you inherently have a say in the direction of the organization.
             The end goal is to either (a) transfer this project its treasury to Wikimedia, or (b)
             hire a partner (decided by the community) that manage the finances of the organization.
-            WikiToken holders will have a say in every decision.
+            All holders will have the opportunity to vote on these decisions.
           </p>
           <p>
-            The WikiTokenDAO Juicebox project and treasury is owned by the wikitoken.eth address.
-            This address is a multisig wallet shared by the creator of the token, and other projects
-            in the crypto space. Some of these include the following: TODO.
+            The WikiTokenDAO Juicebox project and treasury is owned by{" "}
+            <AboutLink
+              link="https://etherscan.io/address/0x549238d4ee184e2cb4d3b7dcf47be933d1348fa8"
+              text="wikitoken.eth"
+            />
+            . wikitoken.eth is a multisig wallet shared by the creators of WikiToken, as well as
+            other projects in the crypto space; some of these include
+            <AboutLink link="https://juice.money" text="Juice" />,{" "}
+            <AboutLink link="https://tokentax.co" text="TokenTax" />, and more.
           </p>
         </div>
       </>
