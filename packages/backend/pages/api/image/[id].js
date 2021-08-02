@@ -38,6 +38,8 @@ export function getImage() {
 }
 
 export default (req, res) => {
+  res.setHeader("Content-Type", "image/svg+xml");
+
   //const { name } = req.params;
   const image = getImage();
   const body = `
