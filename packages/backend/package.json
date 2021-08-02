@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vercel/node": "^1.7.4",
+    "btoa": "^1.2.1",
     "next": "latest"
   },
   "devDependencies": {

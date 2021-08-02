@@ -95,7 +95,7 @@ export default function Tokens({ showOwner, tokensOfAddress, noTokensHeader }) {
                 token && (
                   <Token
                     key={token.name}
-                    imageUrl={token.image}
+                    imageUrl={token.meta}
                     pageTitle={token.description}
                     pageId={token.name}
                     showOwner={showOwner}

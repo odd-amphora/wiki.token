@@ -11,7 +11,7 @@ NOTE: WikiToken is in no way affiliated with Wikimedia. We hope that one day we 
     git clone https://github.com/odd-amphora/wiki.token.git
     cd wiki.token
     ```
-1.  Create `.env` files in `./packes/frontend` and `./packages/hardhat` which mirror the `.sample.env` files in the same directories.
+1.  Create `.env` files in `./packages/backend`, `./packages/frontend` and `./packages/hardhat` which mirror the `.sample.env` files in the same directories.
 
 1.  Install dependencies:
 

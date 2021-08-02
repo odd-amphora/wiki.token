@@ -1,19 +1,15 @@
 import { fetchPageByTitle } from "../../../utils/query";
 
-export default (req, res) => {
+export default async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (!req.query.title) {
-    res.status(400);
-    res.send(`{error: You need to specify an article title}`);
+    res.status(400).send({ error: `Title is required` });
     return;
   }
-  fetchPageByTitle(req.query.title).then(response => {
-    if (!response) {
-      res.status(404);
-      res.send(`{error: No article found}`);
-      return;
-    }
-    res.status(200);
-    res.send(response);
-  });
+  let queryResponse = await fetchPageByTitle(req.query.title);
+  if (!queryResponse) {
+    res.status(404).send({ error: `${req.query.title} not found` });
+    return;
+  }
+  res.status(200).send(queryResponse);
 };

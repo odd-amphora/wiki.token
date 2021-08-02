@@ -22,7 +22,6 @@ const buildTitleQuery = title => {
   return buildBaseWikipediaQuery().concat(`&titles=${title}`);
 };
 
-// Maybe return validation error instead?
 const formatQueryResponse = response => {
   if (!response.data || !response.data.query || !response.data.query.pages) {
     return null;
