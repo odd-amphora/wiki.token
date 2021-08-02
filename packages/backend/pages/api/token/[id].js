@@ -16,5 +16,6 @@ export default async (req, res) => {
     image: `${process.env.BASE_URL}/api/image/${queryResponse.pageId}`,
     description: queryResponse.pageTitle,
     meta: queryResponse.imageUrl,
+    external_url: `https://en.wikipedia.org/?curid=${queryResponse.pageId}`,
   });
 };
