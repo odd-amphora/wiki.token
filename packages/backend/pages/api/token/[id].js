@@ -17,5 +17,6 @@ export default async (req, res) => {
     description: queryResponse.pageTitle,
     meta: queryResponse.imageUrl,
     external_url: `https://en.wikipedia.org/?curid=${queryResponse.pageId}`,
+    background_color: `f8f9fa`, // wikipedia card blue
   });
 };
