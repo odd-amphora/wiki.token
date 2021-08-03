@@ -60,7 +60,7 @@ NOTE: Once contracts are deployed, new artifacts will be generated for the front
 To verify any of the contracts on Etherscan, do the following:
 
 1.  `cd packages/hardhat`
-1.  `npx hardhat verify --network $network $contract_address $constructor args`
+1.  `npx hardhat verify --network $network $contract_address $constructor_args`
 
 An example, verifying the `Token.sol` contract on Rinkeby may look like:
 
