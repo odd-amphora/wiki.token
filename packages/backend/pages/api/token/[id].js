@@ -12,9 +12,9 @@ export default async (req, res) => {
     return;
   }
   res.status(200).send({
-    name: queryResponse.pageId,
+    name: queryResponse.pageTitle,
     image: `${process.env.BASE_URL}/api/image/${queryResponse.pageId}`,
-    description: queryResponse.pageTitle,
+    description: queryResponse.pageId,
     meta: queryResponse.imageUrl,
     external_url: `https://en.wikipedia.org/?curid=${queryResponse.pageId}`,
     background_color: `f8f9fa`, // wikipedia card blue
