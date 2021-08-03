@@ -20,7 +20,14 @@ const wikiTokenBaseURI = process.env.WIKI_TOKEN_BASE_URI || "http://localhost:50
 const network = process.env.HARDHAT_NETWORK || "localhost";
 const artifactsDir = `artifacts`;
 
-const multisigAddress = "0x549238D4eE184e2Cb4d3B7DCf47Be933d1348Fa8"; // wikitoken.eth
+const getMultisigAddress = () => {
+  // A different multisig is required for each network.
+  // TODO: create a multisig for Kovan, if we continue to support it?
+  if (network === NETWORK_RINKEBY) {
+    return "0x0e357f89f752Da8d7e093C234afe498B87745087"; // wikitokenDAO-rinkeby;
+  }
+  return "0x549238D4eE184e2Cb4d3B7DCf47Be933d1348Fa8"; // wikitoken.eth, wikitokenDAO;
+};
 
 const getJuiceProjectId = () => {
   if (network === NETWORK_LOCALHOST) {
@@ -124,8 +131,8 @@ const main = async () => {
     juiceTerminalDirectory,
   ]);
 
+  const multisigAddress = getMultisigAddress();
   console.log(`🤝 Transferring ownership to:`, chalk.magenta(multisigAddress));
-
   await token.transferOwnership(multisigAddress);
 
   console.log("\n");
