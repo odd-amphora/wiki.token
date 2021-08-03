@@ -69,7 +69,7 @@ const deploy = async (contractName, _args = [], overrides = {}, libraries = {}) 
   const encoded = abiEncodeArgs(deployed, contractArgs);
   fs.writeFileSync(`${artifactsDir}/${contractName}.address`, deployed.address);
 
-  console.log(" 📄", chalk.cyan(contractName), "deployed to:", chalk.magenta(deployed.address));
+  console.log("📄", chalk.cyan(contractName), "deployed to:", chalk.magenta(deployed.address));
 
   if (!encoded || encoded.length <= 2) return deployed;
   fs.writeFileSync(`${artifactsDir}/${contractName}.args`, encoded.slice(2));
@@ -97,32 +97,36 @@ const main = async () => {
   const juiceTerminalDirectory = getJuiceTerminalDirectory();
 
   console.log(
-    `🛰 Deploying WikiToken with the following parameters:\n`,
-    chalk.green(`wikiTokenBaseURI`),
+    `🛰  Deploying WikiToken with the following parameters:\n`,
+    chalk.green(` - wikiTokenBaseURI`),
     `=`,
     chalk.cyan(wikiTokenBaseURI),
     `\n`,
-    chalk.green(`isJuiceEnabled`),
+    chalk.green(` - isJuiceEnabled`),
     `=`,
     chalk.cyan(isJuiceEnabled),
     `\n`,
-    chalk.green(`juiceProjectId`),
+    chalk.green(` - juiceProjectId`),
     `=`,
     chalk.cyan(juiceProjectId),
     `\n`,
-    chalk.green(`juiceTerminalDirectory`),
+    chalk.green(` - juiceTerminalDirectory`),
     `=`,
-    chalk.cyan(juiceTerminalDirectory),
+    chalk.magenta(juiceTerminalDirectory),
   );
 
   console.log("\n");
 
-  const _ = await deploy("Token", [
+  const token = await deploy("Token", [
     wikiTokenBaseURI,
     isJuiceEnabled,
     juiceProjectId,
     juiceTerminalDirectory,
   ]);
+
+  console.log(`🤝 Transferring ownership to:`, chalk.magenta(multisigAddress));
+
+  await token.transferOwnership(multisigAddress);
 
   console.log("\n");
 
