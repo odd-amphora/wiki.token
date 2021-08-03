@@ -57,4 +57,20 @@ NOTE: Once contracts are deployed, new artifacts will be generated for the front
 
 ### Verification
 
-TODO(odd-amphora)
+To verify any of the contracts on Etherscan, do the following:
+
+1.  `cd packages/hardhat`
+1.  `npx hardhat verify --network $network $contract_address $constructor args`
+
+An example, verifying the `Token.sol` contract on Rinkeby may look like:
+
+```
+npx hardhat verify --network rinkeby \
+  0x5f1F7c1E9830a46E00E21e204c7628b629B213d8 \
+  "https://api.wikitoken.org/api/token/" \
+  "true" \
+  "0x02" \
+  "0x5d03dA1Ec58cf319c4fDbf2E3fE3DDcd887ef9aD"
+```
+
+Verification allows for users on Etherscan to read the contract code and debug errors more easily.
