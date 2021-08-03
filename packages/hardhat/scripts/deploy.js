@@ -16,7 +16,7 @@ const NETWORK_KOVAN = "kovan";
 const NETWORK_RINKEBY = "rinkeby";
 const NETWORK_MAINNET = "mainnet";
 
-const wikiTokenBaseURI = process.env.WIKI_TOKEN_BASE_URI || "http://localhost:3000/";
+const wikiTokenBaseURI = process.env.WIKI_TOKEN_BASE_URI || "http://localhost:5000/api/token/";
 const network = process.env.HARDHAT_NETWORK || "localhost";
 const artifactsDir = `artifacts`;
 
