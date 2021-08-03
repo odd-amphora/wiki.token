@@ -13,7 +13,7 @@ export default async (req, res) => {
     {
       encoding: "binary",
       headers: {
-        "User-Agent": "WikiToken/0.0 (https://wikitoken.org",
+        "User-Agent": "WikiToken/0.0 (https://wikitoken.org)",
       },
     },
     function (err, response) {
