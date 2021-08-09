@@ -59,7 +59,7 @@ export default function About() {
         <Divider />
         <div className="about-text-block">
           <p>
-            On the site, users can <AboutLink link="/claim" text="claim" external="false" />, or
+            On the site, users can <AboutLink link="/sponser" text="sponser" external="false" />, or
             "mint", WikiToken(s) with Wikipedia Page URL(s). We have built an API that resolves each
             Page URL to a{" "}
             <AboutLink
@@ -116,9 +116,9 @@ export default function About() {
         <div className="about-text-title">Contributing</div>
         <Divider />
         <div className="about-text-block">
-          WikiToken is 100% open source and always will be. We are always looking for new members to
-          join our community, each with the opportunity to contribute in however they please. If
-          you're looking to get started, joining our{" "}
+          WikiToken is 100% open source. We are always looking for new members to join our
+          community, each with the opportunity to contribute in however they please. If you're
+          looking to get started, joining our{" "}
           <AboutLink link="https://discord.gg/RdrZKjAEyd" text="discord" /> community is a good
           place to begin. If you've found an issue with the site, please feel free to bring it up in
           the relevant channel there, or (even better) just{" "}

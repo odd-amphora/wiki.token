@@ -12,7 +12,7 @@ import {
 import "antd/dist/antd.css";
 import "./styles/App.scss";
 import { Layout } from "./components";
-import { About, Claim, DiscoverTokens, TokensOfAddress } from "./views";
+import { About, DiscoverTokens, Sponser, TokensOfAddress } from "./views";
 
 function App() {
   const [route, setRoute] = useState();
@@ -28,9 +28,9 @@ function App() {
       />
       <Layout>
         <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
-          <Menu.Item key="/claim" icon={<SearchOutlined />}>
-            <Link onClick={() => setRoute("/claim")} to="/claim" className="menu-link">
-              Claim
+          <Menu.Item key="/sponser" icon={<SearchOutlined />}>
+            <Link onClick={() => setRoute("/sponser")} to="/sponser" className="menu-link">
+              Sponser
             </Link>
           </Menu.Item>
           <Menu.Item key="/tokens" icon={<TrophyOutlined />}>
@@ -52,8 +52,8 @@ function App() {
           <Route exact path={["/about", "/"]}>
             <About />
           </Route>
-          <Route exact path="/claim">
-            <Claim />
+          <Route exact path="/sponser">
+            <Sponser />
           </Route>
           <Route path="/tokens">
             <TokensOfAddress />

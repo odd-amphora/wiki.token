@@ -82,11 +82,11 @@ contract Token is ERC721Enumerable, JuiceboxProject {
     _mintedWikipediaPageIds.push(wikipediaPageId);
   }
 
-  /// Checks if the token for a corresponding Wikipedia page is claimed.
+  /// Checks if the token for a corresponding Wikipedia page has been minted.
   ///
   /// @param pageId ID of token in question.
-  /// @return True if claimed, false otherwise.
-  function isWikipediaPageClaimed(uint256 pageId) public view returns (bool) {
+  /// @return True if minted, false otherwise.
+  function isPageMinted(uint256 pageId) public view returns (bool) {
     return _exists(pageId);
   }
 

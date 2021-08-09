@@ -22,12 +22,12 @@ const STATE_MINING = "Mining";
 const REFRESH_DELAY_MS = 200;
 const DEBOUNCE_DELAY_MS = 300;
 
-export default function Claim() {
+export default function Sponser() {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
-  const [isClaiming, setIsClaiming] = useState(false);
-  const [isClaimed, setIsClaimed] = useState(false);
+  const [isSponsering, setIsSponsering] = useState(false);
+  const [isSponsered, setIsSponsered] = useState(false);
 
   const { account } = useEthers();
   const wikiTokenContract = useWikiTokenContract();
@@ -43,10 +43,10 @@ export default function Claim() {
     );
     setCurrentPageId(currentPageId);
     wikiTokenContract
-      .isWikipediaPageClaimed(currentPageId)
-      .then(res => setIsClaimed(res))
+      .isPageMinted(currentPageId)
+      .then(res => setIsSponsered(res))
       .catch(err => {
-        console.log(`Error checking if page is claimed: `, err);
+        console.log(`Error checking if page is minted: `, err);
       });
   };
 
@@ -92,13 +92,13 @@ export default function Claim() {
       });
   };
 
-  const claim = async () => {
-    setIsClaiming(true);
+  const sponser = async () => {
+    setIsSponsering(true);
     // TODO: we should show error message
     send(currentPageId, {
       value: web3.utils.toBN(web3.utils.toWei("0.01", "ether")).toString(),
     });
-    setIsClaiming(false);
+    setIsSponsering(false);
     setTimeout(() => {
       refresh();
     }, REFRESH_DELAY_MS);
@@ -106,12 +106,12 @@ export default function Claim() {
 
   return (
     <div className="menu-view">
-      <Form className="claim-form">
+      <Form>
         <Form.Item hasFeedback validateStatus={validateStatus}>
           <Input
             addonBefore="https://en.wikipedia.org/wiki/"
             placeholder="Earth"
-            disabled={!account || isClaiming}
+            disabled={!account || isSponsering}
             onChange={e => {
               setFormValue(e.target.value);
             }}
@@ -121,7 +121,7 @@ export default function Claim() {
       </Form>
       {/* For whatever reason, style/visibility isn't working for alert so we have to wrap it */}
       <div hidden={account}>
-        <Alert message="You must connect a wallet in order to claim tokens 😢" type="error" />
+        <Alert message="You must connect a wallet in order to sponser tokens 😢" type="error" />
       </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         {articleQueryResponse?.pageId && (
@@ -130,18 +130,18 @@ export default function Claim() {
             imageUrl={articleQueryResponse?.imageUrl}
             pageId={articleQueryResponse?.pageId}
             pageTitle={articleQueryResponse?.pageTitle}
-            claimStatus={isClaimed}
+            sponsershipStatus={isSponsered}
             showOwner={true}
           />
         )}
-        <div hidden={isClaimed || !account}>
+        <div hidden={isSponsered || !account}>
           <Button
-            loading={isClaiming || (state && state.status === STATE_MINING)}
+            loading={isSponsering || (state && state.status === STATE_MINING)}
             onClick={() => {
-              claim();
+              sponser();
             }}
           >
-            Claim for {MINT_FEE}
+            Sponser for {MINT_FEE}
           </Button>
         </div>
       </div>
