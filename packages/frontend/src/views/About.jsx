@@ -72,10 +72,14 @@ export default function About() {
           </p>
           <p>
             Each WikiToken costs a flat rate of {MINT_FEE} to mint, and always will. This fee is
-            routed to the WikiTokenDAO Juicebox project, which holds a treasury of funds to be
-            donated to Wikimedia, and to pay the maintainers of this project; recurring funding
-            targets are set to pay mainters of the project, and overflow funds are considered part
-            of the treasury. We anticipate the majority of the treasury to live in overflow.
+            routed to the WikiTokenDAO Juicebox project, which holds the WikiToken treasury;
+            recurring funding targets are set to pay mainters of the project, and overflow funds
+            will be routed to Wikimedia. We anticipate the vast majority of the treasury to live in
+            overflow.
+          </p>
+          <p>
+            Secondary sales on <AboutLink link="https://opensea.io" text="Open Sea" /> will incur a
+            small royalty fee that will also be routed to the WikiToken treasury.
           </p>
         </div>
       </>
@@ -84,19 +88,20 @@ export default function About() {
         <Divider />
         <div className="about-text-block">
           <p>
-            As a WikiToken holder, you inherently have a say in the direction of the organization.
-            The end goal is to either (a) transfer this project its treasury to Wikimedia, or (b)
-            hire a partner (decided by the community) that manage the finances of the organization.
-            All holders will have the opportunity to vote on these decisions.
+            As a WikiToken holder, you are inherently part of the WikiToken DAO. The end goal is one
+            of the following: (a) transfer this project its entire treasury to Wikimedia, or (b)
+            hire a partner (decided by the community) that manages the finances of the organization
+            and routing funds to Wikimedia. Members of the DAO will vote on every single one of
+            these decisions.
           </p>
           <p>
-            The WikiTokenDAO Juicebox project and treasury is owned by{" "}
+            Currently, the WikiTokenDAO Juicebox project and treasury is owned by{" "}
             <AboutLink
               link="https://etherscan.io/address/0x549238d4ee184e2cb4d3b7dcf47be933d1348fa8"
               text="wikitoken.eth"
             />
-            . wikitoken.eth is a multisig wallet shared by the creators of WikiToken, as well as
-            other projects in the crypto space; some of these include{" "}
+            , a multisig wallet shared by the creators of WikiToken, as well as other projects in
+            the crypto space; some of these include{" "}
             <AboutLink link="https://juice.money" text="Juice" />,{" "}
             <AboutLink link="https://tokentax.co" text="TokenTax" />, and more.
           </p>
