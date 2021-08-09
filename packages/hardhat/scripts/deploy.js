@@ -38,7 +38,7 @@ const getJuiceProjectId = () => {
     return "0x01";
   }
   if (network === NETWORK_RINKEBY) {
-    return "0x12";
+    return "0x0c";
   }
   throw error(`Network ${network} does not have a Juice project configured`);
 };
