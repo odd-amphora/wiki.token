@@ -38,7 +38,7 @@ const getJuiceProjectId = () => {
     return "0x01";
   }
   if (network === NETWORK_RINKEBY) {
-    return "0x02";
+    return "0x12";
   }
   throw error(`Network ${network} does not have a Juice project configured`);
 };
@@ -131,9 +131,9 @@ const main = async () => {
     juiceTerminalDirectory,
   ]);
 
-  const multisigAddress = getMultisigAddress();
-  console.log(`🤝 Transferring ownership to:`, chalk.magenta(multisigAddress));
-  await token.transferOwnership(multisigAddress);
+  // const multisigAddress = getMultisigAddress();
+  // console.log(`🤝 Transferring ownership to:`, chalk.magenta(multisigAddress));
+  // await token.transferOwnership(multisigAddress);
 
   console.log("\n");
 
