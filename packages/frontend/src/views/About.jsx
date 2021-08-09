@@ -71,11 +71,10 @@ export default function About() {
             . The Page ID is what is ultimately used to ensure that each token is unique.
           </p>
           <p>
-            Each WikiToken costs a flat rate of {MINT_FEE} to mint, and always will. This fee is
-            routed to the WikiTokenDAO Juicebox project, which holds the WikiToken treasury;
-            recurring funding targets are set to pay mainters of the project, and overflow funds
-            will be routed to Wikimedia. We anticipate the vast majority of the treasury to live in
-            overflow.
+            Each WikiToken costs a flat rate of {MINT_FEE} to mint. This fee is routed to the
+            WikiTokenDAO Juicebox project, which holds the WikiToken treasury; recurring funding
+            targets are set to pay mainters of the project, and overflow funds will be routed to
+            Wikimedia. We anticipate the vast majority of the treasury to live in overflow.
           </p>
           <p>
             Secondary sales on <AboutLink link="https://opensea.io" text="Open Sea" /> will incur a
@@ -89,10 +88,10 @@ export default function About() {
         <div className="about-text-block">
           <p>
             As a WikiToken holder, you are inherently part of the WikiToken DAO. The end goal is one
-            of the following: (a) transfer this project its entire treasury to Wikimedia, or (b)
-            hire a partner (decided by the community) that manages the finances of the organization
-            and routing funds to Wikimedia. Members of the DAO will vote on every single one of
-            these decisions.
+            of the following: (a) transfer this project and its treasury to Wikimedia, or (b) hire a
+            partner (decided by the community) that manages the finances of the organization and
+            routing funds to Wikimedia. Members of the DAO will vote on every single one of these
+            decisions.
           </p>
           <p>
             Currently, the WikiTokenDAO Juicebox project and treasury is owned by{" "}
