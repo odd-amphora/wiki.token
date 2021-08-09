@@ -272,7 +272,7 @@ module.exports = [
         "type": "uint256"
       }
     ],
-    "name": "isWikipediaPageClaimed",
+    "name": "isPageMinted",
     "outputs": [
       {
         "internalType": "bool",
