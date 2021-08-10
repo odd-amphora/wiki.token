@@ -39,10 +39,11 @@ export default function InvalidNetwork() {
       {isReady && (
         <Modal title="Invalid network" visible={!isValidNetwork} footer={null} closable={false}>
           <span>
-            Your wallet is connected to <span className="invalid-network">{NETWORK}</span>, but you
-            are using the <span className="invalid-network">{CHAIN_ID_TO_NETWORK[chainId]}</span>{" "}
-            WikiToken app. Please connect to a different network in Metamask, or connect to a
-            different WikiToken application.
+            Your wallet is connected to{" "}
+            <span className="invalid-network">{CHAIN_ID_TO_NETWORK[chainId]}</span>, but you are
+            using the <span className="invalid-network">{NETWORK}</span> WikiToken app. Please
+            connect to a different network in Metamask, or connect to a different WikiToken
+            application.
           </span>
         </Modal>
       )}
