@@ -3,7 +3,7 @@ import { useEthers } from "@usedapp/core";
 import { Modal } from "antd";
 import { getChainId, NETWORK, CHAIN_ID_TO_NETWORK } from "../constants";
 
-const IS_READY_DELAY_MS = 3000;
+const IS_READY_DELAY_MS = 2000;
 
 export default function InvalidNetwork() {
   const { account, chainId } = useEthers();
