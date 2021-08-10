@@ -102,6 +102,7 @@ contract Token is ERC721Enumerable, JuiceboxProject {
   /// NOTE: Logic for tokensOfAddress() and discover() is not shared because different APIs are
   /// required for fetching tokens generally and fetching tokens belonging to a particular address.
   ///
+  /// @param owner Address of the owner tokens should be fetched for.
   /// @param cursor Index paginated results should start at.
   /// @param howMany How many results should be returned.
   /// @param ascending True if results should be returned in ascending order.
