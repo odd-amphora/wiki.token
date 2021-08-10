@@ -20,13 +20,14 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 /// @author wikitoken.org //////////////////////////////////////////////////////
 /// @title Wiki Token ERC 721 contract. ///
 contract Token is ERC721Enumerable, JuiceboxProject {
-  /// Minted page ids in order, used for pagination and getting all of the tokens belonging to an address.
+  /// Minted page ids in order, used for pagination and for getting all of the tokens belonging to an address.
   uint256[] private _mintedWikipediaPageIds;
 
   /// Base URI that WikiToken IDs will be concatenated to.
   string public baseURI;
 
   /// True if Juice is enblaed, false otherwise. This is useful for local testing.
+  /// https://juicebox.money
   bool private _isJuiceEnabled;
 
   /// The minimum price required to mint a WikiToken.
@@ -35,6 +36,9 @@ contract Token is ERC721Enumerable, JuiceboxProject {
   /// Wiki Token constructor.
   ///
   /// @param _baseURI Base URI that will be applied to all tokens.
+  /// @param isJuiceEnabled True if juice is enabled, false otherwise.
+  /// @param _projectID Juicebox project ID.
+  /// @param _terminalDirectory Terminal Directory, required by Juice.
   constructor(
     string memory _baseURI,
     bool isJuiceEnabled,
@@ -45,30 +49,33 @@ contract Token is ERC721Enumerable, JuiceboxProject {
     _isJuiceEnabled = isJuiceEnabled;
   }
 
-  /// Sets base URI for all tokens.
+  /// Sets the base URI for all tokens.
   ///
   /// @param _baseURI Base URI that will be set.
   function setBaseURI(string memory _baseURI) public onlyOwner {
     baseURI = _baseURI;
   }
 
-  /// Returns a URI for a given token.
+  /// Returns the URI for a given token.
   ///
   /// @param tokenId ID of the token in question.
   function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    require(_exists(tokenId), "Token does not exist");
+    require(_exists(tokenId), "WikiToken::tokenURI:: TOKEN_DOES_NOT_EXIST");
 
     return
       bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(tokenId))) : "";
   }
 
-  /// Mints a Wiki Token.
+  /// Mints a Wiki Token with a Wikipedia page ID.
   ///
   /// @param wikipediaPageId Wikipedia page that will be minted as a token.
   function mintWikipediaPage(uint256 wikipediaPageId) external payable {
-    require(msg.value >= MIN_MINT_PRICE, "Ether value sent is below the required price");
+    require(
+      msg.value >= MIN_MINT_PRICE,
+      "WikiToken::mintWikipediaPage:: MIN_ETHER_NOT_SENT"
+    );
 
-    /// Take fee into WikiTokenDAO Juicebox treasury if Juice is enabled.
+    /// Route fee to WikiTokenDAO Juicebox treasury if Juice is enabled.
     if (_isJuiceEnabled) {
       _takeFee(
         msg.value,
@@ -113,8 +120,14 @@ contract Token is ERC721Enumerable, JuiceboxProject {
     )
   {
     uint256 tokenCount = balanceOf(owner);
-    require(tokenCount > 0, "Owner has no tokens");
-    require(cursor >= 0 && cursor < tokenCount, "Cursor out of bounds");
+    require(
+      tokenCount > 0,
+      "WikiToken::tokensOfAddress:: OWNER_HAS_NO_TOKENS"
+    );
+    require(
+      cursor >= 0 && cursor < tokenCount,
+      "WikiToken::tokensOfAddress:: CURSOR_OUT_OF_BOUNDS"
+    );
 
     /// Determine cursor position depending on length and
     uint256 cursor_ = cursor;
@@ -146,7 +159,7 @@ contract Token is ERC721Enumerable, JuiceboxProject {
     uint256 howMany,
     bool ascending
   )
-    public
+    external
     view
     returns (
       uint256[] memory result,
@@ -154,10 +167,13 @@ contract Token is ERC721Enumerable, JuiceboxProject {
       uint256 newCursor
     )
   {
-    require(_mintedWikipediaPageIds.length > 0, "No tokens have been minted");
+    require(
+      _mintedWikipediaPageIds.length > 0,
+      "WikiToken::discover:: NO_TOKENS_MINTED"
+    );
     require(
       cursor >= 0 && cursor < _mintedWikipediaPageIds.length,
-      "Cursor position out of bounds"
+      "WikiToken::discover:: CURSOR_OUT_OF_BOUNDS"
     );
 
     /// Determine cursor position depending on length and

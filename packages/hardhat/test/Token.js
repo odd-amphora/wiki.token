@@ -1,14 +1,19 @@
+// TODO(odd-amphora): Add tests for paging functions. Lower priority since they don't mutate state.
+
 const { expect } = require("chai");
 const { BigNumber } = require("@ethersproject/bignumber");
 
 const TEST_BASE_URI = `https://bananabread.com/api/`;
-const TEST_INITIAL_DONATION_PERCENTAGE = 1;
+const FAKE_TERMINAL_DIRECTORY = "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7";
+
+const TOKEN_PRICE = BigNumber.from("10000000000000000"); // .01 ETH
+const TOKEN_PRICE_INSUFFICIENT = BigNumber.from("9999999999999999"); // .001 ETH
 
 const EXCEPTION_PREFIX = `VM Exception while processing transaction: revert `;
 
 describe("Token Contract", function () {
   let Token;
-  let hardhatToken;
+  let wikiToken;
   let owner;
   let addr1;
   let addr2;
@@ -18,54 +23,62 @@ describe("Token Contract", function () {
     Token = await ethers.getContractFactory("Token");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    args = [TEST_BASE_URI, TEST_INITIAL_DONATION_PERCENTAGE];
-    hardhatToken = await Token.deploy(...args);
+    args = [TEST_BASE_URI, /*isJuiceEnabled=*/ false, /*projectId=*/ 1, FAKE_TERMINAL_DIRECTORY];
+    wikiToken = await Token.deploy(...args);
   });
 
-  describe("mintPage()", function () {
+  describe("mintWikipediaPage()", function () {
     it("Should not mint pages that have already been claimed", async function () {
-      await hardhatToken.mintPage(/*pageId=*/ 1);
-      await expect(hardhatToken.mintPage(/*pageId=*/ 1)).to.be.reverted;
+      await wikiToken.mintWikipediaPage(/*pageId=*/ 1, {
+        value: TOKEN_PRICE,
+      });
+      await expect(wikiToken.mintWikipediaPage(/*pageId=*/ 1)).to.be.reverted;
 
-      await hardhatToken.mintPage(/*pageId=*/ 2);
-      await expect(hardhatToken.mintPage(/*pageId=*/ 2)).to.be.reverted;
+      await wikiToken.mintWikipediaPage(/*pageId=*/ 2, {
+        value: TOKEN_PRICE,
+      });
+      await expect(wikiToken.mintWikipediaPage(/*pageId=*/ 2)).to.be.reverted;
     });
 
-    it("Should mint tokens with proper URI", async function () {
-      await hardhatToken.mintPage(/*pageId=*/ 1);
-      expect(await hardhatToken.tokenURI(/*pageId=*/ 1)).to.equal(TEST_BASE_URI.concat(1));
-
-      await hardhatToken.mintPage(/*pageId=*/ 9226);
-      expect(await hardhatToken.tokenURI(/*pageId=*/ 9226)).to.equal(TEST_BASE_URI.concat(9226));
-
-      await hardhatToken.mintPage(/*pageId=*/ 29384);
-      expect(await hardhatToken.tokenURI(/*pageId=*/ 29384)).to.equal(TEST_BASE_URI.concat(29384));
-
-      await hardhatToken.mintPage(/*pageId=*/ 12891648290);
-      expect(await hardhatToken.tokenURI(/*pageId=*/ 12891648290)).to.equal(
-        TEST_BASE_URI.concat(12891648290),
-      );
-
-      // TODO(bingbongle) Cover new data structures that been added.
+    it("Should not mint pages with insufficient funds", async function () {
+      // No funds.
+      await expect(
+        wikiToken.mintWikipediaPage(/*pageId=*/ 1, {
+          value: 0,
+        }),
+      ).to.be.reverted;
+      // Insufficient funds.
+      await expect(
+        wikiToken.mintWikipediaPage(/*pageId=*/ 1, {
+          value: TOKEN_PRICE_INSUFFICIENT,
+        }),
+      ).to.be.reverted;
     });
   });
 
-  describe("isClaimed()", function () {
-    it("Should return true if already claimed, false otherwise", async function () {
-      await hardhatToken.mintPage(/*pageId=*/ 1);
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 1)).to.be.true;
+  describe("tokenURI()", function () {
+    it("Should be reverted if token has not been minted", async function () {
+      await expect(wikiToken.tokenURI(/*pageId=*/ 1)).to.be.reverted;
+      await expect(wikiToken.tokenURI(/*pageId=*/ 2)).to.be.reverted;
+      await expect(wikiToken.tokenURI(/*pageId=*/ 3)).to.be.reverted;
+      await expect(wikiToken.tokenURI(/*pageId=*/ 4)).to.be.reverted;
+    });
 
-      await hardhatToken.mintPage(/*pageId=*/ 2);
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 2)).to.be.true;
+    it("Should return proper token URI.", async function () {
+      await wikiToken.mintWikipediaPage(/*pageId=*/ 1, {
+        value: TOKEN_PRICE,
+      });
+      expect(await wikiToken.tokenURI(/*pageId=*/ 1)).to.equal(`${TEST_BASE_URI}1`);
 
-      await hardhatToken.mintPage(/*pageId=*/ 3);
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 3)).to.be.true;
+      await wikiToken.mintWikipediaPage(/*pageId=*/ 2, {
+        value: TOKEN_PRICE,
+      });
+      expect(await wikiToken.tokenURI(/*pageId=*/ 2)).to.equal(`${TEST_BASE_URI}2`);
 
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 4)).to.be.false;
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 5)).to.be.false;
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 6)).to.be.false;
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 7)).to.be.false;
-      expect(await hardhatToken.isClaimed(/*pageId=*/ 8)).to.be.false;
+      await wikiToken.mintWikipediaPage(/*pageId=*/ 3, {
+        value: TOKEN_PRICE,
+      });
+      expect(await wikiToken.tokenURI(/*pageId=*/ 3)).to.equal(`${TEST_BASE_URI}3`);
     });
   });
 });
