@@ -58,52 +58,47 @@ export default function About() {
         <div className="about-text-title">Mechanism</div>
         <Divider />
         <div className="about-text-block">
-          <p>
-            On the site, users can <AboutLink link="/sponser" text="sponser" external="false" />, or
-            "mint", WikiToken(s) with Wikipedia Page URL(s). We have built an API that resolves each
-            Page URL to a{" "}
-            <AboutLink
-              link="https://www.mediawiki.org/wiki/Manual:Page_table#page_id"
-              text="Page ID"
-            />{" "}
-            via{" "}
-            <AboutLink link="https://www.mediawiki.org/wiki/API:Main_page" text="Wikimedia's API" />
-            . The Page ID is what is ultimately used to ensure that each token is unique.
-          </p>
-          <p>
-            Each WikiToken costs a flat rate of {MINT_FEE} to mint. This fee is routed to the
-            WikiTokenDAO Juicebox project, which holds the WikiToken treasury; recurring funding
-            targets are set to pay mainters of the project, and overflow funds will be routed to
-            Wikimedia. We anticipate the vast majority of the treasury to live in overflow.
-          </p>
-          <p>
-            Secondary sales on <AboutLink link="https://opensea.io" text="Open Sea" /> will incur a
-            small royalty fee that will also be routed to the WikiToken treasury.
-          </p>
+          On the site, users can <AboutLink link="/sponser" text="sponser" external="false" />, or
+          "mint", WikiToken(s) with Wikipedia Page URL(s). We have built an API that resolves each
+          Page URL to a{" "}
+          <AboutLink
+            link="https://www.mediawiki.org/wiki/Manual:Page_table#page_id"
+            text="Page ID"
+          />{" "}
+          via{" "}
+          <AboutLink link="https://www.mediawiki.org/wiki/API:Main_page" text="Wikimedia's API" />.
+          The Page ID is what is ultimately used to ensure that each token is unique.
+        </div>
+        <div className="about-text-block">
+          Each WikiToken costs a flat rate of {MINT_FEE} to mint. This fee is routed to the
+          WikiTokenDAO Juicebox project, which holds the WikiToken treasury; recurring funding
+          targets are set to pay mainters of the project, and overflow funds will be routed to
+          Wikimedia. We anticipate the vast majority of the treasury to live in overflow.
+        </div>
+        <div className="about-text-block">
+          Secondary sales on <AboutLink link="https://opensea.io" text="Open Sea" /> will incur a
+          small royalty fee that will also be routed to the WikiToken treasury.
         </div>
       </>
       <>
         <div className="about-text-title">DAO</div>
         <Divider />
         <div className="about-text-block">
-          <p>
-            As a WikiToken holder, you are inherently part of the WikiToken DAO. The end goal is one
-            of the following: (a) transfer this project and its treasury to Wikimedia, or (b) hire a
-            partner (decided by the community) that manages the finances of the organization and
-            routing funds to Wikimedia. Members of the DAO will vote on every single one of these
-            decisions.
-          </p>
-          <p>
-            Currently, the WikiTokenDAO Juicebox project and treasury is owned by{" "}
-            <AboutLink
-              link="https://etherscan.io/address/0x549238d4ee184e2cb4d3b7dcf47be933d1348fa8"
-              text="wikitoken.eth"
-            />
-            , a multisig wallet shared by the creators of WikiToken, as well as other projects in
-            the crypto space; some of these include{" "}
-            <AboutLink link="https://juice.money" text="Juice" />,{" "}
-            <AboutLink link="https://tokentax.co" text="TokenTax" />, and more.
-          </p>
+          As a WikiToken holder, you are inherently part of the WikiToken DAO. The end goal is one
+          of the following: (a) transfer this project and its treasury to Wikimedia, or (b) hire a
+          partner (decided by the community) that manages the finances of the organization and
+          routing funds to Wikimedia. Members of the DAO will vote on every single one of these
+          decisions.
+        </div>
+        <div className="about-text-block">
+          Currently, the WikiTokenDAO Juicebox project and treasury is owned by{" "}
+          <AboutLink
+            link="https://etherscan.io/address/0x549238d4ee184e2cb4d3b7dcf47be933d1348fa8"
+            text="wikitoken.eth"
+          />
+          , a multisig wallet shared by the creators of WikiToken, as well as other projects in the
+          crypto space; some of these include <AboutLink link="https://juice.money" text="Juice" />,{" "}
+          <AboutLink link="https://tokentax.co" text="TokenTax" />, and more.
         </div>
       </>
       <>
