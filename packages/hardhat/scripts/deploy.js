@@ -40,6 +40,9 @@ const getJuiceProjectId = () => {
   if (network === NETWORK_RINKEBY) {
     return "0x0c";
   }
+  if (network === NETWORK_MAINNET) {
+    return "0x0a";
+  }
   throw error(`Network ${network} does not have a Juice project configured`);
 };
 
@@ -52,6 +55,9 @@ const getJuiceTerminalDirectory = () => {
   }
   if (network === NETWORK_RINKEBY) {
     return "0x5d03dA1Ec58cf319c4fDbf2E3fE3DDcd887ef9aD";
+  }
+  if (network === NETWORK_MAINNET) {
+    return "0x46C9999A2EDCD5aA177ed7E8af90c68b7d75Ba46";
   }
   throw error(`Network ${network} does not have a Juice terminal directory configured`);
 };
