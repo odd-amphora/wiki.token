@@ -8,6 +8,7 @@ $wiki-yellow: rgb(255, 228, 150);
 $wiki-dark-gray: rgb(233, 233, 234);
 
 $animation-duration: 0.75s;
+$info-text: 19px;
 
 #root {
   display: flex;
@@ -47,7 +48,7 @@ body {
 .about-text-block {
   margin-bottom: 16px;
   text-align: left;
-  font-size: 15px;
+  font-size: $info-text;
   font-family: sans-serif;
 }
 
@@ -149,6 +150,10 @@ body {
   -ms-animation: fadeIn $animation-duration;
 }
 
+.form-section .form-group label {
+  font-size: 160px;
+}
+
 .token {
   display: inline-block;
   margin: 24px;
@@ -218,6 +223,10 @@ body {
   -moz-animation: fadeIn $animation-duration;
   -o-animation: fadeIn $animation-duration;
   -ms-animation: fadeIn $animation-duration;
+}
+
+.tokens-header {
+  font-size: $info-text;
 }
 
 @keyframes fadeIn {

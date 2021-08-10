@@ -106,11 +106,12 @@ export default function Sponser() {
 
   return (
     <div className="menu-view">
-      <Form>
-        <Form.Item hasFeedback validateStatus={validateStatus}>
+      <Form className="sponser-input" size="large">
+        <Form.Item hasFeedback validateStatus={validateStatus} size="large">
           <Input
             addonBefore="https://en.wikipedia.org/wiki/"
             placeholder="Earth"
+            size="large"
             disabled={!account || isSponsering}
             onChange={e => {
               setFormValue(e.target.value);

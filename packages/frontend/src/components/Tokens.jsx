@@ -77,12 +77,12 @@ export default function Tokens({ showOwner, tokensOfAddress, noTokensHeader }) {
       ) : (
         <div>
           {tokens.length === 0 && (
-            <div>
+            <div className="tokens-header">
               {noTokensHeader}
               <Divider />
             </div>
           )}
-          <div hidden={account}>
+          <div className="tokens-header" hidden={account}>
             Connect a wallet to get started{" "}
             <span role="img" aria-label="rocket">
               🚀

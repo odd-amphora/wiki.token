@@ -13,6 +13,7 @@ import "antd/dist/antd.css";
 import "./styles/App.scss";
 import { Layout } from "./components";
 import { About, DiscoverTokens, Sponser, TokensOfAddress } from "./views";
+import { NETWORK, MAINNET } from "./constants";
 
 function App() {
   const [route, setRoute] = useState();
@@ -22,12 +23,11 @@ function App() {
 
   return (
     <div className="App">
-      <Alert
-        message="Wiki Token is still in development and is not yet deployed. Follow us on Twitter for updates."
-        type="warning"
-      />
+      <div hidden={NETWORK === MAINNET}>
+        <Alert message={`⚠️ This is not production. Network: ${NETWORK}. ⚠️`} type="warning" />
+      </div>
       <Layout>
-        <Menu style={{ marginBottom: 24 }} selectedKeys={[route]} mode="horizontal">
+        <Menu style={{ marginBottom: 24, fontSize: 19 }} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/sponser" icon={<SearchOutlined />}>
             <Link onClick={() => setRoute("/sponser")} to="/sponser" className="menu-link">
               Sponser
