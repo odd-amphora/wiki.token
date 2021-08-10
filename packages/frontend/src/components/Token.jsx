@@ -4,7 +4,7 @@ import { useEthers } from "@usedapp/core";
 import { useWikiTokenContract } from "../hooks";
 import { formatAddress } from "../utils/stringUtils";
 
-export default function Token({ imageUrl, pageId, pageTitle, sponsershipStatus, showOwner }) {
+export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, showOwner }) {
   const wikiTokenContract = useWikiTokenContract(/*readOnly=*/ true);
   const [owner, setOwner] = useState("");
   const { account } = useEthers();
@@ -17,7 +17,7 @@ export default function Token({ imageUrl, pageId, pageTitle, sponsershipStatus, 
         console.log(`Error fetching owner of ${pageId}:`, err);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId, account, sponsershipStatus]);
+  }, [pageId, account, sponsorshipStatus]);
 
   const openWikipediaPage = () => {
     window.open(`https://en.wikipedia.org/?curid=${pageId}`);

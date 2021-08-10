@@ -58,7 +58,7 @@ export default function About() {
         <div className="about-text-title">Mechanism</div>
         <Divider />
         <div className="about-text-block">
-          On the site, users can <AboutLink link="/sponser" text="sponser" external="false" />, or
+          On the site, users can <AboutLink link="/sponsor" text="sponsor" external="false" />, or
           "mint", WikiToken(s) with Wikipedia Page URL(s). We have built an API that resolves each
           Page URL to a{" "}
           <AboutLink
@@ -77,7 +77,7 @@ export default function About() {
         </div>
         <div className="about-text-block">
           Secondary sales on <AboutLink link="https://opensea.io" text="Open Sea" /> will incur a
-          small royalty fee that will also be routed to the WikiToken treasury.
+          small royalty fee that will be routed to the same treasury.
         </div>
       </>
       <>

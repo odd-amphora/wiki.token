@@ -12,7 +12,7 @@ import {
 import "antd/dist/antd.css";
 import "./styles/App.scss";
 import { Layout } from "./components";
-import { About, DiscoverTokens, Sponser, TokensOfAddress } from "./views";
+import { About, DiscoverTokens, Sponsor, TokensOfAddress } from "./views";
 import { NETWORK, MAINNET } from "./constants";
 
 function App() {
@@ -28,9 +28,9 @@ function App() {
       </div>
       <Layout>
         <Menu style={{ marginBottom: 24, fontSize: 19 }} selectedKeys={[route]} mode="horizontal">
-          <Menu.Item key="/sponser" icon={<SearchOutlined />}>
-            <Link onClick={() => setRoute("/sponser")} to="/sponser" className="menu-link">
-              Sponser
+          <Menu.Item key="/sponsor" icon={<SearchOutlined />}>
+            <Link onClick={() => setRoute("/sponsor")} to="/sponsor" className="menu-link">
+              Sponsor
             </Link>
           </Menu.Item>
           <Menu.Item key="/tokens" icon={<TrophyOutlined />}>
@@ -52,8 +52,8 @@ function App() {
           <Route exact path={["/about", "/"]}>
             <About />
           </Route>
-          <Route exact path="/sponser">
-            <Sponser />
+          <Route exact path="/sponsor">
+            <Sponsor />
           </Route>
           <Route path="/tokens">
             <TokensOfAddress />
