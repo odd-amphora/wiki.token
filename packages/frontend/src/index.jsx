@@ -3,17 +3,9 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import "./styles/index.scss";
 import App from "./App";
-import { Footer } from "./components";
+import { Footer, InvalidNetwork } from "./components";
 import { ChainId, DAppProvider } from "@usedapp/core";
-import { NETWORK } from "./constants";
-
-// TODO: these can be moved elsewhere.
-const NETWORK_TO_CHAIN_ID = {
-  localhost: 31337,
-  rinkeby: ChainId.Rinkeby,
-  kovan: ChainId.Kovan,
-  mainnet: ChainId.Mainnet,
-};
+import { NETWORK, NETWORK_TO_CHAIN_ID } from "./constants";
 
 export const networkConfig = {
   readOnlyChainId: NETWORK_TO_CHAIN_ID[NETWORK],
@@ -37,6 +29,7 @@ export const networkConfig = {
 ReactDOM.render(
   <BrowserRouter>
     <DAppProvider config={networkConfig}>
+      <InvalidNetwork />
       <App key="1" />
       <Footer key="2" />
     </DAppProvider>
