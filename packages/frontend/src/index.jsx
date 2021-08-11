@@ -27,20 +27,26 @@ export const networkConfig = {
   supportedChains: [31337, ChainId.Localhost, ChainId.Kovan, ChainId.Rinkeby, ChainId.Mainnet],
 };
 
-const renderer = ({ hours, minutes, seconds, completed }) => {
+const renderer = ({ days, hours, minutes, seconds, completed }) => {
   if (!completed) {
     return (
-      <span className="countdown">
-        {hours}:{minutes}:{seconds}
-      </span>
+      <>
+        <span className="countdown-header">Come back in</span>
+        <span className="countdown-clock">
+          {days} day(s), {hours} hour(s), {minutes} minute(s), {seconds} second(s)
+        </span>
+      </>
     );
   }
 };
 
 ReactDOM.render(
   <BrowserRouter>
-    {NETWORK === "mainnet" ? (
-      <Countdown date={"12 Aug 2021 00:08:00 GMT-0400"} renderer={renderer} />
+    {NETWORK !== "mainnet" ? (
+      <Countdown
+        date={new Date("Thursday, August 12, 2021 8:00:00 AM GMT-04:00")}
+        renderer={renderer}
+      />
     ) : (
       <DAppProvider config={networkConfig}>
         <InvalidNetwork />
