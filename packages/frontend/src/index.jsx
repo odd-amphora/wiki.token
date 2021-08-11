@@ -42,7 +42,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
 
 ReactDOM.render(
   <BrowserRouter>
-    {NETWORK !== "mainnet" ? (
+    {NETWORK === "mainnet" ? (
       <Countdown
         date={new Date("Thursday, August 12, 2021 8:00:00 AM GMT-04:00")}
         renderer={renderer}
