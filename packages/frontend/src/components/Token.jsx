@@ -7,6 +7,7 @@ import { formatAddress } from "../utils/stringUtils";
 export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, showOwner }) {
   const wikiTokenContract = useWikiTokenContract(/*readOnly=*/ true);
   const [owner, setOwner] = useState("");
+  const [formattedOwnerAddress, setFormattedOwnerAddress] = useState("");
   const { account } = useEthers();
 
   useEffect(() => {
@@ -18,6 +19,10 @@ export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, 
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId, account, sponsorshipStatus]);
+
+  useEffect(() => {
+    setFormattedOwnerAddress(formatAddress(owner));
+  }, [owner]);
 
   const openWikipediaPage = () => {
     window.open(`https://en.wikipedia.org/?curid=${pageId}`);
@@ -41,7 +46,12 @@ export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, 
       {showOwner && (
         <div className="token-owner">
           <span className="link-span" onClick={openEtherscan}>
-            {account && owner === account ? `You own this token` : formatAddress(owner)}
+            {/* TODO(odd-amphora): this loading state could be improved */}
+            {account && owner === account
+              ? `You own this token`
+              : formattedOwnerAddress
+              ? formattedOwnerAddress
+              : "..."}
           </span>
         </div>
       )}
