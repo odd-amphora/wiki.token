@@ -34,6 +34,7 @@
     "less": "^4.1.1",
     "react": "^16.14.0",
     "react-blockies": "^1.4.1",
+    "react-countdown": "^2.3.2",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
