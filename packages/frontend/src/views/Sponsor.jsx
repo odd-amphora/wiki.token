@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import "antd/dist/antd.css";
-import { Alert, Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input, Select, Switch } from "antd";
 import axios from "axios";
 import { BigNumber } from "@ethersproject/bignumber";
 import web3 from "web3";
@@ -10,6 +10,9 @@ import { Token } from "../components";
 import { MINT_FEE } from "../constants";
 import { useWikiTokenContract } from "../hooks";
 import { useContractFunction, useEthers } from "@usedapp/core";
+
+// import  { Switch } from antd;
+// import  { CloseOutlined, CheckOutlined } from  antd/icons;
 
 // Form validation status
 const VALIDATE_STATUS_IDLE = "idle";
@@ -28,12 +31,14 @@ export default function Sponser() {
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
   const [isSponsering, setIsSponsering] = useState(false);
   const [isSponsered, setIsSponsered] = useState(false);
+  const [useUrl, setUseUrl] = useState(true);
 
   const { account } = useEthers();
   const wikiTokenContract = useWikiTokenContract();
   const { send, state } = useContractFunction(wikiTokenContract, "mintWikipediaPage");
 
   const [formValue, setFormValue] = useState("");
+  const [pageIdFormValue, setPageIdFormValue] = useState("");
 
   let cancelRequest;
 
@@ -92,6 +97,15 @@ export default function Sponser() {
       });
   };
 
+  const selectBefore = (
+    <Select defaultValue="https://en.wikipedia.org/wiki/">
+      <Select.Option value="https://en.wikipedia.org/wiki/">
+        https://en.wikipedia.org/wiki/
+      </Select.Option>
+      <Select.Option value="Page ID">pageId</Select.Option>
+    </Select>
+  );
+
   const sponser = async () => {
     setIsSponsering(true);
     // TODO: we should show error message
@@ -107,16 +121,28 @@ export default function Sponser() {
   return (
     <div className="menu-view">
       <Form className="sponser-input" size="large">
+        <Switch
+          checkedChildren="URL"
+          unCheckedChildren="Page ID"
+          defaultChecked
+          onChange={checked => {
+            setUseUrl(checked);
+          }}
+        />
         <Form.Item hasFeedback validateStatus={validateStatus} size="large">
           <Input
-            addonBefore="https://en.wikipedia.org/wiki/"
-            placeholder="Earth"
+            addonBefore={useUrl ? "https://en.wikipedia.org/wiki/" : ""}
+            placeholder={useUrl ? "Earth" : "Enter a page id"}
             size="large"
             disabled={!account || isSponsering}
             onChange={e => {
-              setFormValue(e.target.value);
+              if (useUrl) {
+                setFormValue(e.target.value);
+              } else {
+                setPageIdFormValue(e.target.value);
+              }
             }}
-            value={formValue}
+            value={useUrl ? formValue : pageIdFormValue}
           />
         </Form.Item>
       </Form>
