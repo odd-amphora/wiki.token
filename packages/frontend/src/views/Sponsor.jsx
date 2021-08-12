@@ -26,7 +26,9 @@ const REFRESH_DELAY_MS = 200;
 const DEBOUNCE_DELAY_MS = 300;
 
 export default function Sponser() {
-  const [validateStatus, setValidateStatus] = useState("");
+  const [articleValidateStatus, setArticleValidateStatus] = useState("");
+  const [pageIdValidateStatus, setPageIdValidateStatus] = useState("");
+
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
   const [isSponsering, setIsSponsering] = useState(false);
@@ -37,7 +39,7 @@ export default function Sponser() {
   const wikiTokenContract = useWikiTokenContract();
   const { send, state } = useContractFunction(wikiTokenContract, "mintWikipediaPage");
 
-  const [formValue, setFormValue] = useState("");
+  const [articleFormValue, setArticleFormValue] = useState("");
   const [pageIdFormValue, setPageIdFormValue] = useState("");
 
   let cancelRequest;
@@ -61,21 +63,21 @@ export default function Sponser() {
   }, [articleQueryResponse, state]);
 
   useEffect(() => {
-    setValidateStatus(VALIDATE_STATUS_VALIDATING);
+    setArticleValidateStatus(VALIDATE_STATUS_VALIDATING);
     let id = setTimeout(() => {
-      fetchArticleMetadata(formValue);
+      fetchArticleMetadata(articleFormValue);
     }, DEBOUNCE_DELAY_MS);
     return () => {
       clearTimeout(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formValue]);
+  }, [articleFormValue]);
 
   const fetchArticleMetadata = article => {
     cancelRequest && cancelRequest();
     if (!article || article.length === 0) {
       setArticleQueryResponse(null);
-      setValidateStatus(VALIDATE_STATUS_IDLE);
+      setArticleValidateStatus(VALIDATE_STATUS_IDLE);
       return;
     }
     axios
@@ -86,25 +88,16 @@ export default function Sponser() {
       })
       .then(response => {
         setArticleQueryResponse(response?.data);
-        setValidateStatus(
+        setArticleValidateStatus(
           response.status === 200 ? VALIDATE_STATUS_SUCCESS : VALIDATE_STATUS_ERROR,
         );
       })
       .catch(error => {
         console.log("Error: ", error);
         setArticleQueryResponse(null);
-        setValidateStatus(VALIDATE_STATUS_ERROR);
+        setArticleValidateStatus(VALIDATE_STATUS_ERROR);
       });
   };
-
-  const selectBefore = (
-    <Select defaultValue="https://en.wikipedia.org/wiki/">
-      <Select.Option value="https://en.wikipedia.org/wiki/">
-        https://en.wikipedia.org/wiki/
-      </Select.Option>
-      <Select.Option value="Page ID">pageId</Select.Option>
-    </Select>
-  );
 
   const sponser = async () => {
     setIsSponsering(true);
@@ -129,7 +122,11 @@ export default function Sponser() {
             setUseUrl(checked);
           }}
         />
-        <Form.Item hasFeedback validateStatus={validateStatus} size="large">
+        <Form.Item
+          hasFeedback
+          validateStatus={useUrl ? articleValidateStatus : pageIdValidateStatus}
+          size="large"
+        >
           <Input
             addonBefore={useUrl ? "https://en.wikipedia.org/wiki/" : ""}
             placeholder={useUrl ? "Earth" : "Enter a page id"}
@@ -137,12 +134,12 @@ export default function Sponser() {
             disabled={!account || isSponsering}
             onChange={e => {
               if (useUrl) {
-                setFormValue(e.target.value);
+                setArticleFormValue(e.target.value);
               } else {
                 setPageIdFormValue(e.target.value);
               }
             }}
-            value={useUrl ? formValue : pageIdFormValue}
+            value={useUrl ? articleFormValue : pageIdFormValue}
           />
         </Form.Item>
       </Form>
@@ -150,7 +147,8 @@ export default function Sponser() {
       <div hidden={account}>
         <Alert message="You must connect a wallet in order to sponser tokens 😢" type="error" />
       </div>
-      <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
+      {/* TODO */}
+      <div hidden={articleValidateStatus !== VALIDATE_STATUS_SUCCESS}>
         {articleQueryResponse?.pageId && (
           <Token
             key={articleQueryResponse?.pageId}
