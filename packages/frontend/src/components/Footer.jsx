@@ -21,7 +21,7 @@ export default function Footer() {
             className="footer-icon"
             size={FA_ICON_SIZE}
             onClick={() => {
-              openSocialLink(`https://github.com/teddywilson/wiki.token`);
+              openSocialLink(`https://github.com/odd-amphora/wiki.token`);
             }}
           />
           <FontAwesomeIcon
