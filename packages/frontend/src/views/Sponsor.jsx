@@ -132,7 +132,7 @@ export default function Sponser() {
             pageId={articleQueryResponse?.pageId}
             pageTitle={articleQueryResponse?.pageTitle}
             sponsershipStatus={isSponsered}
-            showOwner={true}
+            showOwner={isSponsered}
           />
         )}
         <div hidden={isSponsered || !account}>
