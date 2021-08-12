@@ -78,7 +78,7 @@ export default function About() {
             wikitoken.eth
           </a>
           , a multisig wallet shared by the creators of WikiToken, as well as other projects in the
-          crypto space; some of these include <a link="https://juice.money">Juice</a>,{" "}
+          crypto space; some of these include <a href="https://juice.money">Juice</a>,{" "}
           <a href="https://tokentax.co">Token Tax</a>, and more. Immediately after the protocol is
           launched, we plan on adding more members of the DAO to the multisig to enforce stronger
           governance.
