@@ -18,7 +18,7 @@ export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, 
         console.log(`Error fetching owner of ${pageId}:`, err);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId, account, sponsorshipStatus]);
+  }, [pageId, account, sponsorshipStatus, showOwner]);
 
   useEffect(() => {
     setFormattedOwnerAddress(formatAddress(owner));

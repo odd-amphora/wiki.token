@@ -95,7 +95,7 @@ export default function Sponser() {
   const sponser = async () => {
     setIsSponsering(true);
     // TODO: we should show error message
-    send(currentPageId, {
+    await send(currentPageId, {
       value: web3.utils.toBN(web3.utils.toWei("0.01", "ether")).toString(),
     });
     setIsSponsering(false);
