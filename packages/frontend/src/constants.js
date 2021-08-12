@@ -4,14 +4,14 @@ const WIKI_TOKEN_ABIS = {
   localhost: require("./contracts/localhost/Token.abi"),
   kovan: require("./contracts/kovan/Token.abi"),
   rinkeby: require("./contracts/rinkeby/Token.abi"),
-  // mainnet: require("./contracts/mainnet/Token.abi"),
+  mainnet: require("./contracts/mainnet/Token.abi"),
 };
 
 const WIKI_TOKEN_ADDRESSES = {
   localhost: require("./contracts/localhost/Token.address"),
   kovan: require("./contracts/kovan/Token.address"),
   rinkeby: require("./contracts/rinkeby/Token.address"),
-  // mainnet: require("./contracts/mainnet/Token.abi"),
+  mainnet: "0xD224B0eAf5B5799ca46D9FdB89a2C10941E66109",
 };
 
 export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";

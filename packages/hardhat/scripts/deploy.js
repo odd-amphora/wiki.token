@@ -130,12 +130,13 @@ const main = async () => {
 
   console.log("\n");
 
-  const token = await deploy("Token", [
-    wikiTokenBaseURI,
-    isJuiceEnabled,
-    juiceProjectId,
-    juiceTerminalDirectory,
-  ]);
+  const token = await deploy(
+    "Token",
+    [wikiTokenBaseURI, isJuiceEnabled, juiceProjectId, juiceTerminalDirectory],
+    {
+      gasLimit: 9000000,
+    },
+  );
 
   // const multisigAddress = getMultisigAddress();
   // console.log(`🤝 Transferring ownership to:`, chalk.magenta(multisigAddress));

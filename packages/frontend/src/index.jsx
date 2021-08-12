@@ -7,7 +7,6 @@ import { Footer } from "./components";
 import { InvalidNetwork } from "./components/modal";
 import { ChainId, DAppProvider } from "@usedapp/core";
 import { NETWORK, NETWORK_TO_CHAIN_ID } from "./constants";
-import Countdown from "react-countdown";
 
 export const networkConfig = {
   readOnlyChainId: NETWORK_TO_CHAIN_ID[NETWORK],
@@ -28,33 +27,13 @@ export const networkConfig = {
   supportedChains: [31337, ChainId.Localhost, ChainId.Kovan, ChainId.Rinkeby, ChainId.Mainnet],
 };
 
-const renderer = ({ days, hours, minutes, seconds, completed }) => {
-  if (!completed) {
-    return (
-      <>
-        <span className="countdown-header">Come back in</span>
-        <span className="countdown-clock">
-          {days} day(s), {hours} hour(s), {minutes} minute(s), {seconds} second(s)
-        </span>
-      </>
-    );
-  }
-};
-
 ReactDOM.render(
   <BrowserRouter>
-    {NETWORK === "mainnet" ? (
-      <Countdown
-        date={new Date("Thursday, August 12, 2021 1:00:00 PM GMT-04:00")}
-        renderer={renderer}
-      />
-    ) : (
-      <DAppProvider config={networkConfig}>
-        <InvalidNetwork />
-        <App key="1" />
-        <Footer key="2" />
-      </DAppProvider>
-    )}
+    <DAppProvider config={networkConfig}>
+      <InvalidNetwork />
+      <App key="1" />
+      <Footer key="2" />
+    </DAppProvider>{" "}
   </BrowserRouter>,
   document.getElementById("root"),
 );
