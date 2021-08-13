@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const WIKIPEDIA_API_BASE_URL = `https://en.wikipedia.org/w/api.php`;
-const DEFAULT_IMAGE_URL = `https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg`;
+const DEFAULT_IMAGE_URL = `https://upload.wikimedia.org/wikipedia/commons/d/de/Wikipedia_Logo_1.0.png`;
 
 const buildBaseWikipediaQuery = () => {
   return `${WIKIPEDIA_API_BASE_URL}?action=query`
