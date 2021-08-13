@@ -22,6 +22,7 @@ const STATE_MINING = "Mining";
 const REFRESH_DELAY_MS = 200;
 const DEBOUNCE_DELAY_MS = 300;
 
+// TODO(odd-amphora): Sponser-> Sponsor lol.
 export default function Sponser() {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
@@ -147,7 +148,7 @@ export default function Sponser() {
               sponser();
             }}
           >
-            Sponser for {MINT_FEE}
+            Sponsor for {MINT_FEE}
           </Button>
         </div>
       </div>
