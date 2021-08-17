@@ -4,7 +4,14 @@ import { useEthers } from "@usedapp/core";
 import { useWikiTokenContract } from "../hooks";
 import { formatAddress } from "../utils/stringUtils";
 
-export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, showOwner }) {
+export default function Token({
+  imageUrl,
+  pageId,
+  pageTitle,
+  sponsorshipStatus,
+  showOwner,
+  onOwnerDetermined,
+}) {
   const wikiTokenContract = useWikiTokenContract(/*readOnly=*/ true);
   const [owner, setOwner] = useState("");
   const [formattedOwnerAddress, setFormattedOwnerAddress] = useState("");
@@ -13,7 +20,12 @@ export default function Token({ imageUrl, pageId, pageTitle, sponsorshipStatus, 
   useEffect(() => {
     wikiTokenContract
       .ownerOf(pageId)
-      .then(res => setOwner(res))
+      .then(res => {
+        setOwner(res);
+        if (onOwnerDetermined) {
+          onOwnerDetermined(res);
+        }
+      })
       .catch(err => {
         console.log(`Error fetching owner of ${pageId}:`, err);
       });

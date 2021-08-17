@@ -22,13 +22,13 @@ const STATE_MINING = "Mining";
 const REFRESH_DELAY_MS = 200;
 const DEBOUNCE_DELAY_MS = 300;
 
-// TODO(odd-amphora): Sponser-> Sponsor lol.
-export default function Sponser() {
+export default function Sponsor() {
   const [validateStatus, setValidateStatus] = useState("");
   const [articleQueryResponse, setArticleQueryResponse] = useState("");
   const [currentPageId, setCurrentPageId] = useState(BigNumber.from(0));
-  const [isSponsering, setIsSponsering] = useState(false);
-  const [isSponsered, setIsSponsered] = useState(false);
+  const [isSponsoring, setIsSponsoring] = useState(false);
+  const [isSponsored, setIsSponsored] = useState(false);
+  const [owner, setOwner] = useState("");
 
   const { account } = useEthers();
   const wikiTokenContract = useWikiTokenContract();
@@ -45,7 +45,7 @@ export default function Sponser() {
     setCurrentPageId(currentPageId);
     wikiTokenContract
       .isPageMinted(currentPageId)
-      .then(res => setIsSponsered(res))
+      .then(res => setIsSponsored(res))
       .catch(err => {
         console.log(`Error checking if page is minted: `, err);
       });
@@ -93,32 +93,38 @@ export default function Sponser() {
       });
   };
 
-  const sponser = async () => {
+  const sponsor = async () => {
     try {
-      setIsSponsering(true);
+      setIsSponsoring(true);
       // TODO: we should show error message
       await send(currentPageId, {
         value: web3.utils.toBN(web3.utils.toWei("0.01", "ether")).toString(),
       });
-      setIsSponsering(false);
+      setIsSponsoring(false);
       setTimeout(() => {
         refresh();
       }, REFRESH_DELAY_MS);
     } catch (e) {
       console.log("Error sponsoring: ", e);
-      setIsSponsered(false);
+      setIsSponsored(false);
     }
+  };
+
+  const openOpenSea = () => {
+    window.open(
+      `https://opensea.io/assets/0xd224b0eaf5b5799ca46d9fdb89a2c10941e66109/${articleQueryResponse?.pageId}`,
+    );
   };
 
   return (
     <div className="menu-view">
-      <Form className="sponser-input" size="large">
+      <Form className="sponsor-input" size="large">
         <Form.Item hasFeedback validateStatus={validateStatus} size="large">
           <Input
             addonBefore="https://en.wikipedia.org/wiki/"
             placeholder="Earth"
             size="large"
-            disabled={!account || isSponsering}
+            disabled={!account || isSponsoring}
             onChange={e => {
               setFormValue(e.target.value);
             }}
@@ -128,7 +134,7 @@ export default function Sponser() {
       </Form>
       {/* For whatever reason, style/visibility isn't working for alert so we have to wrap it */}
       <div hidden={account}>
-        <Alert message="You must connect a wallet in order to sponser tokens 😢" type="error" />
+        <Alert message="You must connect a wallet in order to sponsor tokens 😢" type="error" />
       </div>
       <div hidden={validateStatus !== VALIDATE_STATUS_SUCCESS}>
         {articleQueryResponse?.pageId && (
@@ -137,18 +143,24 @@ export default function Sponser() {
             imageUrl={articleQueryResponse?.imageUrl}
             pageId={articleQueryResponse?.pageId}
             pageTitle={articleQueryResponse?.pageTitle}
-            sponsershipStatus={isSponsered}
-            showOwner={isSponsered}
+            sponsorshipStatus={isSponsored}
+            showOwner={isSponsored}
+            onOwnerDetermined={owner => {
+              setOwner(owner);
+            }}
           />
         )}
-        <div hidden={isSponsered || !account}>
+        <div hidden={isSponsored || !account}>
           <Button
-            loading={isSponsering || (state && state.status === STATE_MINING)}
-            onClick={() => {
-              sponser();
-            }}
+            loading={isSponsoring || (state && state.status === STATE_MINING)}
+            onClick={sponsor}
           >
             Sponsor for {MINT_FEE}
+          </Button>
+        </div>
+        <div hidden={!isSponsored}>
+          <Button onClick={openOpenSea}>
+            {account && owner && account === owner ? `List on Open Sea` : `Buy on Open Sea`}
           </Button>
         </div>
       </div>
